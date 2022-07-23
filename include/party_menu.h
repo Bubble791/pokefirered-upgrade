@@ -26,6 +26,7 @@ extern u8 gSelectedMonPartyId;
 extern MainCallback gPostMenuFieldCallback;
 extern u8 gSelectedOrderFromParty[3];
 extern u8 gBattlePartyCurrentOrder[PARTY_SIZE / 2];
+extern const u16 sTMHMMoves[];
 
 extern void (*gItemUseCB)(u8, TaskFunc);
 
@@ -83,5 +84,7 @@ u8 GetPartyIdFromBattlePartyId(u8 battlePartyId);
 void ShowPartyMenuToShowcaseMultiBattleParty(void);
 void ChooseMonForDaycare(void);
 void ChoosePartyMonByMenuType(u8 menuType);
+bool8 CanLearnTutorMove(u16 species, u8 tutor);
+u16 GetTutorMove(u8 tutor);
 
 #endif // GUARD_PARTY_MENU_H

@@ -454,4 +454,12 @@
 // Check if the item is one that can be used on a Pokemon.
 #define IS_POKEMON_ITEM(item) ((item) >= ITEM_POTION && (item) <= ITEM_0B2)
 
+#define NUM_TMS 50	//keep this defined even if EXPANDED_TMSHMS is not!!
+#define NUM_HMS 8	//keep this defined even if EXPANDED_TMSHMS is not!!
+
+#define NUM_TMSHMS NUM_TMS + NUM_HMS	// never change this
+
+#define PU_COMMON_PER_ROW   9
+#define PU_RARE_PER_ROW     2
+
 #endif  // GUARD_CONSTANTS_ITEMS_H

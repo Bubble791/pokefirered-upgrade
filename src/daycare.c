@@ -27,12 +27,11 @@
 #include "help_system.h"
 #include "field_fadetransition.h"
 #include "trade.h"
+#include "util.h"
 #include "constants/daycare.h"
 #include "constants/region_map_sections.h"
 
 // Combination of RSE's Day-Care (re-used on Four Island), FRLG's Day-Care, and egg_hatch.c
-
-extern const struct Evolution gEvolutionTable[][EVOS_PER_MON];
 
 struct EggHatchData
 {
@@ -2160,4 +2159,119 @@ static void EggHatchPrintMessage(u8 windowId, u8* string, u8 x, u8 y, u8 speed)
     sEggHatchData->textColor[1] = 5;
     sEggHatchData->textColor[2] = 6;
     AddTextPrinterParameterized4(windowId, 3, x, y, 1, 1, sEggHatchData->textColor, speed, string);
+}
+
+static void AlterSpeciesWithIncenseItems(u16* species, u16 motherItem, u16 fatherItem)
+{
+	// if neither parent holding incense, force 2nd evo species
+	switch (*species)
+	{
+		#if (defined SPECIES_WYNAUT && defined SPECIES_WOBBUFFET && defined ITEM_LAX_INCENSE)
+		case SPECIES_WYNAUT:
+			if (motherItem != ITEM_LAX_INCENSE && fatherItem != ITEM_LAX_INCENSE)
+				*species = SPECIES_WOBBUFFET;
+			break;
+		#endif
+
+		#if (defined SPECIES_AZURILL && defined SPECIES_MARILL && defined ITEM_SEA_INCENSE)
+		case SPECIES_AZURILL:
+			if (motherItem != ITEM_SEA_INCENSE && fatherItem != ITEM_SEA_INCENSE)
+				*species = SPECIES_MARILL;
+			break;
+		#endif
+
+		#if (defined SPECIES_MUNCHLAX && defined SPECIES_SNORLAX && defined ITEM_FULL_INCENSE)
+		case SPECIES_MUNCHLAX:
+			if (motherItem != ITEM_FULL_INCENSE && fatherItem != ITEM_FULL_INCENSE)
+				*species = SPECIES_SNORLAX;
+			break;
+		#endif
+
+		#if (defined SPECIES_MIME_JR && defined SPECIES_MR_MIME && defined ITEM_ODD_INCENSE)
+		case SPECIES_MIME_JR:
+			if (motherItem != ITEM_ODD_INCENSE && fatherItem != ITEM_ODD_INCENSE)
+				*species = SPECIES_MR_MIME;
+			break;
+		#endif
+
+		#if (defined SPECIES_CHINGLING && defined SPECIES_CHIMECHO && defined ITEM_PURE_INCENSE)
+		case SPECIES_CHINGLING:
+			if (motherItem != ITEM_PURE_INCENSE && fatherItem != ITEM_PURE_INCENSE)
+				*species = SPECIES_CHIMECHO;
+			break;
+		#endif
+
+		#if (defined SPECIES_BONSLY && defined SPECIES_SUDOWOODO && defined ITEM_ROCK_INCENSE)
+		case SPECIES_BONSLY:
+			if (motherItem != ITEM_ROCK_INCENSE && fatherItem != ITEM_ROCK_INCENSE)
+				*species = SPECIES_SUDOWOODO;
+			break;
+		#endif
+
+		#if (defined SPECIES_BUDEW && defined SPECIES_ROSELIA && defined ITEM_ROSE_INCENSE)
+		case SPECIES_BUDEW:
+			if (motherItem != ITEM_ROSE_INCENSE && fatherItem != ITEM_ROSE_INCENSE)
+				*species = SPECIES_ROSELIA;
+			break;
+		#endif
+
+		#if (defined SPECIES_MANTYKE && defined SPECIES_MANTINE && defined ITEM_WAVE_INCENSE)
+		case SPECIES_MANTYKE:
+			if (motherItem != ITEM_WAVE_INCENSE && fatherItem != ITEM_WAVE_INCENSE)
+				*species = SPECIES_MANTINE;
+			break;
+		#endif
+
+		#if (defined SPECIES_HAPPINY && defined SPECIES_CHANSEY && defined ITEM_LUCK_INCENSE)
+		case SPECIES_HAPPINY:
+			if (motherItem != ITEM_LUCK_INCENSE && fatherItem != ITEM_LUCK_INCENSE)
+				*species = SPECIES_CHANSEY;
+			break;
+		#endif
+
+		default:
+			break;
+	}
+}
+
+u8 GetAllEggMoves(struct Pokemon* mon, u16* moves, bool8 ignoreAlreadyKnownMoves)
+{
+	u8 numEggMoves;
+	u32 i, j;
+	struct Pokemon dummyMon = {0};
+	u16 eggMovesBuffer[EGG_MOVES_ARRAY_COUNT];
+	bool8 moveInList[MOVES_COUNT] = {FALSE};
+	u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+	u16 eggSpecies = GetEggSpecies(species);
+    u16 eggSpecies2;
+
+	SetMonData(&dummyMon, MON_DATA_SPECIES, &eggSpecies);
+	numEggMoves = GetEggMoves(&dummyMon, eggMovesBuffer);
+
+	//Filter out any egg moves the Pokemon already knows
+	for (i = 0, j = 0; i < numEggMoves; ++i)
+	{
+		if (!ignoreAlreadyKnownMoves || !MoveInMonMoveset(eggMovesBuffer[i], mon))
+		{
+			moves[j++] = eggMovesBuffer[i];
+			moveInList[eggMovesBuffer[i]] = TRUE;
+		}
+	}
+
+	eggSpecies2 = eggSpecies;
+	AlterSpeciesWithIncenseItems(&eggSpecies2, 0, 0);
+	if (eggSpecies2 != eggSpecies) //Different baby; eg. Marill + Azurill
+	{
+		SetMonData(&dummyMon, MON_DATA_SPECIES, &eggSpecies2);
+		numEggMoves = GetEggMoves(&dummyMon, eggMovesBuffer);
+
+		//Filter out any egg moves the Pokemon already knows
+		for (i = 0; i < numEggMoves && j < EGG_MOVES_ARRAY_COUNT; ++i)
+		{
+			if (!moveInList[eggMovesBuffer[i]] && !MoveInMonMoveset(eggMovesBuffer[i], mon))
+				moves[j++] = eggMovesBuffer[i];
+		}
+	}
+
+	return j;
 }

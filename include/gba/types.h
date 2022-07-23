@@ -166,4 +166,10 @@ struct SioMultiCnt
 #define ST_SIO_57600_BPS  2 //  57600 bps
 #define ST_SIO_115200_BPS 3 // 115200 bps
 
+#define SPECIES_TABLES_TERMIN       0xFEFE
+#define MOVE_TABLES_TERMIN          0xFEFE
+#define ITEM_TABLES_TERMIN          0xFEFE
+#define ABILITY_TABLES_TERMIN       0xFF
+#define MOVE_EFFECT_TABLES_TERMIN   0xFF
+
 #endif // GUARD_GBA_TYPES_H

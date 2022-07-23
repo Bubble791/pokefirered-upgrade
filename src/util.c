@@ -1,5 +1,6 @@
 #include "global.h"
 #include "random.h"
+#include "pokemon.h"
 
 const u32 gBitTable[] =
 {
@@ -298,4 +299,153 @@ u16 RandRange(u16 min, u16 max)
 		return min;
 
 	return (Random() % (max - min)) + min;
+}
+
+bool8 CheckTableForMove(u16 move, const u16 table[])
+{
+    u32 i;
+	for (i = 0; table[i] != MOVE_TABLES_TERMIN; ++i)
+	{
+		if (move == table[i])
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+u8 GetMonType(struct Pokemon* mon, u8 typeId)
+{/*
+	u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+
+	if (typeId == 0)
+		return (ShouldReplaceTypesWithCamomons()) ? GetCamomonsTypeByMon(mon, 0) : gBaseStats[species].type1;
+	else
+		return (ShouldReplaceTypesWithCamomons()) ? GetCamomonsTypeByMon(mon, 1) : gBaseStats[species].type2;*/
+}
+
+bool8 IsMonOfType(struct Pokemon* mon, u8 type)
+{
+	u8 type1 = GetMonType(mon, 0);
+	u8 type2 = GetMonType(mon, 1);
+
+	return type1 == type || type2 == type;
+}
+
+bool8 CheckTableForSpecies(u16 species, const u16 table[])
+{
+    u32 i;
+	for (i = 0; table[i] != SPECIES_TABLES_TERMIN; ++i)
+	{
+		if (species == table[i])
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+bool8 CheckTableForItem(u16 item, const u16 table[])
+{
+    u32 i;
+	for (i = 0; table[i] != ITEM_TABLES_TERMIN; ++i)
+	{
+		if (item == table[i])
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+u8 ViableMonCount(struct Pokemon* party)
+{
+	u8 count = 0;
+    u32 i;
+
+	for (i = 0; i < PARTY_SIZE; ++i)
+	{
+		if (GetMonData(&party[i], MON_DATA_SPECIES, NULL) != SPECIES_NONE
+		&& !GetMonData(&party[i], MON_DATA_IS_EGG, NULL)
+		&&  GetMonData(&party[i], MON_DATA_HP, NULL) > 0)
+			++count;
+	}
+
+	return count;
+}
+
+void HealMon(struct Pokemon* mon)
+{
+	u32 none = 0;
+	u16 maxHP = GetMonData(mon, MON_DATA_MAX_HP, NULL);
+
+	//Restore HP.
+	SetMonData(mon, MON_DATA_HP, &maxHP);
+
+	//Restore PP.
+	MonRestorePP(mon);
+
+	//Restore Status.
+	SetMonData(mon, MON_DATA_STATUS, &none);
+}
+
+bool8 CanEvolve(struct Pokemon* mon)
+{/*
+	u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+	const struct Evolution* evolutions = gEvolutionTable[species];
+    u32 i;
+	for (i = 0; i < EVOS_PER_MON; ++i)
+	{
+		if (evolutions[i].method != MEGA_EVOLUTION && evolutions[i].method != EVO_GIGANTAMAX && evolutions[i].method != 0)
+			return TRUE;
+	}
+
+	return FALSE;*/
+}
+
+bool8 CouldHaveEvolvedViaLevelUp(struct Pokemon* mon) // need todo
+{
+	u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
+	const struct Evolution* evolutions = gEvolutionTable[species];
+    u32 i;
+
+	/*for (i = 0; i < EVOS_PER_MON; ++i)
+	{
+		if (IsLevelUpEvolutionMethod(evolutions[i].method) && mon->level >= evolutions[i].param)
+			return TRUE;
+	}
+
+	return FALSE;*/
+}
+
+u32 GetBaseStatsTotal(const u16 species)
+{
+	return gBaseStats[species].baseHP + gBaseStats[species].baseAttack + gBaseStats[species].baseDefense + gBaseStats[species].baseSpeed + gBaseStats[species].baseSpAttack + gBaseStats[species].baseSpDefense;
+}
+
+u8 FindMovePositionInMonMoveset(u16 move, struct Pokemon* mon)
+{
+	u8 i;
+
+	for (i = 0; i < MAX_MON_MOVES; ++i)
+	{
+		if (GetMonData(mon, MON_DATA_MOVE1 + i, NULL) == move)
+			break;
+	}
+
+	return i;
+}
+
+bool8 MoveInMonMoveset(u16 move, struct Pokemon* mon)
+{
+	return FindMovePositionInMonMoveset(move, mon) < MAX_MON_MOVES;
+}
+
+bool8 CheckTableForMoveEffect(u16 move, const u8 table[])
+{
+    u32 i;
+	for (i = 0; table[i] != MOVE_EFFECT_TABLES_TERMIN; ++i)
+	{
+		if (gBattleMoves[move].effect == table[i])
+			return TRUE;
+	}
+
+	return FALSE;
 }
