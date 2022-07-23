@@ -4,6 +4,7 @@
 #include "event_object_movement.h"
 #include "field_weather.h"
 #include "field_weather_effects.h"
+#include "graphics.h"
 #include "random.h"
 #include "script.h"
 #include "constants/weather.h"
@@ -18,6 +19,10 @@
 static void CreateCloudSprites(void);
 static void DestroyCloudSprites(void);
 static void UpdateCloudSprite(struct Sprite *);
+
+const struct SpritePalette sFogSpritePalette = {gDefaultWeatherSpritePalette, 0x1201};
+const struct SpritePalette sCloudsSpritePalette = {gCloudsWeatherPalette, 0x1207};
+const struct SpritePalette sSandstormSpritePalette = {gSandstormWeatherPalette, 0x1204};
 
 // The clouds are positioned on the map's grid.
 // These coordinates are for the lower half of Route 120.
@@ -60,7 +65,7 @@ static const union AnimCmd *const sCloudSpriteAnimCmds[] = {
 
 static const struct SpriteTemplate sCloudSpriteTemplate = {
     .tileTag = 0x1200,
-    .paletteTag = 0x1200,
+    .paletteTag = 0x1207,
     .oam = &sCloudSpriteOamData,
     .anims = sCloudSpriteAnimCmds,
     .images = NULL,
@@ -156,7 +161,7 @@ static void CreateCloudSprites(void)
         return;
 
     LoadSpriteSheet(&sCloudSpriteSheet);
-    LoadCustomWeatherSpritePalette(gCloudsWeatherPalette);
+    LoadCustomWeatherSpritePalette(&sCloudsSpritePalette);
     for (i = 0; i < NUM_CLOUD_SPRITES; i++)
     {
         spriteId = CreateSprite(&sCloudSpriteTemplate, 0, 0, 0xFF);
@@ -189,7 +194,7 @@ static void DestroyCloudSprites(void)
             DestroySprite(gWeatherPtr->sprites.s1.cloudSprites[i]);
     }
 
-    FreeSpriteTilesByTag(0x1200);
+    FreeSpriteTilesByTag(0x1207);
     gWeatherPtr->cloudSpritesCreated = FALSE;
 }
 
@@ -1394,6 +1399,7 @@ static void CreateFogHorizontalSprites(void)
                 sprite->x = (i % 5) * 64 + 32;
                 sprite->y = (i / 5) * 64 + 32;
                 gWeatherPtr->sprites.s2.fogHSprites[i] = sprite;
+                sprite->oam.paletteNum = gWeatherPtr->altGammaSpritePalIndex;
             }
             else
             {
@@ -1547,7 +1553,7 @@ static const union AnimCmd *const sAshSpriteAnimCmds[] = {
 
 static const struct SpriteTemplate sAshSpriteTemplate = {
     .tileTag = 0x1202,
-    .paletteTag = 0x1200,
+    .paletteTag = 0x1201,
     .oam = &sAshSpriteOamData,
     .anims = sAshSpriteAnimCmds,
     .images = NULL,
@@ -1568,6 +1574,7 @@ static void CreateAshSprites(void)
 
     if (!gWeatherPtr->ashSpritesCreated)
     {
+        LoadCustomWeatherSpritePalette(&sFogSpritePalette);
         for (i = 0; i < NUM_ASH_SPRITES; i++)
         {
             spriteId = CreateSpriteAtEnd(&sAshSpriteTemplate, 0, 0, 0x4E);
@@ -1759,7 +1766,7 @@ static const union AnimCmd *const sFogDiagonalSpriteAnimCmds[] = {
 
 static const struct SpriteTemplate sFogDiagonalSpriteTemplate = {
     .tileTag = 0x1203,
-    .paletteTag = 0x1200,
+    .paletteTag = 0x1201,
     .oam = &sFogDiagonalSpriteOamData,
     .anims = sFogDiagonalSpriteAnimCmds,
     .images = NULL,
@@ -1781,6 +1788,7 @@ static void CreateFogDiagonalSprites(void)
     {
         fogDiagonalSpriteSheet = gFogDiagonalSpriteSheet;
         LoadSpriteSheet(&fogDiagonalSpriteSheet);
+        LoadCustomWeatherSpritePalette(&sFogSpritePalette);
         for (i = 0; i < NUM_FOG_DIAGONAL_SPRITES; i++)
         {
             spriteId = CreateSpriteAtEnd(&sFogDiagonalSpriteTemplate, 0, (i / 5) * 64, 0xFF);
@@ -2001,7 +2009,7 @@ static const union AnimCmd *const sSandstormSpriteAnimCmds[] = {
 
 static const struct SpriteTemplate sSandstormSpriteTemplate = {
     .tileTag = 0x1204,
-    .paletteTag = 0x1200,
+    .paletteTag = 0x1204,
     .oam = &sSandstormSpriteOamData,
     .anims = sSandstormSpriteAnimCmds,
     .images = NULL,
@@ -2033,7 +2041,7 @@ static void CreateSandstormSprites(void)
     if (!gWeatherPtr->sandstormSpritesCreated)
     {
         LoadSpriteSheet(&sSandstormSpriteSheet);
-        LoadCustomWeatherSpritePalette(gSandstormWeatherPalette);
+        LoadCustomWeatherSpritePalette(&sSandstormSpritePalette);
         for (i = 0; i < NUM_SANDSTORM_SPRITES; i++)
         {
             spriteId = CreateSpriteAtEnd(&sSandstormSpriteTemplate, 0, (i / 5) * 64, 1);

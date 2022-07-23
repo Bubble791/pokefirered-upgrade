@@ -2,3 +2,4 @@
 
 ## Features
 * Rtc System and Day/Night/Seasons
+* Dynamic overworld palettes

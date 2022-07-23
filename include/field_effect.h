@@ -7,6 +7,7 @@
 extern u32 gFieldEffectArguments[8];
 extern void (*gPostMenuFieldCallback)(void);
 extern bool8 (*gFieldCallback2)(void);
+extern u16 gReflectionPaletteBuffer[0x10];
 
 u32 FieldEffectStart(u8);
 bool8 FieldEffectActiveListContains(u8 id);
@@ -27,5 +28,10 @@ void MultiplyInvertedPaletteRGBComponents(u16 i, u8 r, u8 g, u8 b);
 void SpriteCB_PopOutOfAsh(struct Sprite * sprite);
 void SpriteCB_AshLaunch(struct Sprite * sprite);
 void FieldEffectActiveListClear(void);
+u32 ShowDisguiseFieldEffect(u8 fldEff, u8 templateIdx, u8 paletteNum);
+void FieldEffectFreePaletteIfUnused(u8 paletteNum);
+void LoadFieldEffectPalette(u8 fieldEffect);
+void LoadSpecialReflectionPalette(struct Sprite *sprite);
+void LoadFieldEffectPalette_(u8 fieldEffect, bool8 updateGammaType);
 
 #endif //GUARD_FIELD_EFFECTS_H

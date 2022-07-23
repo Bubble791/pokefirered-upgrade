@@ -194,7 +194,7 @@ extern const struct SpriteTemplate * const gFieldEffectObjectTemplatePointers[];
 extern const struct OamData gObjectEventBaseOam_32x32;
 extern const u16 gUnknown_8398648[];
 extern const u16 gUnknown_8398688[];
-extern const u8 gReflectionEffectPaletteMap[];
+
 u8 GetLedgeJumpDirection(s16 x, s16 y, u8 z);
 u8 sub_8063FDC(u32 direction);
 u8 GetRideWaterCurrentMovementAction(u32 direction);
@@ -216,5 +216,6 @@ u8 GetJumpSpecialWithEffectMovementAction(u32 direction);
 u8 GetFishingBiteDirectionAnimNum(u8 direction);
 void TrySpawnObjectEvents(s16 cameraX, s16 cameraY);
 void ResetObjectEvents(void);
+void LoadObjectEventPalette(u16);
 
 #endif // GUARD_EVENT_OBJECT_MOVEMENT_H
