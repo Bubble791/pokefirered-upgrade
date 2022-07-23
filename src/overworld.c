@@ -3,6 +3,7 @@
 #include "bg_regs.h"
 #include "cable_club.h"
 #include "credits.h"
+#include "dns.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "event_scripts.h"
@@ -127,7 +128,6 @@ static void SetDefaultFlashLevel(void);
 static void Overworld_TryMapConnectionMusicTransition(void);
 static void ChooseAmbientCrySpecies(void);
 
-static void CB2_Overworld(void);
 static void CB2_LoadMap2(void);
 static void CB2_LoadMapOnReturnToFieldCableClub(void);
 static void CB2_ReturnToFieldLocal(void);
@@ -1451,6 +1451,10 @@ void CB1_Overworld(void)
 
 static void OverworldBasic(void)
 {
+    #ifdef DNS_ENABLED
+    DnsApplyFilters();
+    #endif
+
     ScriptContext2_RunScript();
     RunTasks();
     AnimateSprites();
@@ -1469,7 +1473,7 @@ void CB2_OverworldBasic(void)
     OverworldBasic();
 }
 
-static void CB2_Overworld(void)
+void CB2_Overworld(void)
 {
     bool32 fading = !!gPaletteFade.active;
     if (fading)

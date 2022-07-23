@@ -1,4 +1,5 @@
 #include "global.h"
+#include "random.h"
 
 const u32 gBitTable[] =
 {
@@ -273,4 +274,28 @@ u32 CalcByteArraySum(const u8 * array, u32 size)
     }
 
     return result;
+}
+
+u32 MathMax(u32 num1, u32 num2)
+{
+	if (num1 > num2)
+		return num1;
+
+	return num2;
+}
+
+u32 MathMin(u32 num1, u32 num2)
+{
+	if (num1 < num2)
+		return num1;
+
+	return num2;
+}
+
+u16 RandRange(u16 min, u16 max)
+{
+	if (min == max)
+		return min;
+
+	return (Random() % (max - min)) + min;
 }

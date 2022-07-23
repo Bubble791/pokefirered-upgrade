@@ -12,6 +12,7 @@
 #include "battle_string_ids.h"
 #include "berry.h"
 #include "data.h"
+#include "dns.h"
 #include "decompress.h"
 #include "event_data.h"
 #include "evolution_scene.h"
@@ -1432,6 +1433,11 @@ void BattleMainCB2(void)
     RunTextPrinters();
     UpdatePaletteFade();
     RunTasks();
+
+    #ifdef DNS_ENABLED
+    DnsApplyFilters();
+    #endif
+
     if (JOY_HELD(B_BUTTON) && gBattleTypeFlags & BATTLE_TYPE_POKEDUDE)
     {
         gSpecialVar_Result = gBattleOutcome = B_OUTCOME_DREW;

@@ -2,6 +2,7 @@
 #include "script.h"
 #include "event_data.h"
 #include "quest_log.h"
+#include "rtc.h"
 #include "constants/maps.h"
 
 #define RAM_SCRIPT_MAGIC 51

@@ -125,6 +125,7 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum);
 void CB2_ReturnToFieldFromDiploma(void);
 void CB2_OverworldBasic(void);
 void CB2_NewGame(void);
+void CB2_Overworld(void);
 bool8 IsMapTypeOutdoors(u8 mapType);
 bool8 Overworld_MapTypeAllowsTeleportAndFly(u8 mapType);
 void Overworld_ResetStateAfterTeleport(void);

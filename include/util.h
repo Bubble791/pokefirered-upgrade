@@ -18,4 +18,5 @@ u32 CalcByteArraySum(const u8 *data, u32 length);
 void BlendPalette(u16 palOffset, u16 numEntries, u8 coeff, u16 blendColor);
 void DoBgAffineSet(struct BgAffineDstData * dest, u32 texX, u32 texY, s16 srcX, s16 srcY, s16 sx, s16 sy, u16 alpha);
 
+u32 MathMax(u32 num1, u32 num2);
 #endif // GUARD_UTIL_H

@@ -5,6 +5,7 @@
 #include "gba/gba.h"
 #include <string.h>
 #include "constants/global.h"
+#include "constants/global_config.h"
 #include "constants/flags.h"
 #include "constants/vars.h"
 #include "constants/species.h"

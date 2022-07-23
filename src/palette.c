@@ -3,6 +3,7 @@
 #include "util.h"
 #include "decompress.h"
 #include "task.h"
+#include "dns.h"
 
 enum
 {
@@ -101,7 +102,11 @@ void TransferPlttBuffer(void)
     {
         void *src = gPlttBufferFaded;
         void *dest = (void *)PLTT;
-        DmaCopy16(3, src, dest, PLTT_SIZE);
+
+		#ifdef DNS_ENABLED
+		DnsTransferPlttBuffer(src, dest);
+		#endif
+
         sPlttBufferTransferPending = 0;
         if (gPaletteFade.mode == HARDWARE_FADE && gPaletteFade.active)
             UpdateBlendRegisters();
