@@ -730,23 +730,11 @@ bool8 MoveCursor(u8 by, u8 dirn)
     case 2:
     case 3:
         // changed itemsAbove
-        if (GetHelpSystemMenuLevel() == 1)
-        {
-            HelpSystem_SetInputDelay(2);
-            HelpSystem_FillPanel1();
-            PrintListMenuItems();
-            PlaceListMenuCursor();
-            HelpSystem_PrintTopicLabel();
-            HS_UpdateMenuScrollArrows();
-        }
-        else
-        {
-            HS_ShowOrHideMainWindowText(0);
-            HelpSystem_FillPanel1();
-            PrintListMenuItems();
-            PlaceListMenuCursor();
-            HS_ShowOrHideMainWindowText(1);
-        }
+        HelpSystem_SetInputDelay(2);
+        HelpSystem_FillPanel1();
+        PrintListMenuItems();
+        PlaceListMenuCursor();
+        HS_UpdateMenuScrollArrows();
         CommitTilemap();
         break;
     }

@@ -153,7 +153,6 @@ void BedroomPC(void)
     u8 taskId;
 
     gPlayerPcMenuManager.notInRoom = FALSE;
-    BackupHelpContext();
     sItemOrder = gUnknown_8402200;
     sTopMenuItemCount = 3;
     taskId = CreateTask(TaskDummy, 0);
@@ -165,7 +164,6 @@ void PlayerPC(void)
     u8 taskId;
 
     gPlayerPcMenuManager.notInRoom = TRUE;
-    BackupHelpContext();
     sItemOrder = gUnknown_8402203;
     sTopMenuItemCount = 3;
     taskId = CreateTask(TaskDummy, 0);
@@ -214,7 +212,6 @@ static void Task_TopMenuHandleInput(u8 taskId)
 
 static void Task_ReturnToTopMenu(u8 taskId)
 {
-    RestoreHelpContext();
     DisplayItemMessageOnField(taskId, 2, gText_WhatWouldYouLikeToDo, Task_DrawPlayerPcTopMenu);
 }
 
