@@ -94,18 +94,70 @@ struct BoxPokemon
     u8 language;
     u8 isBadEgg:1;
     u8 hasSpecies:1;
-    u8 isEgg:1;
-    u8 unused:5;
+    u8 unused:6;
     u8 otName[PLAYER_NAME_LENGTH];
     u8 markings;
     u16 checksum;
     u16 unknown;
 
-    union
-    {
-        u32 raw[12];
-        union PokemonSubstruct substructs[4];
-    } secure;
+    u16 species;
+    u16 heldItem;
+    u32 experience;
+    u8 ppBonuses;
+    u8 friendship;
+
+    u16 moves[4];
+    u8 pp[4];
+
+    u8 hpEV;
+    u8 attackEV;
+    u8 defenseEV;
+    u8 speedEV;
+    u8 spAttackEV;
+    u8 spDefenseEV;
+    u8 cool;
+    u8 beauty;
+    u8 cute;
+    u8 smart;
+    u8 tough;
+    u8 sheen;
+
+    u8 pokerus;
+    u8 metLocation;
+
+    u16 metLevel:7;
+    u16 metGame:4;
+    u16 pokeball:4;
+    u16 otGender:1;
+
+    u32 hpIV:5;
+    u32 attackIV:5;
+    u32 defenseIV:5;
+    u32 speedIV:5;
+    u32 spAttackIV:5;
+    u32 spDefenseIV:5;
+    u32 isEgg:1;
+    u32 abilityNum:1;
+
+    u32 coolRibbon:3;
+    u32 beautyRibbon:3;
+    u32 cuteRibbon:3;
+    u32 smartRibbon:3;
+    u32 toughRibbon:3;
+    u32 championRibbon:1;
+    u32 winningRibbon:1;
+    u32 victoryRibbon:1;
+    u32 artistRibbon:1;
+    u32 effortRibbon:1;
+    u32 marineRibbon:1; // never distributed
+    u32 landRibbon:1; // never distributed
+    u32 skyRibbon:1; // never distributed
+    u32 countryRibbon:1; // distributed during Pokémon Festa '04 and '05 to tournament winners
+    u32 nationalRibbon:1;
+    u32 earthRibbon:1;
+    u32 worldRibbon:1; // distributed during Pokémon Festa '04 and '05 to tournament winners
+    u32 filler:4;
+    u32 eventLegal:1;
 };
 
 struct Pokemon
