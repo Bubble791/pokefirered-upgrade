@@ -414,11 +414,13 @@ void RunOnLoadMapScript(void)
 
 void RunOnTransitionMapScript(void)
 {
+    ForceClockUpdate();
     mapheader_run_script_by_tag(3);
 }
 
 void RunOnResumeMapScript(void)
 {
+    ForceClockUpdate();
     mapheader_run_script_by_tag(5);
 }
 
