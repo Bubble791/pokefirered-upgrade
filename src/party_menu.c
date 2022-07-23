@@ -5352,10 +5352,12 @@ static void sub_8126BD4(void)
 
 static bool8 MonCanEvolve(void)
 {
+    #ifndef REMOVE_EVOLUTION_LIMIT
     if (!IsNationalPokedexEnabled()
      && GetEvolutionTargetSpecies(&gPlayerParty[gPartyMenu.slotId], EVO_MODE_ITEM_USE, gSpecialVar_ItemId) > KANTO_DEX_COUNT)
         return FALSE;
     else
+    #endif
         return TRUE;
 }
 

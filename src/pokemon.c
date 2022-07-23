@@ -5008,7 +5008,9 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
                 if (gEvolutionTable[species][i].param == heldItem)
                 {
                     targetSpecies = gEvolutionTable[species][i].targetSpecies;
+                    #ifndef REMOVE_EVOLUTION_LIMIT
                     if (IsNationalPokedexEnabled() || targetSpecies <= 151)
+                    #endif
                     {
                         heldItem = 0;
                         SetMonData(mon, MON_DATA_HELD_ITEM, &heldItem);
