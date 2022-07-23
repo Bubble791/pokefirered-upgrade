@@ -25,7 +25,6 @@ struct HelpSystemListMenu
 };
 
 extern struct HelpSystemListMenu gHelpSystemListMenu;
-extern struct ListMenuItem gHelpSystemListMenuItems[];
 extern bool8 gHelpSystemEnabled;
 extern bool8 gHelpSystemToggleWithRButtonDisabled;
 
