@@ -13,5 +13,6 @@
 /*===== Other Options =====*/
 #define DNS_ENABLED
 #define REMOVE_EVOLUTION_LIMIT
+#define ALWAYS_NATIONAL_DEX
 
 #endif //GUARD_CONSTANTS_GLOBAL_CONFIG_H
