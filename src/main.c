@@ -15,6 +15,7 @@
 #include "scanline_effect.h"
 #include "save_failed_screen.h"
 #include "quest_log.h"
+#include "rtc.h"
 
 extern u32 intr_main[];
 
@@ -215,7 +216,7 @@ static void InitMainCallbacks(void)
 
 static void CallCallbacks(void)
 {
-    if (!RunSaveFailedScreen() && !RunHelpSystemCallback())
+    if (!RunSaveFailedScreen())
     {
         if (gMain.callback1)
             gMain.callback1();
@@ -271,6 +272,9 @@ void InitKeys(void)
 static void ReadKeys(void)
 {
     u16 keyInput = REG_KEYINPUT ^ KEYS_MASK;
+
+    RtcCalcLocalTime(); //Called here for convenience
+
     gMain.newKeysRaw = keyInput & ~gMain.heldKeysRaw;
     gMain.newKeys = gMain.newKeysRaw;
     gMain.newAndRepeatedKeys = gMain.newKeysRaw;
@@ -434,12 +438,13 @@ void RestoreSerialTimer3IntrHandlers(void)
 static void IntrDummy(void)
 {}
 
-static void WaitForVBlank(void)
+void WaitForVBlank(void)
 {
     gMain.intrCheck &= ~INTR_FLAG_VBLANK;
 
-    while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
-        ;
+    //while (!(gMain.intrCheck & INTR_FLAG_VBLANK))
+    //    asm("swi 0x2");
+    VBlankIntrWait(); //Game Speed Up
 }
 
 void SetVBlankCounter1Ptr(u32 *ptr)

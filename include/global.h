@@ -129,6 +129,19 @@ extern u8 gStringVar4[];
 #define NUM_FLAG_BYTES ROUND_BITS_TO_BYTES(FLAGS_COUNT)
 #define NUM_ADDITIONAL_PHRASE_BYTES ROUND_BITS_TO_BYTES(NUM_ADDITIONAL_PHRASES)
 
+struct Clock
+{
+	u16 year;
+	u8 month;
+	u8 day;
+	u8 dayOfWeek;
+	u8 hour;
+	u8 minute;
+	u8 second;
+};
+
+extern struct Clock gClock;
+
 struct Coords8
 {
     s8 x;
