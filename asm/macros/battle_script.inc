@@ -1253,12 +1253,6 @@
 	.2byte \hword
 	.endm
 
-	.macro setword param0:req param1:req
-	.byte 0xfa
-	.4byte \param0
-	.4byte \param1
-	.endm
-
 	.macro setspecialstatusbit bank:req, specialstatus:req
 	.byte 0xfb
 	.byte \bank
@@ -1577,7 +1571,7 @@
 	.byte \bank
 	.4byte \rom_address
 	.endm
-	
+
 @ various command changed to more readable macros
 	.macro cancelmultiturnmoves battler:req
 	various \battler, VARIOUS_CANCEL_MULTI_TURN_MOVES
