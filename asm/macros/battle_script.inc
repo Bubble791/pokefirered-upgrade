@@ -1242,6 +1242,342 @@
 	.byte 0xf7
 	.endm
 
+	.macro callasm param0:req
+	.byte 0xf8
+	.4byte \param0
+	.endm
+
+	.macro sethalfword mem_address:req, hword:req
+	.byte 0xf9
+	.4byte \mem_address
+	.2byte \hword
+	.endm
+
+	.macro setword param0:req param1:req
+	.byte 0xfa
+	.4byte \param0
+	.4byte \param1
+	.endm
+
+	.macro setspecialstatusbit bank:req, specialstatus:req
+	.byte 0xfb
+	.byte \bank
+	.4byte \specialstatus
+	.endm
+
+	.macro clearspecialstatusbit param0:req, param1:req
+	.byte 0xfc
+	.byte \param0
+	.4byte \param1
+	.endm
+	
+	.macro jumpifabilitypresenttargetfield ability:req, rom_address:req
+	.byte 0xfd
+	.byte \ability
+	.4byte \rom_address
+	.endm
+
+	.macro prefaintmoveendeffects arg:req
+	.byte 0xFE
+	.byte \arg, 0x0
+	.endm
+
+	.macro cureprimarystatus bank:req, rom_address:req
+	.byte 0xFF, 0x02
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifpartnerattack moveid:req, rom_address:req
+	.byte 0xFF, 0x03
+	.byte \moveid
+	.4byte \rom_address
+	.endm
+
+	.macro setterrain rom_address:req
+	.byte 0xFF, 0x06
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifhelditemeffect bank:req, effect:req, rom_address:req
+	.byte 0xFF, 0x07
+	.byte \bank
+	.byte \effect
+	.4byte \rom_address
+	.endm
+
+	.macro counterclear bank:req, counter_id:req, rom_address:req
+	.byte 0xFF, 0x08
+	.byte \bank
+	.byte \counter_id
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifcounter bank:req, counter_id:req, predicate:req, compare_byte:req, rom_address:req
+	.byte 0xFF, 0x09
+	.byte \bank
+	.byte \counter_id
+	.byte \predicate
+	.byte \compare_byte
+	.4byte \rom_address
+	.endm
+
+	.macro setability bank:req, ability:req
+	.byte 0xFF, 0x0A
+	.byte \bank
+	.byte \ability
+	.endm
+
+	.macro jumpiftargetpartner rom_address:req
+	.byte 0xFF, 0x0C
+	.word \rom_address
+	.endm
+
+	.macro setcounter bank:req, counter_id:req, amount:req
+	.byte 0xFF, 0x0E
+	.byte \bank
+	.byte \counter_id
+	.byte \amount
+	.endm
+
+	.macro jumpifgrounded bank:req, rom_address:req
+	.byte 0xFF, 0x0F
+	.byte \bank
+	.4byte \rom_address
+	.endm
+	
+	.macro jumpifhelditem bank:req, item:req, rom_address:req
+	.byte 0xFF, 0x10
+	.byte \bank
+	.2byte \item
+	.4byte \rom_address
+	.endm
+
+	.macro reloadhealthbar bank:req
+	.byte 0xFF, 0x11
+	.byte \bank
+	.endm
+
+	.macro jumpifhealthcomparestomax bank:req, predicate:req, rom_address:req
+	.byte 0xFF, 0x12
+	.byte \bank
+	.byte \predicate
+	.4byte \rom_address
+	.endm
+
+	.macro setdamagetobankhealthfraction bank:req, percent:req, useActualMaxHP:req
+	.byte 0xFF, 0x13
+	.byte \bank
+	.byte \percent
+	.byte \useActualMaxHP
+	.endm
+
+	.macro jumpiftypepresent type:req, rom_address:req
+	.byte 0xFF, 0x14
+	.byte \type
+	.4byte \rom_address
+	.endm
+	
+	.macro jumpifstatcanbemodified bank:req, stat:req, direction:req, rom_address:req
+	.byte 0xFF, 0x15
+	.byte \bank
+	.byte \stat
+	.byte \direction
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifstatcanberaised bank stat rom_address
+	.byte 0xFF, 0x15
+	.byte \bank
+	.byte \stat
+	.byte 0x0
+	.4byte \rom_address
+	.endm
+	
+	.macro jumpifnoviablemonsleft bank:req, rom_address:req
+	.byte 0xFF, 0x16
+	.byte \bank
+	.4byte \rom_address
+	.endm
+	
+	.macro setsidestatus bank:req, halver:req
+	.byte 0xFF, 0x17
+	.byte \bank
+	.2byte \halver
+	.endm
+
+	.macro clearsidestatus bank:req, halver:req
+	.byte 0xFF, 0x18
+	.byte \bank
+	.2byte \halver
+	.endm
+	
+	.macro formchange bank:req, original_species:req, target_species:req, reload_type:req, reload_stats:req, reload_ability:req, rom_address:req
+	.byte 0xFF, 0x19
+	.byte \bank
+	.2byte \original_species
+	.2byte \target_species
+	.byte \reload_type
+	.byte \reload_stats
+	.byte \reload_ability
+	.4byte \rom_address
+	.endm
+	
+	.macro jumpifabilitypresentattackerfield ability:req, rom_address:req
+	.byte 0xFF, 0x1A
+	.byte \ability
+	.4byte \rom_address
+	.endm
+	
+	.macro tryactivateswitchinability bank:req
+	.byte 0xFF, 0x1B
+	.byte \bank
+	.endm
+	
+	.macro handletrainerslidemsg bank case:req
+	.byte 0xFF, 0x1C
+	.byte \bank
+	.byte \case
+	.endm
+
+	.macro trytrainerslidefirstdownmsg bank:req
+	.byte 0xFF, 0x1D
+	.byte \bank
+	.endm
+
+	.macro trainerslideout position:req
+	.byte 0xFF, 0x1E
+	.byte \position
+	.endm
+	
+	.macro flowershieldlooper move_effect:req, rom_address:req, fail_address:req
+	.byte 0xFF, 0x1F
+	.byte \move_effect
+	.4byte \rom_address
+	.4byte \fail_address
+	.endm
+	
+	.macro jumpifprotectedbycraftyshield bank:req, rom_address:req
+	.byte 0xFF, 0x20
+	.byte \bank
+	.4byte \rom_address
+	.endm
+	
+	.macro tryspectralthiefsteal rom_address:req
+	.byte 0xFF, 0x21
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifspecies bank:req, species:req, rom_address:req
+	.byte 0xFF, 0x22
+	.byte \bank
+	.2byte \species
+	.4byte \rom_address
+	.endm
+
+	.macro faintpokemonaftermove
+	.byte 0xFF, 0x23
+	.byte 0x0, 0x0
+	.endm
+
+	.macro jumpifattackeralreadydiddamage rom_address:req
+	.byte 0xFF, 0x24
+	.4byte \rom_address
+	.endm
+	
+	.macro jumpifterrainandgrounded terrain:req, bank:req, rom_address:req
+	.byte 0xFF, 0x25
+	.byte \terrain
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro attackstringnoprotean
+	.byte 0xFF, 0x26
+	.endm
+
+	.macro tryactivateprotean
+	.byte 0xFF, 0x27
+	.endm
+
+	.macro jumpifweight bank:req, predicate:req, weight:req, rom_address:req
+	.byte 0xFF, 0x28
+	.byte \bank
+	.byte \predicate
+	.2byte \weight
+	.4byte \rom_address
+	.endm
+
+	.macro trysetsleep bank:req, rom_address:req
+	.byte 0xFF, 0x29
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro trysetparalysis bank:req, rom_address:req
+	.byte 0xFF, 0x2A
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro trysetburn bank:req, rom_address:req
+	.byte 0xFF, 0x2B
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro trysetpoison bank:req, rom_address:req
+	.byte 0xFF, 0x2C
+	.byte \bank
+	.4byte \rom_address
+	.endm
+	
+	.macro addindicatorforattackerswitchineffects
+	.byte 0xFF, 0x2D
+	.endm
+	
+	.macro setmoveeffect2
+	.byte 0xFF, 0x2E
+	.endm
+
+	.macro setmaxmoveeffect
+	.byte 0xFF, 0x2F
+	.endm
+
+	.macro jumpifdynamaxed bank:req, rom_address:req
+	.byte 0xFF, 0x30
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifraidboss bank:req, rom_address:req
+	.byte 0xFF, 0x31
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro recycleberry bankish:req, rom_address:req
+	.byte 0xFF, 0x32
+	.byte \bankish
+	.4byte \rom_address
+	.endm
+
+	.macro seteffectprimaryscriptingbank
+	.byte 0xFF, 0x33
+	.endm
+
+	.macro canconfuse bank:req, rom_address:req
+	.byte 0xFF, 0x34
+	.byte \bank
+	.4byte \rom_address
+	.endm
+
+	.macro jumpifmaxchistrikecapped bank:req, rom_address:req
+	.byte 0xFF, 0x35
+	.byte \bank
+	.4byte \rom_address
+	.endm
+	
 @ various command changed to more readable macros
 	.macro cancelmultiturnmoves battler:req
 	various \battler, VARIOUS_CANCEL_MULTI_TURN_MOVES
