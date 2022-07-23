@@ -242,24 +242,6 @@ u8 *GetFlagAddr(u16 idx)
         return NULL;
     if (idx < SPECIAL_FLAGS_START)
     {
-        switch (gQuestLogPlaybackState)
-        {
-        case 0:
-        default:
-            break;
-        case 1:
-            ptr = QuestLogGetFlagOrVarPtr(TRUE, idx);
-            if (ptr != NULL)
-                gSaveBlock1Ptr->flags[idx >> 3] = *ptr;
-            break;
-        case 2:
-            if (IsFlagOrVarStoredInQuestLog(idx, FALSE) == TRUE)
-            {
-                gLastQuestLogStoredFlagOrVarIdx = idx;
-                QuestLogSetFlagOrVar(TRUE, idx, gSaveBlock1Ptr->flags[idx / 8]);
-            }
-            break;
-        }
         return &gSaveBlock1Ptr->flags[idx / 8];
     }
     return &sSpecialFlags[(idx - SPECIAL_FLAGS_START) / 8];
