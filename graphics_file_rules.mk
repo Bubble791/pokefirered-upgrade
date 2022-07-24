@@ -94,6 +94,12 @@ $(FONTGFXDIR)/font6.fwjpnfont: $(FONTGFXDIR)/font6_braille.png
 $(FONTGFXDIR)/font9_jap.fwjpnfont: $(FONTGFXDIR)/font9_jap.png
 	$(GFX) $< $@
 
+$(FONTGFXDIR)/font0_chinese.latfont: $(FONTGFXDIR)/font0_chinese.png
+	$(GFX) $< $@
+
+$(FONTGFXDIR)/font1_chinese.latfont: $(FONTGFXDIR)/font1_chinese.png
+	$(GFX) $< $@
+	
 graphics/title_screen/pokemon_logo.gbapal: %.gbapal: %.pal
 	$(GFX) $< $@ -num_colors 224
 
