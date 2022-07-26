@@ -721,6 +721,14 @@ static void Task_EvolutionScene(u8 taskId)
             BattlePutTextOnWindow(gStringVar4, 0);
             PlayBGM(MUS_EVOLVED);
             gTasks[taskId].tState++;
+            #ifdef EVO_HOLD_ITEM_REMOVAL
+            if (FlagGet(FLAG_REMOVE_EVO_ITEM))
+            {
+                u16 none = 0;
+                SetMonData(mon, MON_DATA_HELD_ITEM, &none);
+                FlagClear(FLAG_REMOVE_EVO_ITEM);
+            }
+            #endif
             SetMonData(mon, MON_DATA_SPECIES, (void*)(&gTasks[taskId].tPostEvoSpecies));
             CalculateMonStats(mon);
             EvolutionRenameMon(mon, gTasks[taskId].tPreEvoSpecies, gTasks[taskId].tPostEvoSpecies);
@@ -986,7 +994,7 @@ static void Task_TradeEvolutionScene(u8 taskId)
 
     // Automatically cancel if the Pokemon would evolve into a species you have not
     // yet unlocked, such as Crobat.
-    #ifndef REMOVE_EVOLUTION_LIMIT
+#ifndef REMOVE_EVOLUTION_LIMIT
     if (!IsNationalPokedexEnabled()
         && gTasks[taskId].tState == 7
         && gTasks[taskId].tPostEvoSpecies > SPECIES_MEW)
@@ -999,7 +1007,7 @@ static void Task_TradeEvolutionScene(u8 taskId)
             DestroyMovingBackgroundTasks();
         }
     }
-    #endif
+#endif
 
     switch (gTasks[taskId].tState)
     {

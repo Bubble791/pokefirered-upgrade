@@ -6,23 +6,23 @@
 #include "trig.h"
 #include "constants/songs.h"
 
-static void AnimFallingRock(struct Sprite *sprite);
-static void AnimRockFragment(struct Sprite *sprite);
-static void AnimDirtParticleAcrossScreen(struct Sprite *sprite);
-static void AnimRaiseSprite(struct Sprite *sprite);
-static void sub_80B4D00(u8 taskId);
-static void AnimRolloutParticle(struct Sprite *sprite);
-static void AnimRockTomb(struct Sprite *sprite);
-static void AnimRockBlastRock(struct Sprite *sprite);
-static void AnimRockScatter(struct Sprite *sprite);
-static void AnimParticleInVortex(struct Sprite *sprite);
-static void sub_80B46B4(struct Sprite *sprite);
-static void sub_80B47C4(struct Sprite *sprite);
-static void sub_80B490C(u8 taskId);
-static void sub_80B4E70(struct Task *task);
+void AnimFallingRock(struct Sprite *sprite);
+void AnimRockFragment(struct Sprite *sprite);
+void AnimDirtParticleAcrossScreen(struct Sprite *sprite);
+void AnimRaiseSprite(struct Sprite *sprite);
+void sub_80B4D00(u8 taskId);
+void AnimRolloutParticle(struct Sprite *sprite);
+void AnimRockTomb(struct Sprite *sprite);
+void AnimRockBlastRock(struct Sprite *sprite);
+void AnimRockScatter(struct Sprite *sprite);
+void AnimParticleInVortex(struct Sprite *sprite);
+void sub_80B46B4(struct Sprite *sprite);
+void sub_80B47C4(struct Sprite *sprite);
+void sub_80B490C(u8 taskId);
+void sub_80B4E70(struct Task *task);
 static u8 sub_80B4FB8(void);
-static void sub_80B5024(struct Sprite *sprite);
-static void sub_80B50F8(struct Sprite *sprite);
+void sub_80B5024(struct Sprite *sprite);
+void sub_80B50F8(struct Sprite *sprite);
 
 static const union AnimCmd sAnim_FlyingRock_0[] =
 {
@@ -42,7 +42,7 @@ static const union AnimCmd sAnim_FlyingRock_2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_FlyingRock[] =
+const union AnimCmd *const sAnims_FlyingRock[] =
 {
     sAnim_FlyingRock_0,
     sAnim_FlyingRock_1,
@@ -90,7 +90,7 @@ static const union AffineAnimCmd sAffineAnim_Whirlpool[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sAffineAnims_Whirlpool[] =
+const union AffineAnimCmd *const sAffineAnims_Whirlpool[] =
 {
     sAffineAnim_Whirlpool,
 };
@@ -189,19 +189,19 @@ static const union AnimCmd sAnim_TwisterRock_1[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_BasicRock[] =
+const union AnimCmd *const sAnims_BasicRock[] =
 {
     sAnim_BasicRock_0,
     sAnim_BasicRock_1,
 };
 
-static const union AnimCmd *const sAnims_WeatherBallRockDown[] =
+const union AnimCmd *const sAnims_WeatherBallRockDown[] =
 {
     sAnim_WeatherBallRockDown_0,
     sAnim_WeatherBallRockDown_1,
 };
 
-static const union AnimCmd *const sAnims_TwisterRock[] =
+const union AnimCmd *const sAnims_TwisterRock[] =
 {
     sAnim_TwisterRock_0,
     sAnim_TwisterRock_1,
@@ -263,7 +263,7 @@ static const union AffineAnimCmd sAffineAnim_BasicRock_1[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sAffineAnims_BasicRock[] =
+const union AffineAnimCmd *const sAffineAnims_BasicRock[] =
 {
     sAffineAnim_BasicRock_0,
     sAffineAnim_BasicRock_1,
@@ -313,7 +313,7 @@ const struct SpriteTemplate gWeatherBallRockDownSpriteTemplate =
     .callback = AnimWeatherBallDown,
 };
 
-static void AnimFallingRock(struct Sprite *sprite)
+void AnimFallingRock(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[3] != 0)
         SetAverageBattlerPositions(gBattleAnimTarget, 0, &sprite->x, &sprite->y);
@@ -332,7 +332,7 @@ static void AnimFallingRock(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void sub_80B46B4(struct Sprite *sprite)
+void sub_80B46B4(struct Sprite *sprite)
 {
     sprite->x += sprite->data[5];
     sprite->data[0] = 192;
@@ -345,7 +345,7 @@ static void sub_80B46B4(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void AnimRockFragment(struct Sprite *sprite)
+void AnimRockFragment(struct Sprite *sprite)
 {
     StartSpriteAnim(sprite, gBattleAnimArgs[5]);
     AnimateSprite(sprite);
@@ -366,7 +366,7 @@ static void AnimRockFragment(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroySpriteAndMatrix);
 }
 
-static void AnimParticleInVortex(struct Sprite *sprite)
+void AnimParticleInVortex(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[6] == 0)
         InitSpritePosToAnimAttacker(sprite, 0);
@@ -379,7 +379,7 @@ static void AnimParticleInVortex(struct Sprite *sprite)
     sprite->callback = sub_80B47C4;
 }
 
-static void sub_80B47C4(struct Sprite *sprite)
+void sub_80B47C4(struct Sprite *sprite)
 {
     sprite->data[4] += sprite->data[1];
     sprite->y2 = -(sprite->data[4] >> 8);
@@ -419,7 +419,7 @@ void AnimTask_LoadSandstormBackground(u8 taskId)
     gTasks[taskId].func = sub_80B490C;
 }
 
-static void sub_80B490C(u8 taskId)
+void sub_80B490C(u8 taskId)
 {
     struct BattleAnimBgData animBg;
 
@@ -487,7 +487,7 @@ static void sub_80B490C(u8 taskId)
 // arg 1: projectile speed
 // arg 2: y pixel drop
 // arg 3: ??? unknown (possibly a color bit)
-static void AnimDirtParticleAcrossScreen(struct Sprite *sprite)
+void AnimDirtParticleAcrossScreen(struct Sprite *sprite)
 {
     if (sprite->data[0] == 0)
     {
@@ -536,7 +536,7 @@ static void AnimDirtParticleAcrossScreen(struct Sprite *sprite)
 // arg 2: terminal y offset
 // arg 3: duration
 // arg 4: sprite size [1,5]
-static void AnimRaiseSprite(struct Sprite *sprite)
+void AnimRaiseSprite(struct Sprite *sprite)
 {
     StartSpriteAnim(sprite, gBattleAnimArgs[4]);
     InitSpritePosToAnimAttacker(sprite, 0);
@@ -590,7 +590,7 @@ void AnimTask_Rollout(u8 taskId)
     task->func = sub_80B4D00;
 }
 
-static void sub_80B4D00(u8 taskId)
+void sub_80B4D00(u8 taskId)
 {
     struct Task *task;
 
@@ -650,7 +650,7 @@ static void sub_80B4D00(u8 taskId)
     }
 }
 
-static void sub_80B4E70(struct Task *task)
+void sub_80B4E70(struct Task *task)
 {
     const struct SpriteTemplate *spriteTemplate;
     s32 var0;
@@ -696,7 +696,7 @@ static void sub_80B4E70(struct Task *task)
     task->data[12] *= -1;
 }
 
-static void AnimRolloutParticle(struct Sprite *sprite)
+void AnimRolloutParticle(struct Sprite *sprite)
 {
     if (TranslateAnimHorizontalArc(sprite))
     {
@@ -718,7 +718,7 @@ static u8 sub_80B4FB8(void)
     return retVal;
 }
 
-static void AnimRockTomb(struct Sprite *sprite)
+void AnimRockTomb(struct Sprite *sprite)
 {
     StartSpriteAnim(sprite, gBattleAnimArgs[4]);
     sprite->x2 = gBattleAnimArgs[0];
@@ -730,7 +730,7 @@ static void AnimRockTomb(struct Sprite *sprite)
     sprite->invisible = TRUE;
 }
 
-static void sub_80B5024(struct Sprite *sprite)
+void sub_80B5024(struct Sprite *sprite)
 {
     sprite->invisible = FALSE;
     if (sprite->data[3] != 0)
@@ -749,14 +749,14 @@ static void sub_80B5024(struct Sprite *sprite)
     }
 }
 
-static void AnimRockBlastRock(struct Sprite *sprite)
+void AnimRockBlastRock(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) == B_SIDE_OPPONENT)
         StartSpriteAffineAnim(sprite, 1);
     TranslateAnimSpriteToTargetMonLocation(sprite);
 }
 
-static void AnimRockScatter(struct Sprite *sprite)
+void AnimRockScatter(struct Sprite *sprite)
 {
     sprite->x = GetBattlerSpriteCoord(gBattleAnimTarget, 0);
     sprite->y = GetBattlerSpriteCoord(gBattleAnimTarget, 1);
@@ -769,7 +769,7 @@ static void AnimRockScatter(struct Sprite *sprite)
     sprite->callback = sub_80B50F8;
 }
 
-static void sub_80B50F8(struct Sprite *sprite)
+void sub_80B50F8(struct Sprite *sprite)
 {
     sprite->data[0] += 8;
     sprite->data[3] += sprite->data[1];
@@ -825,4 +825,23 @@ void AnimTask_SeismicTossBgAccelerateDownAtEnd(u8 taskId)
         ToggleBg3Mode(1);
         DestroyAnimVisualTask(taskId);
     }
+}
+
+void SpriteCB_ROCKSLIDE_USER(struct Sprite *sprite)
+{
+    if (gBattleAnimArgs[3] != 0)
+        SetAverageBattlerPositions(gBattleAnimAttacker, 0, &sprite->x, &sprite->y);
+    sprite->x += gBattleAnimArgs[0];
+    sprite->y += 14;
+    StartSpriteAnim(sprite, gBattleAnimArgs[1]);
+    AnimateSprite(sprite);
+    sprite->data[0] = 0;
+    sprite->data[1] = 0;
+    sprite->data[2] = 4;
+    sprite->data[3] = 16;
+    sprite->data[4] = -70;
+    sprite->data[5] = gBattleAnimArgs[2];
+    StoreSpriteCallbackInData6(sprite, sub_80B46B4);
+    sprite->callback = TranslateSpriteInEllipseOverDuration;
+    sprite->callback(sprite);
 }

@@ -97,8 +97,8 @@ struct BoxPokemon
     u8 unused:6;
     u8 otName[PLAYER_NAME_LENGTH];
     u8 markings;
-    u16 checksum;
-    u16 unknown;
+    u16 backupSpecies;
+    u16 pokeball;
 
     u16 species;
     u16 heldItem;
@@ -127,7 +127,8 @@ struct BoxPokemon
 
     u16 metLevel:7;
     u16 metGame:4;
-    u16 pokeball:4;
+    u16 gigantamax:1;
+    u16 blank:3;
     u16 otGender:1;
 
     u32 hpIV:5;
@@ -137,7 +138,7 @@ struct BoxPokemon
     u32 spAttackIV:5;
     u32 spDefenseIV:5;
     u32 isEgg:1;
-    u32 abilityNum:1;
+    u32 hiddenAbility:1;
 
     u32 coolRibbon:3;
     u32 beautyRibbon:3;
@@ -229,8 +230,9 @@ struct BattlePokemon
     /*0x17*/ u32 spDefenseIV:5;
     /*0x17*/ u32 isEgg:1;
     /*0x17*/ u32 abilityNum:1;
-    /*0x18*/ s8 statStages[BATTLE_STATS_NO];
-    /*0x20*/ u8 ability;
+    /*0x18*/ u8 type3;
+    /*0x19*/ s8 statStages[BATTLE_STATS_NO - 1];
+    /*0x20*/ ability_t ability;
     /*0x21*/ u8 type1;
     /*0x22*/ u8 type2;
     /*0x23*/ u8 unknown;
@@ -276,10 +278,12 @@ struct BaseStats
  /* 0x13 */ u8 growthRate;
  /* 0x14 */ u8 eggGroup1;
  /* 0x15 */ u8 eggGroup2;
- /* 0x16 */ u8 abilities[2];
+ /* 0x16 */ u8 ability1;
+ /* 0x17 */ u8 ability2;
  /* 0x18 */ u8 safariZoneFleeRate;
  /* 0x19 */ u8 bodyColor : 7;
             u8 noFlip : 1;
+ /* 0x1A */	u8 hiddenAbility;
 };
 
 struct BattleMove
@@ -293,9 +297,13 @@ struct BattleMove
     u8 target;
     s8 priority;
     u8 flags;
+    u8 z_move_power;
+	u8 split;
+	u8 z_move_effect;
 };
 
 extern const struct BattleMove gBattleMoves[];
+extern const u8 gDynamaxMovePowers[];
 
 #define FLAG_MAKES_CONTACT          0x1
 #define FLAG_PROTECT_AFFECTED       0x2
@@ -340,31 +348,100 @@ enum
     BODY_COLOR_PINK
 };
 
-#define EVO_FRIENDSHIP       0x0001 // Pokémon levels up with friendship ≥ 220
-#define EVO_FRIENDSHIP_DAY   0x0002 // Pokémon levels up during the day with friendship ≥ 220
-#define EVO_FRIENDSHIP_NIGHT 0x0003 // Pokémon levels up at night with friendship ≥ 220
-#define EVO_LEVEL            0x0004 // Pokémon reaches the specified level
-#define EVO_TRADE            0x0005 // Pokémon is traded
-#define EVO_TRADE_ITEM       0x0006 // Pokémon is traded while it's holding the specified item
-#define EVO_ITEM             0x0007 // specified item is used on Pokémon
-#define EVO_LEVEL_ATK_GT_DEF 0x0008 // Pokémon reaches the specified level with attack > defense
-#define EVO_LEVEL_ATK_EQ_DEF 0x0009 // Pokémon reaches the specified level with attack = defense
-#define EVO_LEVEL_ATK_LT_DEF 0x000a // Pokémon reaches the specified level with attack < defense
-#define EVO_LEVEL_SILCOON    0x000b // Pokémon reaches the specified level with a Silcoon personality value
-#define EVO_LEVEL_CASCOON    0x000c // Pokémon reaches the specified level with a Cascoon personality value
-#define EVO_LEVEL_NINJASK    0x000d // Pokémon reaches the specified level (special value for Ninjask)
-#define EVO_LEVEL_SHEDINJA   0x000e // Pokémon reaches the specified level (special value for Shedinja)
-#define EVO_BEAUTY           0x000f // Pokémon levels up with beauty ≥ specified value
+enum
+{
+    STAT_STAGE_HP,       // 0
+    STAT_STAGE_ATK,      // 1
+    STAT_STAGE_DEF,      // 2
+    STAT_STAGE_SPEED,    // 3
+    STAT_STAGE_SPATK,    // 4
+    STAT_STAGE_SPDEF,    // 5
+    STAT_STAGE_ACC,      // 6
+    STAT_STAGE_EVASION,  // 7
+};
+
+enum MegaEvoVariants
+{
+	MEGA_VARIANT_STANDARD,
+	MEGA_VARIANT_PRIMAL,
+	MEGA_VARIANT_WISH, //Rayquaza
+	MEGA_VARIANT_ULTRA_BURST, //Necrozma
+};
+
+
+#define STAT_STAGE_MIN 0
+#define STAT_STAGE_MAX 12
+
+#define INCREASE_1 0x10
+#define INCREASE_2 0x20
+#define INCREASE_3 0x30
+#define INCREASE_4 0x40
+#define INCREASE_5 0x50
+#define INCREASE_6 0x60
+
+#define DECREASE_1 0x90
+#define DECREASE_2 0xA0
+#define DECREASE_3 0xB0
+#define DECREASE_4 0xC0
+#define DECREASE_5 0xD0
+#define DECREASE_6 0xE0
+
+enum EvolutionMethods
+{
+	EVO_NONE = 0,
+	EVO_FRIENDSHIP,
+	EVO_FRIENDSHIP_DAY,
+	EVO_FRIENDSHIP_NIGHT,
+	EVO_LEVEL,
+	EVO_TRADE,
+	EVO_TRADE_ITEM,
+	EVO_ITEM,		// for dawn stone, add MON_MALE(0x0) or MON_FEMALE(0xFF) to .unknown in evo table entry
+	EVO_LEVEL_ATK_GT_DEF,
+	EVO_LEVEL_ATK_EQ_DEF,
+	EVO_LEVEL_ATK_LT_DEF,
+	EVO_LEVEL_SILCOON,
+	EVO_LEVEL_CASCOON,
+	EVO_LEVEL_NINJASK,
+	EVO_LEVEL_SHEDINJA,
+	EVO_BEAUTY,
+	// new evolutions
+	EVO_RAINY_FOGGY_OW,		// raining or foggy in overworld
+	EVO_MOVE_TYPE,	// knows a move with a specific type (eg. sylveon: fairy type move). Param is the move type
+	EVO_TYPE_IN_PARTY,	//specific type (param) in party after given level (unknown).
+	EVO_MAP, 	// specific map evolution. bank in param, map in unknown
+	EVO_MALE_LEVEL,		// above given level if male
+	EVO_FEMALE_LEVEL,	// above given level if female	
+	EVO_LEVEL_NIGHT,	// above given level at night
+	EVO_LEVEL_DAY,		// above given level during day
+	EVO_HOLD_ITEM_NIGHT,	// level up holding item at night (eg. sneasel)
+	EVO_HOLD_ITEM_DAY,	// level up while holding a specific item during the day (eg. happiny)
+	EVO_MOVE,	// knows a given move
+	EVO_OTHER_PARTY_MON,	//another poke in the party, arg is a specific species
+	EVO_LEVEL_SPECIFIC_TIME_RANGE, // above given level with a range (unknown is [start][end]. eg lycanroc -> 1700-1800 hrs -> 0x1112)
+	EVO_FLAG_SET, //If a certain flag is set. Can be used for touching the Mossy/Icy Rock for Leafeon/Glaceon evolutions
+	EVO_CRITICAL_HIT, // successfully land 3 critical hits in one battle
+	EVO_NATURE_HIGH, // evolution based on high key nature at a certain level
+	EVO_NATURE_LOW, // evolution based on low key nature at a certain level
+	EVO_DAMAGE_LOCATION, // recieve 49+ damage in battle without fainting, walk to specific tile
+	EVO_ITEM_LOCATION, // Stand on a tile with a certain behaviour and use an item on a Pokemon
+};
+
+#define EVO_GIGANTAMAX 0xFD
+#define EVO_MEGA 0xFE
+#define MEGA_EVOLUTION 0xFE // The evolutionary type for Megas
+
+#define MAX_LEARNABLE_MOVES 50
 
 struct Evolution
 {
     u16 method;
     u16 param;
     u16 targetSpecies;
+    u16 unknown;
 };
 
 #define MAX_LEARNABLE_MOVES 50
-#define EVOS_PER_MON 5
+#define EVOS_PER_MON 16
 
 extern u8 gPlayerPartyCount;
 extern struct Pokemon gPlayerParty[PARTY_SIZE];
@@ -382,6 +459,7 @@ extern const u8 gFacilityClassToTrainerClass[];
 extern const struct SpriteTemplate gSpriteTemplates_Battlers[];
 extern const u8 gPPUpGetMask[];
 extern const struct Evolution gEvolutionTable[][EVOS_PER_MON];
+extern const u8 sStatsToRaise[];
 
 void ZeroBoxMonData(struct BoxPokemon *boxMon);
 void ZeroMonData(struct Pokemon *mon);
@@ -405,13 +483,13 @@ void SetMonMoveSlot(struct Pokemon *mon, u16 move, u8 slot);
 void SetBattleMonMoveSlot(struct BattlePokemon *mon, u16 move, u8 slot);
 u16 MonTryLearningNewMove(struct Pokemon *mon, bool8 firstMove);
 void DeleteFirstMoveAndGiveMoveToMon(struct Pokemon *mon, u16 move);
-s32 CalculateBaseDamage(struct BattlePokemon *attacker, struct BattlePokemon *defender, u32 move, u16 sideStatus, u16 powerOverride, u8 typeOverride, u8 battlerIdAtk, u8 battlerIdDef);
 
 #define BATTLE_ALIVE_EXCEPT_ACTIVE  0
 #define BATTLE_ALIVE_ATK_SIDE       1
 #define BATTLE_ALIVE_DEF_SIDE       2
 
-u8 CountAliveMonsInBattle(u8 caseId);
+u8 CountAliveMonsInBattle(u8 caseId, u8 bankAtk, u8 bankDef);
+u8 CountAliveMons(u8 caseId);
 
 u8 GetDefaultMoveTarget(u8 battlerId);
 u8 GetMonGender(struct Pokemon *mon);
@@ -440,7 +518,6 @@ u8 GiveMonToPlayer(struct Pokemon *mon);
 u8 CalculatePlayerPartyCount(void);
 u8 CalculateEnemyPartyCount(void);
 u8 GetMonsStateToDoubles(void);
-u8 GetAbilityBySpecies(u16 species, bool8 abilityNum);
 u8 GetMonAbility(struct Pokemon *mon);
 u8 GetSecretBaseTrainerPicIndex(void);
 u8 GetSecretBaseTrainerNameIndex(void);
@@ -509,5 +586,13 @@ bool8 CheckBattleTypeGhost(struct Pokemon *mon, u8 bank);
 struct OakSpeechNidoranFStruct *OakSpeechNidoranFSetup(u8 battlePosition, bool8 enable);
 void OakSpeechNidoranFFreeResources(void);
 void *OakSpeechNidoranFGetBuffer(u8 bufferId);
+u16 GetMonDevolution(struct Pokemon* mon);
+u16 BuildLearnableMoveset(struct Pokemon* mon, u16* moves);
+u32 CheckShinyMon(struct Pokemon* mon);
+u8 GetNatureFromPersonality(u32 personality);
+bool8 IsLevelUpEvolutionMethod(u8 method);
+bool8 IsItemEvolutionMethod(u8 method);
+bool8 IsFriendshipEvolutionMethod(u8 method);
+bool8 IsOtherEvolutionMethod(u8 method);
 
 #endif // GUARD_POKEMON_H

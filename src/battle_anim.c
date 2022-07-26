@@ -14,7 +14,7 @@
 #define ANIM_SPRITE_INDEX_COUNT 8
 
 // RAM
-EWRAM_DATA static const u8 *sBattleAnimScriptPtr = NULL;
+EWRAM_DATA const u8 *sBattleAnimScriptPtr = NULL;
 EWRAM_DATA static const u8 *sBattleAnimScriptRetAddr = NULL;
 EWRAM_DATA void (*gAnimScriptCallback)(void) = NULL;
 EWRAM_DATA static s8 sAnimFramesToWait = 0;
@@ -32,7 +32,7 @@ EWRAM_DATA static u16 sSoundAnimFramesToWait = 0;
 EWRAM_DATA static u8 sMonAnimTaskIdArray[2] = {0};
 EWRAM_DATA u8 gAnimMoveTurn = 0;
 EWRAM_DATA static u8 sAnimBackgroundFadeState = 0;
-EWRAM_DATA static u16 sAnimMoveIndex = 0;
+EWRAM_DATA u16 sAnimMoveIndex = 0;
 EWRAM_DATA u8 gBattleAnimAttacker = 0;
 EWRAM_DATA u8 gBattleAnimTarget = 0;
 EWRAM_DATA u16 gAnimBattlerSpecies[MAX_BATTLERS_COUNT] = {0};
@@ -51,7 +51,6 @@ static void LoadMoveBg(u16 bgId);
 static void LoadDefaultBg(void);
 static void Task_LoopAndPlaySE(u8 taskId);
 static void Task_WaitAndPlaySE(u8 taskId);
-static void sub_807331C(u8 taskId);
 
 static void ScriptCmd_loadspritegfx(void);
 static void ScriptCmd_unloadspritegfx(void);
@@ -1274,7 +1273,7 @@ const struct CompressedSpriteSheet gBattleAnimPicTable[] =
     {gBattleAnimSpriteGfx_Spore, 0x0100, ANIM_TAG_SPORE},
     {gBattleAnimSpriteGfx_Flower, 0x00a0, ANIM_TAG_FLOWER},
     {gBattleAnimSpriteGfx_RazorLeaf, 0x0100, ANIM_TAG_RAZOR_LEAF},
-    {gBattleAnimSpriteGfx_Needle, 0x0080, ANIM_TAG_NEEDLE},
+    {gBattleAnimSpriteGfx_Needle, (32 * 32) / 2, ANIM_TAG_NEEDLE},
     {gBattleAnimSpriteGfx_WhirlwindLines, 0x0300, ANIM_TAG_WHIRLWIND_LINES},
     {gBattleAnimSpriteGfx_GoldRing, 0x0100, ANIM_TAG_GOLD_RING},
     {gBattleAnimSpriteGfx_GoldRing, 0x0100, ANIM_TAG_PURPLE_RING},
@@ -1402,6 +1401,86 @@ const struct CompressedSpriteSheet gBattleAnimPicTable[] =
     {gBattleAnimSpriteGfx_Slash, 0x0800, ANIM_TAG_SLASH_2},
     {gBattleAnimSpriteGfx_SlamHit, 0x1000, ANIM_TAG_WHIP_HIT},
     {gBattleAnimSpriteGfx_GoldRing, 0x0100, ANIM_TAG_BLUE_RING_2},
+    //new anim spritegfx
+    {gBattleAnimSpriteGfx_wood, 0xc00, ANIM_TAG_WOOD},
+    {gBattleAnimSpriteGfx_flash_cannon_ball, 0x200, ANIM_TAG_FLASH_CANNON_BALL},
+    {gBattleAnimSpriteGfx_poison_jab, 0x80, ANIM_TAG_POISON_JAB},
+    {gBattleAnimSpriteGfx_power_gem, 0x80, ANIM_TAG_POWER_GEM},
+    {gBattleAnimSpriteGfx_shell_right, 0x800, ANIM_TAG_SHELL_RIGHT},
+    {gBattleAnimSpriteGfx_shell_left, 0x800, ANIM_TAG_SHELL_LEFT},
+    {gBattleAnimSpriteGfx_razor_shell, 0x200, ANIM_TAG_RAZOR_SHELL},
+    {gBattleAnimSpriteGfx_hydro_pump, 0x200, ANIM_TAG_HYDRO_PUMP},
+    {gBattleAnimSpriteGfx_water_gun, 0x180, ANIM_TAG_WATER_GUN},
+    {gBattleAnimSpriteGfx_brine, 0xc00, ANIM_TAG_BRINE},
+    {gBattleAnimSpriteGfx_stealth_rock, 0x180, ANIM_TAG_STEALTH_ROCK},
+    {gBattleAnimSpriteGfx_stone_edge, 0x200, ANIM_TAG_STONE_EDGE},
+    {gBattleAnimSpriteGfx_gear, 0x200, ANIM_TAG_GEAR},
+    {gBattleAnimSpriteGfx_assurance_hand, 0x200, ANIM_TAG_ASSURANCE_HAND},
+    {gBattleAnimSpriteGfx_acupressure_finger, 0x200, ANIM_TAG_ACUPRESSURE_FINGER},
+    {gBattleAnimSpriteGfx_punishment_blades, 0xa00, ANIM_TAG_PUNISHMENT_BLADES},
+    {gBattleAnimSpriteGfx_bees, 0x480, ANIM_TAG_BEES},
+    {gBattleAnimSpriteGfx_wishiwashi_fish, 0x480, ANIM_TAG_WISHIWASHI_FISH},
+    {gBattleAnimSpriteGfx_zygarde_hexes, 0x480, ANIM_TAG_ZYGARDE_HEXES},
+    {gBattleAnimSpriteGfx_aura_sphere, 0x200, ANIM_TAG_AURA_SPHERE},
+    {gBattleAnimSpriteGfx_energy_ball, 0x200, ANIM_TAG_ENERGY_BALL},
+    {gBattleAnimSpriteGfx_mega_rainbow, 0x180, ANIM_TAG_MEGA_RAINBOW},
+    {gBattleAnimSpriteGfx_mega_stone, 0x800, ANIM_TAG_MEGA_STONE},
+    {gBattleAnimSpriteGfx_mega_symbol, 0x200, ANIM_TAG_MEGA_SYMBOL},
+    {gBattleAnimSpriteGfx_omega_stone, 0x800, ANIM_TAG_OMEGA_STONE},
+    {gBattleAnimSpriteGfx_alpha_stone, 0x800, ANIM_TAG_ALPHA_STONE},
+    {gBattleAnimSpriteGfx_berry_normal, (32*32*2)/2, ANIM_TAG_BERRY_NORMAL},
+    {gBattleAnimSpriteGfx_berry_eaten, 0x200, ANIM_TAG_BERRY_EATEN},
+    {gBattleAnimSpriteGfx_dragon_ascent, 0x800, ANIM_TAG_DRAGON_ASCENT},
+    {gBattleAnimSpriteGfx_pink_diamond, 0x40, ANIM_TAG_PINK_DIAMOND},
+    {gBattleAnimSpriteGfx_steam_eruption, 0xa00, ANIM_TAG_STEAM_ERUPTION},
+    {gBattleAnimSpriteGfx_confide, 0x800, ANIM_TAG_CONFIDE},
+    {gBattleAnimSpriteGfx_vertical_hex, 0x480, ANIM_TAG_VERTICAL_HEX},
+    {gBattleAnimSpriteGfx_power_trick, 0x800, ANIM_TAG_POWER_TRICK},
+    {gBattleAnimSpriteGfx_chain_link, 0x200, ANIM_TAG_CHAIN_LINK},
+    {gBattleAnimSpriteGfx_anchor, 0x200, ANIM_TAG_ANCHOR},
+    {gBattleAnimSpriteGfx_horseshoe_side_fist, 0x800, ANIM_TAG_HORSESHOE_SIDE_FIST},
+    {gBattleAnimSpriteGfx_dragon_ascent_foe, 0x800, ANIM_TAG_DRAGON_ASCENT_FOE},
+    {gBattleAnimSpriteGfx_crafty_shield, 0x80, ANIM_TAG_CRAFTY_SHIELD},
+    {gBattleAnimSpriteGfx_quick_guard_hand, 0x200, ANIM_TAG_QUICK_GUARD_HAND},
+    {gBattleAnimSpriteGfx_blacephalon_head, 0x200, ANIM_TAG_BLACEPHALON_HEAD},
+    {gBattleAnimSpriteGfx_fairy_lock_chains, (64*32)/2, ANIM_TAG_FAIRY_LOCK_CHAINS},
+    {gBattleAnimSpriteGfx_ions, 0x700, ANIM_TAG_IONS},
+    {gBattleAnimSpriteGfx_chop, 0x200, ANIM_TAG_CHOP},
+    {gBattleAnimSpriteGfx_heart_stamp, 0x400, ANIM_TAG_HEART_STAMP},
+    {gBattleAnimSpriteGfx_horn_leech, 0x200, ANIM_TAG_HORN_LEECH},
+    {gBattleAnimSpriteGfx_steamroller, 0x800, ANIM_TAG_STEAMROLLER},
+    {gBattleAnimSpriteGfx_hoopa_hand, 0x80, ANIM_TAG_HOOPA_HAND},
+    {gBattleAnimSpriteGfx_hoopa_ring, (32*32*4)/2, ANIM_TAG_HOOPA_RING},
+    {gBattleAnimSpriteGfx_hoopa_ring, 0x0, ANIM_TAG_UNAVAILABLE_1},
+    {gBattleAnimSpriteGfx_hoopa_ring, 0x0, ANIM_TAG_UNAVAILABLE_2},
+    {gBattleAnimSpriteGfx_metal_bits, 0x140, ANIM_TAG_METAL_BITS},
+    {gBattleAnimSpriteGfx_small_rock, 0x140, ANIM_TAG_SMALL_ROCK},
+    {gBattleAnimSpriteGfx_spirit_arrow, 0x200, ANIM_TAG_SPIRIT_ARROW},
+    {gBattleAnimSpriteGfx_ultra_burst_symbol, 0x200, ANIM_TAG_ULTRA_BURST_SYMBOL},
+    {gBattleAnimSpriteGfx_z_move_symbol, 0x800, ANIM_TAG_Z_MOVE_SYMBOL},
+    {gBattleAnimSpriteGfx_really_big_rock, (64*64)/2, ANIM_TAG_REALLY_BIG_ROCK},
+    {gBattleAnimSpriteGfx_cocoon, 0x800, ANIM_TAG_COCOON},
+    {gBattleAnimSpriteGfx_corkscrew, 0x800, ANIM_TAG_CORKSCREW},
+    {gBattleAnimSpriteGfx_havoc_spear, 0x800, ANIM_TAG_HAVOC_SPEAR},
+    {gBattleAnimSpriteGfx_purple_drake, 0x800, ANIM_TAG_PURPLE_DRAKE},
+    {gBattleAnimSpriteGfx_ability_pop_up, (64*64)/2, ANIM_TAG_ABILITY_POP_UP},
+    {gBattleAnimSpriteGfx_mud_bomb, (64*64)/2, ANIM_TAG_MUD_BOMB},
+    {gBattleAnimSpriteGfx_branch, (32*32)/2, ANIM_TAG_BRANCH},
+    {gBattleAnimSpriteGfx_apple, (32*32)/2, ANIM_TAG_APPLE},
+    {gBattleAnimSpriteGfx_obstruct, (32*32)/2, ANIM_TAG_OBSTRUCT_CROSS},
+    {gBattleAnimSpriteGfx_poison_column, (32*64*7)/2, ANIM_TAG_POISON_COLUMN},
+    {gBattleAnimSpriteGfx_poison_column, (32*64*7)/2, ANIM_TAG_GARBAGE_COLUMN},
+    {gBattleAnimSpriteGfx_large_spike, (32*64*4)/2, ANIM_TAG_LARGE_SPIKE},
+    {gBattleAnimSpriteGfx_dragon_pulse_ring, (32*32)/2, ANIM_TAG_DRAGON_PULSE_RING},
+    {gBattleAnimSpriteGfx_stone_pillar, (64*64*4)/2, ANIM_TAG_STONE_PILLAR},
+    {gBattleAnimSpriteGfx_mushroom, (32*32*4)/2, ANIM_TAG_MUSHROOM},
+    {gBattleAnimSpriteGfx_golden_apple, (32*32*4)/2, ANIM_TAG_GOLDEN_APPLE},
+    {gBattleAnimSpriteGfx_ice_rock, (64*64*5)/2, ANIM_TAG_ICE_ROCK},
+    {gBattleAnimSpriteGfx_tornado, (64*64*3)/2, ANIM_TAG_TORNADO},
+    {gBattleAnimSpriteGfx_straight_beam, (16*16*3)/2, ANIM_TAG_STRAIGHT_BEAM},
+    {gBattleAnimSpriteGfx_dreepy, (32*32*2)/2, ANIM_TAG_DREEPY},
+    {gBattleAnimSpriteGfx_ice_rock, (64*64*3)/2, ANIM_TAG_ICE_ROCK_SINGLE},
+    {gBattleAnimSpriteGfx_stone_pillar, (64*64*3)/2, ANIM_TAG_STONE_PILLAR_MULTI},
 };
 
 const struct CompressedSpritePalette gBattleAnimPaletteTable[] =
@@ -1695,7 +1774,284 @@ const struct CompressedSpritePalette gBattleAnimPaletteTable[] =
     {gBattleAnimSpritePal_Slash2, ANIM_TAG_SLASH_2},
     {gBattleAnimSpritePal_WhipHit, ANIM_TAG_WHIP_HIT},
     {gBattleAnimSpritePal_BlueRing2, ANIM_TAG_BLUE_RING_2},
+    //new pal
+    {gBattleAnimSpritePal_wood, ANIM_TAG_WOOD},
+    {gBattleAnimSpritePal_flash_cannon_ball, ANIM_TAG_FLASH_CANNON_BALL},
+    {gBattleAnimSpritePal_poison_jab, ANIM_TAG_POISON_JAB},
+    {gBattleAnimSpritePal_power_gem, ANIM_TAG_POWER_GEM},
+    {gBattleAnimSpritePal_shell_right, ANIM_TAG_SHELL_RIGHT},
+    {gBattleAnimSpritePal_shell_left, ANIM_TAG_SHELL_LEFT},
+    {gBattleAnimSpritePal_razor_shell, ANIM_TAG_RAZOR_SHELL},
+    {gBattleAnimSpritePal_hydro_pump, ANIM_TAG_HYDRO_PUMP},
+    {gBattleAnimSpritePal_water_gun, ANIM_TAG_WATER_GUN},
+    {gBattleAnimSpritePal_brine, ANIM_TAG_BRINE},
+    {gBattleAnimSpritePal_stealth_rock, ANIM_TAG_STEALTH_ROCK},
+    {gBattleAnimSpritePal_stone_edge, ANIM_TAG_STONE_EDGE},
+    {gBattleAnimSpritePal_gear, ANIM_TAG_GEAR},
+    {gBattleAnimSpritePal_assurance_hand, ANIM_TAG_ASSURANCE_HAND},
+    {gBattleAnimSpritePal_acupressure_finger, ANIM_TAG_ACUPRESSURE_FINGER},
+    {gBattleAnimSpritePal_punishment_blades, ANIM_TAG_PUNISHMENT_BLADES},
+    {gBattleAnimSpritePal_bees, ANIM_TAG_BEES},
+    {gBattleAnimSpritePal_wishiwashi_fish, ANIM_TAG_WISHIWASHI_FISH},
+    {gBattleAnimSpritePal_zygarde_hexes, ANIM_TAG_ZYGARDE_HEXES},
+    {gBattleAnimSpritePal_aura_sphere, ANIM_TAG_AURA_SPHERE},
+    {gBattleAnimSpritePal_energy_ball, ANIM_TAG_ENERGY_BALL},
+    {gBattleAnimSpritePal_mega_rainbow, ANIM_TAG_MEGA_RAINBOW},
+    {gBattleAnimSpritePal_mega_stone, ANIM_TAG_MEGA_STONE},
+    {gBattleAnimSpritePal_mega_symbol, ANIM_TAG_MEGA_SYMBOL},
+    {gBattleAnimSpritePal_omega_stone, ANIM_TAG_OMEGA_STONE},
+    {gBattleAnimSpritePal_alpha_stone, ANIM_TAG_ALPHA_STONE},
+    {gBattleAnimSpritePal_berry_normal, ANIM_TAG_BERRY_NORMAL},
+    {gBattleAnimSpritePal_berry_eaten, ANIM_TAG_BERRY_EATEN},
+    {gBattleAnimSpritePal_dragon_ascent, ANIM_TAG_DRAGON_ASCENT},
+    {gBattleAnimSpritePal_pink_diamond, ANIM_TAG_PINK_DIAMOND},
+    {gBattleAnimSpritePal_steam_eruption, ANIM_TAG_STEAM_ERUPTION},
+    {gBattleAnimSpritePal_confide, ANIM_TAG_CONFIDE},
+    {gBattleAnimSpritePal_vertical_hex, ANIM_TAG_VERTICAL_HEX},
+    {gBattleAnimSpritePal_power_trick, ANIM_TAG_POWER_TRICK},
+    {gBattleAnimSpritePal_chain_link, ANIM_TAG_CHAIN_LINK},
+    {gBattleAnimSpritePal_anchor, ANIM_TAG_ANCHOR},
+    {gBattleAnimSpritePal_horseshoe_side_fist, ANIM_TAG_HORSESHOE_SIDE_FIST},
+    {gBattleAnimSpritePal_dragon_ascent_foe, ANIM_TAG_DRAGON_ASCENT_FOE},
+    {gBattleAnimSpritePal_crafty_shield, ANIM_TAG_CRAFTY_SHIELD},
+    {gBattleAnimSpritePal_quick_guard_hand, ANIM_TAG_QUICK_GUARD_HAND},
+    {gBattleAnimSpritePal_blacephalon_head, ANIM_TAG_BLACEPHALON_HEAD},
+    {gBattleAnimSpritePal_fairy_lock_chains, ANIM_TAG_FAIRY_LOCK_CHAINS},
+    {gBattleAnimSpritePal_ions, ANIM_TAG_IONS},
+    {gBattleAnimSpritePal_chop, ANIM_TAG_CHOP},
+    {gBattleAnimSpritePal_heart_stamp, ANIM_TAG_HEART_STAMP},
+    {gBattleAnimSpritePal_horn_leech, ANIM_TAG_HORN_LEECH},
+    {gBattleAnimSpritePal_steamroller, ANIM_TAG_STEAMROLLER},
+    {gBattleAnimSpritePal_hoopa_hand, ANIM_TAG_HOOPA_HAND},
+    {gBattleAnimSpritePal_hoopa_ring, ANIM_TAG_HOOPA_RING},
+    {gBattleAnimSpritePal_hoopa_ring, ANIM_TAG_UNAVAILABLE_1},
+    {gBattleAnimSpritePal_hoopa_ring, ANIM_TAG_UNAVAILABLE_2},
+    {gBattleAnimSpritePal_metal_bits, ANIM_TAG_METAL_BITS},
+    {gBattleAnimSpritePal_small_rock, ANIM_TAG_SMALL_ROCK},
+    {gBattleAnimSpritePal_spirit_arrow, ANIM_TAG_SPIRIT_ARROW},
+    {gBattleAnimSpritePal_ultra_burst_symbol, ANIM_TAG_ULTRA_BURST_SYMBOL},
+    {gBattleAnimSpritePal_z_move_symbol, ANIM_TAG_Z_MOVE_SYMBOL},
+    {gBattleAnimSpritePal_really_big_rock, ANIM_TAG_REALLY_BIG_ROCK},
+    {gBattleAnimSpritePal_cocoon, ANIM_TAG_COCOON},
+    {gBattleAnimSpritePal_corkscrew, ANIM_TAG_CORKSCREW},
+    {gBattleAnimSpritePal_havoc_spear, ANIM_TAG_HAVOC_SPEAR},
+    {gBattleAnimSpritePal_purple_drake, ANIM_TAG_PURPLE_DRAKE},
+    {gBattleAnimSpritePal_ability_pop_up, ANIM_TAG_ABILITY_POP_UP},
+    {gBattleAnimSpritePal_mud_bomb, ANIM_TAG_MUD_BOMB},
+    {gBattleAnimSpritePal_branch, ANIM_TAG_BRANCH},
+    {gBattleAnimSpritePal_apple, ANIM_TAG_APPLE},
+    {gBattleAnimSpritePal_obstruct, ANIM_TAG_OBSTRUCT_CROSS},
+    {gBattleAnimSpritePal_poison_column, ANIM_TAG_POISON_COLUMN},
+    {gBattleAnimSpritePal_poison_column, ANIM_TAG_GARBAGE_COLUMN},
+    {gBattleAnimSpritePal_large_spike, ANIM_TAG_LARGE_SPIKE},
+    {gBattleAnimSpritePal_dragon_pulse_ring, ANIM_TAG_DRAGON_PULSE_RING},
+    {gBattleAnimSpritePal_stone_pillar, ANIM_TAG_STONE_PILLAR},
+    {gBattleAnimSpritePal_mushroom, ANIM_TAG_MUSHROOM},
+    {gBattleAnimSpritePal_golden_apple, ANIM_TAG_GOLDEN_APPLE},
+    {gBattleAnimSpritePal_ice_rock, ANIM_TAG_ICE_ROCK},
+    {gBattleAnimSpritePal_tornado, ANIM_TAG_TORNADO},
+    {gBattleAnimSpritePal_straight_beam, ANIM_TAG_STRAIGHT_BEAM},
+    {gBattleAnimSpritePal_dreepy, ANIM_TAG_DREEPY},
+    {gBattleAnimSpritePal_ice_rock, ANIM_TAG_ICE_ROCK_SINGLE},
+    {gBattleAnimSpritePal_stone_pillar, ANIM_TAG_STONE_PILLAR_MULTI},
 };
+
+const u32 gBattleAnimBgPalette_GigaImpact[] = INCBIN_U32("graphics/battle_anims/backgrounds/giga_impact.gbapal.lz");
+
+//const u32 gBattleAnimBgImage_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/trick_room.4bpp.lz");
+//const u32 gBattleAnimBgPalette_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/trick_room.gbapal.lz");
+//const u32 gBattleAnimBgTilemap_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/trick_room_map.bin.lz");
+
+const u32 gBattleAnimBgImage_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/rock_wrecker.4bpp.lz");
+const u32 gBattleAnimBgPalette_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/rock_wrecker.gbapal.lz");
+const u32 gBattleAnimBgTilemap_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/rock_wrecker_map.bin.lz");
+
+const u32 gBattleAnimBgImage_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_opponent.4bpp.lz");
+const u32 gBattleAnimBgPalette_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_opponent.gbapal.lz");
+const u32 gBattleAnimBgTilemap_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_opponent.bin");
+
+const u32 gBattleAnimBgImage_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_player.4bpp.lz");
+const u32 gBattleAnimBgPalette_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_player.gbapal.lz");
+const u32 gBattleAnimBgTilemap_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/spacial_rend_player.bin");
+
+const u32 gBattleAnimBgImage_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/dark_void.4bpp.lz");
+const u32 gBattleAnimBgPalette_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/dark_void.gbapal.lz");
+const u32 gBattleAnimBgTilemap_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/dark_void.bin");
+
+
+const u32 gBattleAnimBgPalette_SludgeWave[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sludge_wave.gbapal.lz");
+
+const u32 gBattleAnimBgImage_Aeroblast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/aeroblast_tiles.4bpp.lz");
+const u32 gBattleAnimBgPalette_Aeroblast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/aeroblast.gbapal.lz");
+const u32 gBattleAnimBgTilemap_Aeroblast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/aeroblast_map.bin");
+
+const u32 gBattleAnimBgPalette_AuraSphere[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/aura_sphere.gbapal.lz");
+
+const u32 gBattleAnimBgImage_BlackholeEclipse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/blackhole_eclipse.4bpp.lz");
+const u32 gBattleAnimBgPalette_BlackholeEclipse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/blackhole_eclipse.gbapal.lz");
+const u32 gBattleAnimBgTilemap_BlackholeEclipse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/blackhole_eclipse.bin");
+
+const u32 gBattleAnimBgImage_BloomDoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bloom_doom.4bpp.lz");
+const u32 gBattleAnimBgPalette_BloomDoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bloom_doom.gbapal.lz");
+const u32 gBattleAnimBgTilemap_BloomDoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bloom_doom.bin");
+
+const u32 gBattleAnimBgImage_BoltStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bolt_strike.4bpp.lz");
+const u32 gBattleAnimBgPalette_BoltStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bolt_strike.gbapal.lz");
+const u32 gBattleAnimBgTilemap_BoltStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/bolt_strike.bin");
+
+const u32 gBattleAnimBgImage_ClangorousSoulblaze[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/clangorous_soulblaze.4bpp.lz");
+const u32 gBattleAnimBgPalette_ClangorousSoulblaze[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/clangorous_soulblaze.gbapal.lz");
+const u32 gBattleAnimBgTilemap_ClangorousSoulblaze[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/clangorous_soulblaze.bin");
+
+//const u32 gBattleAnimBgImage_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/dark_void.4bpp.lz");
+//const u32 gBattleAnimBgPalette_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/dark_void.gbapal.lz");
+//const u32 gBattleAnimBgTilemap_DarkVoid[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/dark_void.bin");
+
+const u32 gBattleAnimBgPalette_DynamaxCannon[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/dynamax_cannon.gbapal.lz");
+
+const u32 gBattleAnimBgImage_ElectricTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/electric_terrain.4bpp.lz");
+const u32 gBattleAnimBgPalette_ElectricTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/electric_terrain.gbapal.lz");
+const u32 gBattleAnimBgTilemap_ElectricTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/electric_terrain.bin");
+
+const u32 gBattleAnimBgImage_Fire1[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/fire1.4bpp.lz");
+const u32 gBattleAnimBgPalette_Fire1[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/fire1.gbapal.lz");
+const u32 gBattleAnimBgTilemap_Fire1[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/fire1.bin");
+
+const u32 gBattleAnimBgPalette_Fire2[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/fire2.gbapal.lz");
+
+const u32 gBattleAnimBgImage_FocusBlast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/focus_blast.4bpp.lz");
+const u32 gBattleAnimBgPalette_FocusBlast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/focus_blast.gbapal.lz");
+const u32 gBattleAnimBgTilemap_FocusBlast[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/focus_blast.bin");
+
+const u32 gBattleAnimBgPalette_GarbageFalls[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/garbage_falls.gbapal.lz");
+
+const u32 gBattleAnimBgImage_GigaImpactOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_opponent.4bpp.lz");
+const u32 gBattleAnimBgPalette_GigaImpactOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_opponent.gbapal.lz");
+const u32 gBattleAnimBgTilemap_GigaImpactOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_opponent.bin");
+
+const u32 gBattleAnimBgImage_GigaImpactPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_player.4bpp.lz");
+const u32 gBattleAnimBgPalette_GigaImpactPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_player.gbapal.lz");
+const u32 gBattleAnimBgTilemap_GigaImpactPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/giga_impact_player.bin");
+
+const u32 gBattleAnimBgImage_GrassyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/grassy_terrain.4bpp.lz");
+const u32 gBattleAnimBgPalette_GrassyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/grassy_terrain.gbapal.lz");
+const u32 gBattleAnimBgTilemap_GrassyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/grassy_terrain.bin");
+
+const u32 gBattleAnimBgPalette_GunkShot[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/gunk_shot.gbapal.lz");
+
+const u32 gBattleAnimBgImage_HighSpeed[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/high_speed.4bpp.lz");
+const u32 gBattleAnimBgPalette_HighSpeed[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/high_speed.gbapal.lz");
+const u32 gBattleAnimBgTilemap_HighSpeed[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/high_speed.bin");
+
+const u32 gBattleAnimBgImage_HydroCannon[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_cannon.4bpp.lz");
+const u32 gBattleAnimBgPalette_HydroCannon[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_cannon.gbapal.lz");
+const u32 gBattleAnimBgTilemap_HydroCannon[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_cannon.bin");
+
+const u32 gBattleAnimBgImage_HydroPump[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_pump.4bpp.lz");
+const u32 gBattleAnimBgPalette_HydroPump[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_pump.gbapal.lz");
+const u32 gBattleAnimBgTilemap_HydroPump[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hydro_pump.bin");
+
+const u32 gBattleAnimBgPalette_HyperBeam[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hyper_beam.gbapal.lz");
+
+const u32 gBattleAnimBgPalette_HyperspaceFury[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/hyperspace_fury.gbapal.lz");
+
+const u32 gBattleAnimBgImage_InfernoOverdrive[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/inferno_overdrive.4bpp.lz");
+const u32 gBattleAnimBgPalette_InfernoOverdrive[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/inferno_overdrive.gbapal.lz");
+const u32 gBattleAnimBgTilemap_InfernoOverdrive[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/inferno_overdrive.bin");
+
+const u32 gBattleAnimBgImage_LeafStorm[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/leaf_storm.4bpp.lz");
+const u32 gBattleAnimBgPalette_LeafStorm[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/leaf_storm.gbapal.lz");
+const u32 gBattleAnimBgTilemap_LeafStorm[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/leaf_storm.bin");
+
+const u32 gBattleAnimBgPalette_MagicRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/magic_room.gbapal.lz");
+
+const u32 gBattleAnimBgImage_MaliciousMoonsault[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/malicious_moonsault.4bpp.lz");
+const u32 gBattleAnimBgPalette_MaliciousMoonsault[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/malicious_moonsault.gbapal.lz");
+const u32 gBattleAnimBgTilemap_MaliciousMoonsault[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/malicious_moonsault.bin");
+
+const u32 gBattleAnimBgImage_MaxLightning[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/max_lightning.4bpp.lz");
+const u32 gBattleAnimBgPalette_MaxLightning[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/max_lightning.gbapal.lz");
+const u32 gBattleAnimBgTilemap_MaxLightning[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/max_lightning.bin");
+
+const u32 gBattleAnimBgImage_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/misty_terrain.4bpp.lz");
+const u32 gBattleAnimBgPalette_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/misty_terrain.gbapal.lz");
+const u32 gBattleAnimBgTilemap_MistyTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/misty_terrain.bin");
+
+const u32 gBattleAnimBgImage_NeverendingNightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/neverending_nightmare.4bpp.lz");
+const u32 gBattleAnimBgPalette_NeverendingNightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/neverending_nightmare.gbapal.lz");
+const u32 gBattleAnimBgTilemap_NeverendingNightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/neverending_nightmare.bin");
+
+const u32 gBattleAnimBgImage_Nightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/nightmare.4bpp.lz");
+const u32 gBattleAnimBgPalette_Nightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/nightmare.gbapal.lz");
+const u32 gBattleAnimBgTilemap_Nightmare[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/nightmare.bin");
+
+const u32 gBattleAnimBgPalette_PoisonFalls[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/poison_falls.gbapal.lz");
+
+const u32 gBattleAnimBgPalette_PsychicNew[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/psychic.gbapal.lz");
+
+const u32 gBattleAnimBgImage_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/psychic_terrain.4bpp.lz");
+const u32 gBattleAnimBgPalette_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/psychic_terrain.gbapal.lz");
+const u32 gBattleAnimBgTilemap_PsychicTerrain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/psychic_terrain.bin");
+
+//const u32 gBattleAnimBgImage_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/rock_wrecker.4bpp.lz");
+//const u32 gBattleAnimBgPalette_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/rock_wrecker.gbapal.lz");
+//const u32 gBattleAnimBgTilemap_RockWrecker[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/rock_wrecker.bin");
+
+const u32 gBattleAnimBgImage_ShatteredPsyche[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/shattered_psyche.4bpp.lz");
+const u32 gBattleAnimBgPalette_ShatteredPsyche[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/shattered_psyche.gbapal.lz");
+const u32 gBattleAnimBgTilemap_ShatteredPsyche[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/shattered_psyche.bin");
+
+const u32 gBattleAnimBgImage_SkyDay[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sky_day.4bpp.lz");
+const u32 gBattleAnimBgPalette_SkyDay[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sky_day.gbapal.lz");
+const u32 gBattleAnimBgTilemap_SkyDay[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sky_day.bin");
+
+const u32 gBattleAnimBgPalette_SkyAfternoon[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sky_afternoon.gbapal.lz");
+
+const u32 gBattleAnimBgPalette_SkyNight[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/sky_night.gbapal.lz");
+
+const u32 gBattleAnimBgImage_SnuggleForever[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/snuggle_forever.4bpp.lz");
+const u32 gBattleAnimBgPalette_SnuggleForever[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/snuggle_forever.gbapal.lz");
+const u32 gBattleAnimBgTilemap_SnuggleForever[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/snuggle_forever.bin");
+
+const u32 gBattleAnimBgImage_SoulStealing7StarStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/soulstealing_7star_strike.4bpp.lz");
+const u32 gBattleAnimBgPalette_SoulStealing7StarStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/soulstealing_7star_strike.gbapal.lz");
+const u32 gBattleAnimBgTilemap_SoulStealing7StarStrike[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/soulstealing_7star_strike.bin");
+
+//const u32 gBattleAnimBgImage_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_opponent.4bpp.lz");
+//const u32 gBattleAnimBgPalette_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_opponent.gbapal.lz");
+//const u32 gBattleAnimBgTilemap_SpacialRendOpponent[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_opponent.bin");
+//const u32 gBattleAnimBgImage_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_player.4bpp.lz");
+//const u32 gBattleAnimBgPalette_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_player.gbapal.lz");
+//const u32 gBattleAnimBgTilemap_SpacialRendPlayer[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/spacial_rend_player.bin");
+
+const u32 gBattleAnimBgPalette_TectonicRage[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/tectonic_rage.gbapal.lz");
+
+const u32 gBattleAnimBgImage_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/trick_room.4bpp.lz");
+const u32 gBattleAnimBgPalette_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/trick_room.gbapal.lz");
+const u32 gBattleAnimBgTilemap_TrickRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/trick_room.bin");
+
+const u32 gBattleAnimBgImage_TwinkleTackle[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/twinkle_tackle.4bpp.lz");
+const u32 gBattleAnimBgPalette_TwinkleTackle[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/twinkle_tackle.gbapal.lz");
+const u32 gBattleAnimBgTilemap_TwinkleTackle[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/twinkle_tackle.bin");
+
+const u32 gBattleAnimBgImage_WaterPulse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/water_pulse.4bpp.lz");
+const u32 gBattleAnimBgPalette_WaterPulse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/water_pulse.gbapal.lz");
+const u32 gBattleAnimBgTilemap_WaterPulse[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/water_pulse.bin");
+
+const u32 gBattleAnimBgImage_Waterfall[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/waterfall.4bpp.lz");
+const u32 gBattleAnimBgPalette_Waterfall[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/waterfall.gbapal.lz");
+const u32 gBattleAnimBgTilemap_Waterfall[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/waterfall.bin");
+
+const u32 gBattleAnimBgPalette_WonderRoom[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/wonder_room.gbapal.lz");
+
+const u32 gBattleAnimBgImage_ZMoveActivate[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_activate.4bpp.lz");
+const u32 gBattleAnimBgPalette_ZMoveActivate[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_activate.gbapal.lz");
+const u32 gBattleAnimBgTilemap_ZMoveActivate[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_activate.bin");
+
+const u32 gBattleAnimBgImage_ZMoveMountain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_mountain.4bpp.lz");
+const u32 gBattleAnimBgPalette_ZMoveMountain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_mountain.gbapal.lz");
+const u32 gBattleAnimBgTilemap_ZMoveMountain[] = INCBIN_U32("graphics/battle_anims/backgrounds/new/zmove_mountain.bin");
+
 
 const struct BattleAnimBackground gBattleAnimBackgroundTable[] =
 {
@@ -1726,6 +2082,57 @@ const struct BattleAnimBackground gBattleAnimBackgroundTable[] =
     [BG_SOLARBEAM_OPPONENT] = {gBattleAnimBgImage_Impact, gBattleAnimBgPalette_Solarbeam, gBattleAnimBgTilemap_ImpactOpponent},
     [BG_SOLARBEAM_PLAYER] = {gBattleAnimBgImage_Impact, gBattleAnimBgPalette_Solarbeam, gBattleAnimBgTilemap_ImpactPlayer},
     [BG_SOLARBEAM_CONTESTS] = {gBattleAnimBgImage_Impact, gBattleAnimBgPalette_Solarbeam, gBattleAnimBgTilemap_ImpactContests},
+
+    //new
+    [BG_GIGA_IMPACT_ON_OPPONENT] = {gBattleAnimBgImage_Impact, gBattleAnimBgPalette_GigaImpact, gBattleAnimBgTilemap_ImpactOpponent},
+    [BG_GIGA_IMPACT_ON_PLAYER] = {gBattleAnimBgImage_Impact, gBattleAnimBgPalette_GigaImpact, gBattleAnimBgTilemap_ImpactPlayer},
+    [BG_TRICK_ROOM] = {gBattleAnimBgImage_TrickRoom, gBattleAnimBgPalette_TrickRoom, gBattleAnimBgTilemap_TrickRoom},
+    [BG_ROCK_WRECKER] = {gBattleAnimBgImage_RockWrecker, gBattleAnimBgPalette_RockWrecker, gBattleAnimBgTilemap_RockWrecker},
+    [BG_SPACIAL_REND_ON_OPPONENT] = {gBattleAnimBgImage_SpacialRendOpponent, gBattleAnimBgPalette_SpacialRendOpponent, gBattleAnimBgTilemap_SpacialRendOpponent},
+    [BG_SPACIAL_REND_ON_PLAYER] = {gBattleAnimBgImage_SpacialRendPlayer, gBattleAnimBgPalette_SpacialRendPlayer, gBattleAnimBgTilemap_SpacialRendPlayer},
+    [BG_DARK_VOID] = {gBattleAnimBgImage_DarkVoid, gBattleAnimBgPalette_DarkVoid, gBattleAnimBgTilemap_DarkVoid},
+    [BG_WATER] = {gBattleAnimBgImage_HydroPump, gBattleAnimBgPalette_HydroPump, gBattleAnimBgTilemap_HydroPump},
+    [BG_NIGHTMARE] = {gBattleAnimBgImage_Nightmare, gBattleAnimBgPalette_Nightmare, gBattleAnimBgTilemap_Nightmare},
+    [BG_LEAF_STORM] = {gBattleAnimBgImage_LeafStorm, gBattleAnimBgPalette_LeafStorm, gBattleAnimBgTilemap_LeafStorm},
+    [BG_FIRE] = {gBattleAnimBgImage_Fire1, gBattleAnimBgPalette_Fire1, gBattleAnimBgTilemap_Fire1},
+    [BG_FIRE_2] = {gBattleAnimBgImage_Fire1, gBattleAnimBgPalette_Fire2, gBattleAnimBgTilemap_Fire1},
+    [BG_WATER_2] = {gBattleAnimBgImage_Waterfall, gBattleAnimBgPalette_Waterfall, gBattleAnimBgTilemap_Waterfall},
+    [BG_POISON] = {gBattleAnimBgImage_Waterfall, gBattleAnimBgPalette_PoisonFalls, gBattleAnimBgTilemap_Waterfall},
+    [BG_AEROBLAST] = {gBattleAnimBgImage_Aeroblast, gBattleAnimBgPalette_Aeroblast, gBattleAnimBgTilemap_Aeroblast},
+    [BG_HIGH_SPEED] = {gBattleAnimBgImage_HighSpeed, gBattleAnimBgPalette_HighSpeed, gBattleAnimBgTilemap_HighSpeed},
+    [BG_ELECTRIC_TERRAIN] = {gBattleAnimBgImage_ElectricTerrain, gBattleAnimBgPalette_ElectricTerrain, gBattleAnimBgTilemap_ElectricTerrain},
+    [BG_GRASSY_TERRAIN] = {gBattleAnimBgImage_GrassyTerrain, gBattleAnimBgPalette_GrassyTerrain, gBattleAnimBgTilemap_GrassyTerrain},
+    [BG_MISTY_TERRAIN] = {gBattleAnimBgImage_MistyTerrain, gBattleAnimBgPalette_MistyTerrain, gBattleAnimBgTilemap_MistyTerrain},
+    [BG_PSYCHIC_TERRAIN] = {gBattleAnimBgImage_PsychicTerrain, gBattleAnimBgPalette_PsychicTerrain, gBattleAnimBgTilemap_PsychicTerrain},
+    [BG_FOCUS_BLAST] = {gBattleAnimBgImage_FocusBlast, gBattleAnimBgPalette_FocusBlast, gBattleAnimBgTilemap_FocusBlast},
+    [BG_GUNK_SHOT] = {gBattleAnimBgImage_FocusBlast, gBattleAnimBgPalette_GunkShot, gBattleAnimBgTilemap_FocusBlast},
+    [BG_HYDRO_CANNON] = {gBattleAnimBgImage_HydroCannon, gBattleAnimBgPalette_HydroCannon, gBattleAnimBgTilemap_HydroCannon},
+    [BG_WONDER_ROOM] = {gBattleAnimBgImage_TrickRoom, gBattleAnimBgPalette_WonderRoom, gBattleAnimBgTilemap_TrickRoom},
+    [BG_MAGIC_ROOM] = {gBattleAnimBgImage_TrickRoom, gBattleAnimBgPalette_MagicRoom, gBattleAnimBgTilemap_TrickRoom},
+    [BG_HYPERSPACE_FURY] = {gBattleAnimBgImage_Psychic, gBattleAnimBgPalette_HyperspaceFury, gBattleAnimBgTilemap_Psychic},
+    [BG_BOLT_STRIKE] = {gBattleAnimBgImage_BoltStrike, gBattleAnimBgPalette_BoltStrike, gBattleAnimBgTilemap_BoltStrike},
+    [BG_ZMOVE_ACTIVATE] = {gBattleAnimBgImage_ZMoveActivate, gBattleAnimBgPalette_ZMoveActivate, gBattleAnimBgTilemap_ZMoveActivate},
+    [BG_TECTONIC_RAGE] = {gBattleAnimBgImage_InAir, gBattleAnimBgPalette_TectonicRage, gBattleAnimBgTilemap_InAir},
+    [BG_BLUE_SKY_DAY] = {gBattleAnimBgImage_SkyDay, gBattleAnimBgPalette_SkyDay, gBattleAnimBgTilemap_SkyDay},
+    [BG_BLUE_SKY_AFTERNOON] = {gBattleAnimBgImage_SkyDay, gBattleAnimBgPalette_SkyAfternoon, gBattleAnimBgTilemap_SkyDay},
+    [BG_BLUE_SKY_NIGHT] = {gBattleAnimBgImage_SkyDay, gBattleAnimBgPalette_SkyNight, gBattleAnimBgTilemap_SkyDay},
+    [BG_ZMOVE_MOUNTAIN] = {gBattleAnimBgImage_ZMoveMountain, gBattleAnimBgPalette_ZMoveMountain, gBattleAnimBgTilemap_ZMoveMountain},
+    [BG_NEVERENDING_NIGHTMARE] = {gBattleAnimBgImage_NeverendingNightmare, gBattleAnimBgPalette_NeverendingNightmare, gBattleAnimBgTilemap_NeverendingNightmare},
+    [BG_WATER_PULSE] = {gBattleAnimBgImage_WaterPulse, gBattleAnimBgPalette_WaterPulse, gBattleAnimBgTilemap_WaterPulse},
+    [BG_INFERNO_OVERDRIVE] = {gBattleAnimBgImage_InfernoOverdrive, gBattleAnimBgPalette_InfernoOverdrive, gBattleAnimBgTilemap_InfernoOverdrive},
+    [BG_BLOOM_DOOM] = {gBattleAnimBgImage_BloomDoom, gBattleAnimBgPalette_BloomDoom, gBattleAnimBgTilemap_BloomDoom},
+    [BG_SHATTERED_PSYCHE] = {gBattleAnimBgImage_ShatteredPsyche, gBattleAnimBgPalette_ShatteredPsyche, gBattleAnimBgTilemap_ShatteredPsyche},
+    [BG_TWINKLE_TACKLE] = {gBattleAnimBgImage_TwinkleTackle, gBattleAnimBgPalette_TwinkleTackle, gBattleAnimBgTilemap_TwinkleTackle},
+    [BG_BLACKHOLE_ECLIPSE] = {gBattleAnimBgImage_BlackholeEclipse, gBattleAnimBgPalette_BlackholeEclipse, gBattleAnimBgTilemap_BlackholeEclipse},
+    [BG_SOULSTEALING_7STAR_STRIKE_STILL_RAW] = {gBattleAnimBgImage_SoulStealing7StarStrike, gBattleAnimBgPalette_SoulStealing7StarStrike, gBattleAnimBgTilemap_SoulStealing7StarStrike},
+    [BG_MALICIOUS_MOONSAULT] = {gBattleAnimBgImage_MaliciousMoonsault, gBattleAnimBgPalette_MaliciousMoonsault, gBattleAnimBgTilemap_MaliciousMoonsault},
+    [BG_CLANGOROUS_SOULBLAZE] = {gBattleAnimBgImage_ClangorousSoulblaze, gBattleAnimBgPalette_ClangorousSoulblaze, gBattleAnimBgTilemap_ClangorousSoulblaze},
+    [BG_SNUGGLE_FOREVER] = {gBattleAnimBgImage_SnuggleForever, gBattleAnimBgPalette_SnuggleForever, gBattleAnimBgTilemap_SnuggleForever},
+    [BG_MAX_LIGHTNING] = {gBattleAnimBgImage_MaxLightning, gBattleAnimBgPalette_MaxLightning, gBattleAnimBgTilemap_MaxLightning},
+    [BG_GARBAGE_FALLS] = {gBattleAnimBgImage_Waterfall, gBattleAnimBgPalette_GarbageFalls, gBattleAnimBgTilemap_Waterfall},
+    [BG_HYPER_BEAM] = {gBattleAnimBgImage_HydroCannon, gBattleAnimBgPalette_HyperBeam, gBattleAnimBgTilemap_HydroCannon},
+    [BG_DYNAMAX_CANNON] = {gBattleAnimBgImage_HydroCannon, gBattleAnimBgPalette_DynamaxCannon, gBattleAnimBgTilemap_HydroCannon},
+    [BG_AURA_SPHERE] = {gBattleAnimBgImage_FocusBlast, gBattleAnimBgPalette_AuraSphere, gBattleAnimBgTilemap_FocusBlast},
 };
 
 static void (*const sScriptCmdTable[])(void) =
@@ -2414,7 +2821,7 @@ static void ScriptCmd_clearmonbg(void)
     sBattleAnimScriptPtr++;
 }
 
-static void sub_807331C(u8 taskId)
+void sub_807331C(u8 taskId)
 {
     u8 toBG_2;
     u8 position;

@@ -35,7 +35,7 @@ static void SpriteCB_WeatherBallUp_Step(struct Sprite *sprite);
 static EWRAM_DATA union AffineAnimCmd *sAnimTaskAffineAnim = NULL;
 UNUSED static EWRAM_DATA u32 gUnknown_2037F2C = 0; // not used
 
-static const struct UCoords8 sBattlerCoords[][4] =
+const struct UCoords8 sBattlerCoords[][4] =
 {
     {
         { 72, 80 },

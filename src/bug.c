@@ -3,19 +3,15 @@
 #include "gpu_regs.h"
 #include "trig.h"
 
-static void AnimMegahornHorn(struct Sprite *sprite);
-static void AnimLeechLifeNeedle(struct Sprite *sprite);
-static void AnimTranslateWebThread(struct Sprite *sprite);
-static void AnimStringWrap(struct Sprite *sprite);
-static void AnimSpiderWeb(struct Sprite *sprite);
-static void AnimTranslateStinger(struct Sprite *sprite);
-static void AnimMissileArc(struct Sprite *sprite);
-static void AnimTailGlowOrb(struct Sprite *sprite);
-static void sub_80B41C0(struct Sprite *sprite);
-static void sub_80B4274(struct Sprite *sprite);
-static void sub_80B42E8(struct Sprite *sprite);
-static void sub_80B4344(struct Sprite *sprite);
-static void AnimMissileArcStep(struct Sprite *sprite);
+void AnimMegahornHorn(struct Sprite *sprite);
+void AnimLeechLifeNeedle(struct Sprite *sprite);
+void AnimTranslateWebThread(struct Sprite *sprite);
+void AnimStringWrap(struct Sprite *sprite);
+void AnimTranslateStinger(struct Sprite *sprite);
+void AnimTailGlowOrb(struct Sprite *sprite);
+void sub_80B41C0(struct Sprite *sprite);
+void sub_80B42E8(struct Sprite *sprite);
+void sub_80B4344(struct Sprite *sprite);
 
 static const union AffineAnimCmd sAffineAnim_MegahornHorn_0[] =
 {
@@ -71,7 +67,7 @@ static const union AffineAnimCmd sAffineAnim_LeechLifeNeedle_2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sAffineAnims_LeechLifeNeedle[] =
+const union AffineAnimCmd *const sAffineAnims_LeechLifeNeedle[] =
 {
     sAffineAnim_LeechLifeNeedle_0,
     sAffineAnim_LeechLifeNeedle_1,
@@ -118,7 +114,7 @@ static const union AffineAnimCmd sAffineAnim_SpiderWeb[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sAffineAnims_SpiderWeb[] =
+const union AffineAnimCmd *const sAffineAnims_SpiderWeb[] =
 {
     sAffineAnim_SpiderWeb,
 };
@@ -194,7 +190,7 @@ const struct SpriteTemplate gTailGlowOrbSpriteTemplate =
     .callback = AnimTailGlowOrb,
 };
 
-static void AnimMegahornHorn(struct Sprite *sprite)
+void AnimMegahornHorn(struct Sprite *sprite)
 {
     if (IsContest())
     {
@@ -219,7 +215,7 @@ static void AnimMegahornHorn(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
 }
 
-static void AnimLeechLifeNeedle(struct Sprite *sprite)
+void AnimLeechLifeNeedle(struct Sprite *sprite)
 {
     if (IsContest())
     {
@@ -247,7 +243,7 @@ static void AnimLeechLifeNeedle(struct Sprite *sprite)
 // arg 2: controls the left-to-right movement
 // arg 3: amplitude
 // arg 4: if targets both opponents
-static void AnimTranslateWebThread(struct Sprite *sprite)
+void AnimTranslateWebThread(struct Sprite *sprite)
 {
     if (IsContest())
         gBattleAnimArgs[2] /= 2;
@@ -269,7 +265,7 @@ static void AnimTranslateWebThread(struct Sprite *sprite)
     sprite->callback = sub_80B41C0;
 }
 
-static void sub_80B41C0(struct Sprite *sprite)
+void sub_80B41C0(struct Sprite *sprite)
 {
     if (AnimTranslateLinear(sprite))
     {
@@ -280,7 +276,7 @@ static void sub_80B41C0(struct Sprite *sprite)
     sprite->data[6] = (sprite->data[6] + 13) & 0xFF;
 }
 
-static void AnimStringWrap(struct Sprite *sprite)
+void AnimStringWrap(struct Sprite *sprite)
 {
     SetAverageBattlerPositions(gBattleAnimTarget, 0, &sprite->x, &sprite->y);
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
@@ -293,7 +289,7 @@ static void AnimStringWrap(struct Sprite *sprite)
     sprite->callback = sub_80B4274;
 }
 
-static void sub_80B4274(struct Sprite *sprite)
+void sub_80B4274(struct Sprite *sprite)
 {
     if (++sprite->data[0] == 3)
     {
@@ -306,7 +302,7 @@ static void sub_80B4274(struct Sprite *sprite)
     }
 }
 
-static void AnimSpiderWeb(struct Sprite *sprite)
+void AnimSpiderWeb(struct Sprite *sprite)
 {
     SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT2_ALL | BLDCNT_EFFECT_BLEND);
     SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(16, 0));
@@ -314,7 +310,7 @@ static void AnimSpiderWeb(struct Sprite *sprite)
     sprite->callback = sub_80B42E8;
 }
 
-static void sub_80B42E8(struct Sprite *sprite)
+void sub_80B42E8(struct Sprite *sprite)
 {
     if (sprite->data[2] < 20)
     {
@@ -333,7 +329,7 @@ static void sub_80B42E8(struct Sprite *sprite)
     }
 }
 
-static void sub_80B4344(struct Sprite *sprite)
+void sub_80B4344(struct Sprite *sprite)
 {
     SetGpuReg(REG_OFFSET_BLDCNT, 0);
     SetGpuReg(REG_OFFSET_BLDALPHA, 0);
@@ -347,7 +343,7 @@ static void sub_80B4344(struct Sprite *sprite)
 // arg 2: target x pixel offset
 // arg 3: target y pixel offset
 // arg 4: duration
-static void AnimTranslateStinger(struct Sprite *sprite)
+void AnimTranslateStinger(struct Sprite *sprite)
 {
     s16 lVarX, lVarY;
     u16 rot;
@@ -396,7 +392,7 @@ static void AnimTranslateStinger(struct Sprite *sprite)
 // arg 3: target y pixel offset
 // arg 4: duration
 // arg 5: wave amplitude
-static void AnimMissileArc(struct Sprite *sprite)
+void AnimMissileArc(struct Sprite *sprite)
 {
     InitSpritePosToAnimAttacker(sprite, 1);
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
@@ -410,7 +406,7 @@ static void AnimMissileArc(struct Sprite *sprite)
     sprite->invisible = TRUE;
 }
 
-static void AnimMissileArcStep(struct Sprite *sprite)
+void AnimMissileArcStep(struct Sprite *sprite)
 {
     sprite->invisible = FALSE;
 
@@ -445,7 +441,7 @@ static void AnimMissileArcStep(struct Sprite *sprite)
     }
 }
 
-static void AnimTailGlowOrb(struct Sprite *sprite)
+void AnimTailGlowOrb(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[0] == 0)
     {

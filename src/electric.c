@@ -4,35 +4,34 @@
 #include "sound.h"
 #include "constants/songs.h"
 
-static void AnimLightning(struct Sprite *sprite);
-static void sub_80ADC58(struct Sprite *sprite);
-static void sub_80ADCB8(struct Sprite *sprite);
-static void sub_80ADD4C(struct Sprite *sprite);
-static void AnimZapCannonSpark(struct Sprite *sprite);
-static void AnimThunderboltOrb(struct Sprite *sprite);
-static void AnimSparkElectricityFlashing(struct Sprite *sprite);
-static void AnimElectricity(struct Sprite *sprite);
-static void AnimElectricBoltSegment(struct Sprite *sprite);
-static void AnimThunderWave(struct Sprite *sprite);
-static void AnimGrowingChargeOrb(struct Sprite *sprite);
-static void AnimElectricPuff(struct Sprite *sprite);
-static void AnimVoltTackleOrbSlide(struct Sprite *sprite);
-static void AnimVoltTackleBolt(struct Sprite *sprite);
-static void AnimGrowingShockWaveOrb(struct Sprite *sprite);
-static void AnimShockWaveProgressingBolt(struct Sprite *sprite);
-static void sub_80ADC3C(struct Sprite *sprite);
-static void sub_80ADC9C(struct Sprite *sprite);
-static void sub_80ADF38(struct Sprite *sprite);
-static void sub_80AE130(struct Sprite *sprite);
-static void sub_80AE278(u8 taskId);
-static void sub_80AE4F4(struct Sprite *sprite);
-static void sub_80AE5BC(u8 taskId);
-static void sub_80AE704(struct Sprite *sprite);
-static void sub_80AE83C(struct Sprite *sprite);
+void AnimLightning(struct Sprite *sprite);
+void sub_80ADC58(struct Sprite *sprite);
+void sub_80ADCB8(struct Sprite *sprite);
+void sub_80ADD4C(struct Sprite *sprite);
+void AnimZapCannonSpark(struct Sprite *sprite);
+void AnimThunderboltOrb(struct Sprite *sprite);
+void AnimSparkElectricityFlashing(struct Sprite *sprite);
+void AnimElectricity(struct Sprite *sprite);
+void AnimElectricBoltSegment(struct Sprite *sprite);
+void AnimThunderWave(struct Sprite *sprite);
+void AnimGrowingChargeOrb(struct Sprite *sprite);
+void AnimElectricPuff(struct Sprite *sprite);
+void AnimVoltTackleOrbSlide(struct Sprite *sprite);
+void AnimVoltTackleBolt(struct Sprite *sprite);
+void AnimGrowingShockWaveOrb(struct Sprite *sprite);
+void AnimShockWaveProgressingBolt(struct Sprite *sprite);
+void sub_80ADC3C(struct Sprite *sprite);
+void sub_80ADC9C(struct Sprite *sprite);
+void sub_80ADF38(struct Sprite *sprite);
+void sub_80AE130(struct Sprite *sprite);
+void sub_80AE278(u8 taskId);
+void sub_80AE4F4(struct Sprite *sprite);
+void sub_80AE5BC(u8 taskId);
+void sub_80AE704(struct Sprite *sprite);
+void sub_80AE83C(struct Sprite *sprite);
 static bool8 sub_80AEB98(struct Task *task, u8 taskId);
 static bool8 sub_80AEE74(struct Task *task, u8 taskId);
-static bool8 sub_80AF058(struct Task *task, u8 taskId);
-static void sub_80AF0C8(struct Sprite *sprite);
+void sub_80AF0C8(struct Sprite *sprite);
 
 static const union AnimCmd sAnim_Lightning[] =
 {
@@ -44,7 +43,7 @@ static const union AnimCmd sAnim_Lightning[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_Lightning[] =
+const union AnimCmd *const sAnims_Lightning[] =
 {
     sAnim_Lightning,
 };
@@ -95,7 +94,7 @@ static const union AnimCmd gUnknown_83E5F8C[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const gUnknown_83E5FA8[] =
+const union AnimCmd *const gUnknown_83E5FA8[] =
 {
     gUnknown_83E5F8C,
 };
@@ -139,7 +138,7 @@ static const union AffineAnimCmd sAffineAnim_FlashingSpark[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sAffineAnims_FlashingSpark[] =
+const union AffineAnimCmd *const sAffineAnims_FlashingSpark[] =
 {
     sAffineAnim_FlashingSpark,
 };
@@ -163,7 +162,7 @@ static const union AnimCmd sAnim_ThunderboltOrb[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_ThunderboltOrb[] =
+const union AnimCmd *const sAnims_ThunderboltOrb[] =
 {
     sAnim_ThunderboltOrb,
 };
@@ -274,7 +273,7 @@ static const union AnimCmd sAnim_ElectricChargingParticles_1[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_ElectricChargingParticles[] =
+const union AnimCmd *const sAnims_ElectricChargingParticles[] =
 {
     sAnim_ElectricChargingParticles_0,
     sAnim_ElectricChargingParticles_1,
@@ -321,7 +320,7 @@ static const union AffineAnimCmd sAffineAnim_GrowingElectricOrb_2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sAffineAnims_GrowingElectricOrb[] =
+const union AffineAnimCmd *const sAffineAnims_GrowingElectricOrb[] =
 {
     sAffineAnim_GrowingElectricOrb_0,
     sAffineAnim_GrowingElectricOrb_1,
@@ -348,7 +347,7 @@ static const union AnimCmd sAnim_ElectricPuff[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_ElectricPuff[] =
+const union AnimCmd *const sAnims_ElectricPuff[] =
 {
     sAnim_ElectricPuff,
 };
@@ -399,7 +398,7 @@ static const union AnimCmd sAnim_VoltTackleBolt_3[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_VoltTackleBolt[] =
+const union AnimCmd *const sAnims_VoltTackleBolt[] =
 {
     sAnim_VoltTackleBolt_0,
     sAnim_VoltTackleBolt_1,
@@ -451,7 +450,7 @@ static const struct SpriteTemplate sShockWaveProgressingBoltSpriteTemplate =
     .callback = AnimShockWaveProgressingBolt,
 };
 
-static void AnimLightning(struct Sprite *sprite)
+void AnimLightning(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
         sprite->x -= gBattleAnimArgs[0];
@@ -461,13 +460,13 @@ static void AnimLightning(struct Sprite *sprite)
     sprite->callback = sub_80ADC3C;
 }
 
-static void sub_80ADC3C(struct Sprite *sprite)
+void sub_80ADC3C(struct Sprite *sprite)
 {
     if (sprite->animEnded)
         DestroyAnimSprite(sprite);
 }
 
-static void sub_80ADC58(struct Sprite *sprite)
+void sub_80ADC58(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
         sprite->x -= gBattleAnimArgs[0];
@@ -476,13 +475,13 @@ static void sub_80ADC58(struct Sprite *sprite)
     sprite->callback = sub_80ADC9C;
 }
 
-static void sub_80ADC9C(struct Sprite *sprite)
+void sub_80ADC9C(struct Sprite *sprite)
 {
     if (sprite->affineAnimEnded)
         DestroySpriteAndMatrix(sprite);
 }
 
-static void sub_80ADCB8(struct Sprite *sprite)
+void sub_80ADCB8(struct Sprite *sprite)
 {
     sprite->x = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_X_2);
     sprite->y = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_Y_PIC_OFFSET);
@@ -504,7 +503,7 @@ static void sub_80ADCB8(struct Sprite *sprite)
     sprite->callback = TranslateSpriteInCircleOverDuration;
 }
 
-static void sub_80ADD4C(struct Sprite *sprite)
+void sub_80ADD4C(struct Sprite *sprite)
 {
     u8 battler;
     u32 matrixNum;
@@ -555,7 +554,7 @@ static void sub_80ADD4C(struct Sprite *sprite)
     sprite->callback = DestroyAnimSpriteAfterTimer;
 }
 
-static void AnimZapCannonSpark(struct Sprite *sprite)
+void AnimZapCannonSpark(struct Sprite *sprite)
 {
     InitSpritePosToAnimAttacker(sprite, 1);
     sprite->data[0] = gBattleAnimArgs[3];
@@ -572,7 +571,7 @@ static void AnimZapCannonSpark(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void sub_80ADF38(struct Sprite *sprite)
+void sub_80ADF38(struct Sprite *sprite)
 {
     if (!AnimTranslateLinear(sprite))
     {
@@ -588,7 +587,7 @@ static void sub_80ADF38(struct Sprite *sprite)
     }
 }
 
-static void sub_80ADFB0(struct Sprite *sprite)
+void sub_80ADFB0(struct Sprite *sprite)
 {
     if (--sprite->data[5] == -1)
     {
@@ -599,7 +598,7 @@ static void sub_80ADFB0(struct Sprite *sprite)
         DestroyAnimSprite(sprite);
 }
 
-static void AnimThunderboltOrb(struct Sprite *sprite)
+void AnimThunderboltOrb(struct Sprite *sprite)
 {
     if (IsContest() || GetBattlerSide(gBattleAnimTarget) == B_SIDE_PLAYER)
         gBattleAnimArgs[1] = -gBattleAnimArgs[1];
@@ -611,7 +610,7 @@ static void AnimThunderboltOrb(struct Sprite *sprite)
     sprite->callback = sub_80ADFB0;
 }
 
-static void AnimSparkElectricityFlashing(struct Sprite *sprite)
+void AnimSparkElectricityFlashing(struct Sprite *sprite)
 {
     u8 battler;
 
@@ -633,7 +632,7 @@ static void AnimSparkElectricityFlashing(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void sub_80AE130(struct Sprite *sprite)
+void sub_80AE130(struct Sprite *sprite)
 {
     sprite->x2 = Sin(sprite->data[7], sprite->data[5]);
     sprite->y2 = Cos(sprite->data[7], sprite->data[5]);
@@ -644,7 +643,7 @@ static void sub_80AE130(struct Sprite *sprite)
         DestroyAnimSprite(sprite);
 }
 
-static void AnimElectricity(struct Sprite *sprite)
+void AnimElectricity(struct Sprite *sprite)
 {
     InitSpritePosToAnimTarget(sprite, FALSE);
     sprite->oam.tileNum += gBattleAnimArgs[3] * 4;
@@ -665,7 +664,7 @@ void AnimTask_ElectricBolt(u8 taskId)
     gTasks[taskId].func = sub_80AE278;
 }
 
-static void sub_80AE278(u8 taskId)
+void sub_80AE278(u8 taskId)
 {
     u16 r8;
     u16 r2;
@@ -731,7 +730,7 @@ static void sub_80AE278(u8 taskId)
     ++gTasks[taskId].data[10];
 }
 
-static void AnimElectricBoltSegment(struct Sprite *sprite)
+void AnimElectricBoltSegment(struct Sprite *sprite)
 {
     if (!sprite->data[0])
     {
@@ -747,7 +746,7 @@ static void AnimElectricBoltSegment(struct Sprite *sprite)
         DestroySprite(sprite);
 }
 
-static void AnimThunderWave(struct Sprite *sprite)
+void AnimThunderWave(struct Sprite *sprite)
 {
     u8 spriteId;
 
@@ -760,7 +759,7 @@ static void AnimThunderWave(struct Sprite *sprite)
     sprite->callback = sub_80AE4F4;
 }
 
-static void sub_80AE4F4(struct Sprite *sprite)
+void sub_80AE4F4(struct Sprite *sprite)
 {
     if (++sprite->data[0] == 3)
     {
@@ -796,7 +795,7 @@ void AnimTask_ElectricChargingParticles(u8 taskId)
     task->func = sub_80AE5BC;
 }
 
-static void sub_80AE5BC(u8 taskId)
+void sub_80AE5BC(u8 taskId)
 {
     struct Task *task = &gTasks[taskId];
 
@@ -842,7 +841,7 @@ static void sub_80AE5BC(u8 taskId)
     }
 }
 
-static void sub_80AE6D0(struct Sprite *sprite)
+void sub_80AE6D0(struct Sprite *sprite)
 {
     if (AnimTranslateLinear(sprite))
     {
@@ -851,13 +850,13 @@ static void sub_80AE6D0(struct Sprite *sprite)
     }
 }
 
-static void sub_80AE704(struct Sprite *sprite)
+void sub_80AE704(struct Sprite *sprite)
 {
     StartSpriteAnim(sprite, 1);
     sprite->callback = sub_80AE6D0;
 }
 
-static void AnimGrowingChargeOrb(struct Sprite *sprite)
+void AnimGrowingChargeOrb(struct Sprite *sprite)
 {
     if (!gBattleAnimArgs[0])
     {
@@ -873,7 +872,7 @@ static void AnimGrowingChargeOrb(struct Sprite *sprite)
     sprite->callback = RunStoredCallbackWhenAffineAnimEnds;
 }
 
-static void AnimElectricPuff(struct Sprite *sprite)
+void AnimElectricPuff(struct Sprite *sprite)
 {
     if (!gBattleAnimArgs[0])
     {
@@ -891,7 +890,7 @@ static void AnimElectricPuff(struct Sprite *sprite)
     sprite->callback = RunStoredCallbackWhenAnimEnds;
 }
 
-static void AnimVoltTackleOrbSlide(struct Sprite *sprite)
+void AnimVoltTackleOrbSlide(struct Sprite *sprite)
 {
     StartSpriteAffineAnim(sprite, 1);
     sprite->x = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_X_2);
@@ -903,7 +902,7 @@ static void AnimVoltTackleOrbSlide(struct Sprite *sprite)
     sprite->callback = sub_80AE83C;
 }
 
-static void sub_80AE83C(struct Sprite *sprite)
+void sub_80AE83C(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
@@ -1070,7 +1069,7 @@ static bool8 sub_80AEB98(struct Task *task, u8 taskId)
         return FALSE;
 }
 
-static void AnimVoltTackleBolt(struct Sprite *sprite)
+void AnimVoltTackleBolt(struct Sprite *sprite)
 {
     if (++sprite->data[0] > 12)
     {
@@ -1080,7 +1079,7 @@ static void AnimVoltTackleBolt(struct Sprite *sprite)
     }
 }
 
-static void AnimGrowingShockWaveOrb(struct Sprite *sprite)
+void AnimGrowingShockWaveOrb(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
@@ -1206,7 +1205,7 @@ static bool8 sub_80AEE74(struct Task *task, u8 taskId)
     }
 }
 
-static void AnimShockWaveProgressingBolt(struct Sprite *sprite)
+void AnimShockWaveProgressingBolt(struct Sprite *sprite)
 {
     if (++sprite->data[0] > 12)
     {
@@ -1245,7 +1244,7 @@ void AnimTask_ShockWaveLightning(u8 taskId)
     }
 }
 
-static bool8 sub_80AF058(struct Task *task, u8 taskId)
+bool8 sub_80AF058(struct Task *task, u8 taskId)
 {
     u8 spriteId = CreateSprite(&gLightningSpriteTemplate, task->data[13], task->data[14], task->data[12]);
     
@@ -1262,11 +1261,28 @@ static bool8 sub_80AF058(struct Task *task, u8 taskId)
     return FALSE;
 }
 
-static void sub_80AF0C8(struct Sprite *sprite)
+void sub_80AF0C8(struct Sprite *sprite)
 {
     if (sprite->animEnded)
     {
         --gTasks[sprite->data[6]].data[sprite->data[7]];
         DestroySprite(sprite);
+    }
+}
+
+void SpriteCB_TARGET_SHOCKWAVE_TRAJ(struct Sprite *sprite)
+{
+    switch (sprite->data[0])
+    {
+    case 0:
+        sprite->x = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_X_2);
+        sprite->y = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_Y_PIC_OFFSET);
+        StartSpriteAffineAnim(sprite, 2);
+        ++sprite->data[0];
+        break;
+    case 1:
+        if (sprite->affineAnimEnded)
+            DestroySpriteAndMatrix(sprite);
+        break;
     }
 }

@@ -6,37 +6,37 @@
 #include "trig.h"
 #include "constants/songs.h"
 
-static void AnimFireSpiralInward(struct Sprite *sprite);
-static void AnimFireSpread(struct Sprite *sprite);
-static void AnimLargeFlame(struct Sprite *sprite);
-static void AnimFirePlume(struct Sprite *sprite);
-static void sub_80ACAA8(struct Sprite *sprite);
-static void sub_80ACBB0(struct Sprite *sprite);
-static void AnimEmberFlare(struct Sprite *sprite);
-static void AnimBurnFlame(struct Sprite *sprite);
-static void AnimFireRing(struct Sprite *sprite);
-static void AnimFireCross(struct Sprite *sprite);
-static void AnimFireSpiralOutward(struct Sprite *sprite);
-static void AnimEruptionLaunchRock(struct Sprite *sprite);
-static void AnimEruptionFallingRock(struct Sprite *sprite);
-static void AnimWillOWispOrb(struct Sprite *sprite);
-static void AnimWillOWispFire(struct Sprite *sprite);
-static void sub_80ACA6C(struct Sprite *sprite);
-static void sub_80ACB1C(struct Sprite *sprite);
-static void AnimFireRing_Step1(struct Sprite *sprite);
-static void AnimFireRing_Step2(struct Sprite *sprite);
-static void AnimFireRing_Step3(struct Sprite *sprite);
-static void UpdateFireRingCircleOffset(struct Sprite *sprite);
-static void sub_80ACE28(struct Sprite *sprite);
-static void sub_80ACE50(struct Sprite *sprite);
-static void AnimTask_EruptionLaunchRocks_Step(u8 taskId);
-static void sub_80AD1F8(u8 spriteId, u8 taskId, u8 a3);
+void AnimFireSpiralInward(struct Sprite *sprite);
+void AnimFireSpread(struct Sprite *sprite);
+void AnimLargeFlame(struct Sprite *sprite);
+void AnimFirePlume(struct Sprite *sprite);
+void sub_80ACAA8(struct Sprite *sprite);
+void sub_80ACBB0(struct Sprite *sprite);
+void AnimEmberFlare(struct Sprite *sprite);
+void AnimBurnFlame(struct Sprite *sprite);
+void AnimFireRing(struct Sprite *sprite);
+void AnimFireCross(struct Sprite *sprite);
+void AnimFireSpiralOutward(struct Sprite *sprite);
+void AnimEruptionLaunchRock(struct Sprite *sprite);
+void AnimEruptionFallingRock(struct Sprite *sprite);
+void AnimWillOWispOrb(struct Sprite *sprite);
+void AnimWillOWispFire(struct Sprite *sprite);
+void sub_80ACA6C(struct Sprite *sprite);
+void sub_80ACB1C(struct Sprite *sprite);
+void AnimFireRing_Step1(struct Sprite *sprite);
+void AnimFireRing_Step2(struct Sprite *sprite);
+void AnimFireRing_Step3(struct Sprite *sprite);
+void UpdateFireRingCircleOffset(struct Sprite *sprite);
+void sub_80ACE28(struct Sprite *sprite);
+void sub_80ACE50(struct Sprite *sprite);
+void AnimTask_EruptionLaunchRocks_Step(u8 taskId);
+void sub_80AD1F8(u8 spriteId, u8 taskId, u8 a3);
 static u16 sub_80AD374(u8 spriteId);
-static void sub_80AD3C8(struct Sprite *sprite, s16 x, s16 y);
-static void sub_80AD3E4(struct Sprite *sprite);
-static void sub_80AD4A8(struct Sprite *sprite);
-static void sub_80AD690(struct Sprite *sprite);
-static void sub_80AD870(u8 taskId);
+void sub_80AD3C8(struct Sprite *sprite, s16 x, s16 y);
+void sub_80AD3E4(struct Sprite *sprite);
+void sub_80AD4A8(struct Sprite *sprite);
+void sub_80AD690(struct Sprite *sprite);
+void sub_80AD870(u8 taskId);
 
 static const union AnimCmd sAnim_FireSpiralSpread_0[] =
 {
@@ -54,7 +54,7 @@ static const union AnimCmd sAnim_FireSpiralSpread_1[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_FireSpiralSpread[] =
+const union AnimCmd *const sAnims_FireSpiralSpread[] =
 {
     sAnim_FireSpiralSpread_0,
     sAnim_FireSpiralSpread_1,
@@ -95,7 +95,7 @@ static const union AnimCmd sAnim_LargeFlame[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_LargeFlame[] =
+const union AnimCmd *const sAnims_LargeFlame[] =
 {
     sAnim_LargeFlame,
 };
@@ -110,7 +110,7 @@ static const union AnimCmd sAnim_FirePlume[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_FirePlume[] =
+const union AnimCmd *const sAnims_FirePlume[] =
 {
     sAnim_FirePlume,
 };
@@ -179,7 +179,7 @@ static const union AnimCmd gUnknown_83E5CD0[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const gUnknown_83E5CE0[] =
+const union AnimCmd *const gUnknown_83E5CE0[] =
 {
     gUnknown_83E5CD0,
 };
@@ -284,7 +284,7 @@ static const union AnimCmd sAnim_FireBlastCross[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_FireBlastCross[] =
+const union AnimCmd *const sAnims_FireBlastCross[] =
 {
     sAnim_FireBlastCross,
 };
@@ -400,7 +400,7 @@ static const union AnimCmd sAnim_WillOWispOrb_3[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_WillOWispOrb[] =
+const union AnimCmd *const sAnims_WillOWispOrb[] =
 {
     sAnim_WillOWispOrb_0,
     sAnim_WillOWispOrb_1,
@@ -428,7 +428,7 @@ static const union AnimCmd sAnim_WillOWispFire[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_WillOWispFire[] =
+const union AnimCmd *const sAnims_WillOWispFire[] =
 {
     sAnim_WillOWispFire,
 };
@@ -457,7 +457,7 @@ static const s8 sShakeDirsPattern1[16] =
     -1, 0, 1, 0, -1, 1, 0, -1, 0, 1, 0, -1, 0, 1, 0, 1,
 };
 
-static void AnimFireSpiralInward(struct Sprite *sprite)
+void AnimFireSpiralInward(struct Sprite *sprite)
 {
     sprite->data[0] = gBattleAnimArgs[0];
     sprite->data[1] = 0x3C;
@@ -469,7 +469,7 @@ static void AnimFireSpiralInward(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void AnimFireSpread(struct Sprite *sprite)
+void AnimFireSpread(struct Sprite *sprite)
 {
     SetAnimSpriteInitialXOffset(sprite, gBattleAnimArgs[0]);
     sprite->y += gBattleAnimArgs[1];
@@ -480,7 +480,7 @@ static void AnimFireSpread(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
 }
 
-static void AnimFirePlume(struct Sprite *sprite)
+void AnimFirePlume(struct Sprite *sprite)
 {
     SetSpriteCoordsToAnimAttackerCoords(sprite);
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
@@ -501,7 +501,7 @@ static void AnimFirePlume(struct Sprite *sprite)
     sprite->callback = sub_80ACA6C;
 }
 
-static void AnimLargeFlame(struct Sprite *sprite)
+void AnimLargeFlame(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
     {
@@ -521,7 +521,7 @@ static void AnimLargeFlame(struct Sprite *sprite)
     sprite->callback = sub_80ACA6C;
 }
 
-static void sub_80ACA6C(struct Sprite *sprite)
+void sub_80ACA6C(struct Sprite *sprite)
 {
     if (++sprite->data[0] < sprite->data[4])
     {
@@ -532,7 +532,7 @@ static void sub_80ACA6C(struct Sprite *sprite)
         DestroySpriteAndMatrix(sprite);
 }
 
-static void sub_80ACAA8(struct Sprite *sprite)
+void sub_80ACAA8(struct Sprite *sprite)
 {
     SetSpriteCoordsToAnimAttackerCoords(sprite);
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
@@ -554,7 +554,7 @@ static void sub_80ACAA8(struct Sprite *sprite)
     sprite->callback = sub_80ACB1C;
 }
 
-static void sub_80ACB1C(struct Sprite *sprite)
+void sub_80ACB1C(struct Sprite *sprite)
 {
     if (sprite->data[3])
     {
@@ -577,7 +577,7 @@ static void sub_80ACB1C(struct Sprite *sprite)
 }
 
 //sunlight
-static void sub_80ACBB0(struct Sprite *sprite)
+void sub_80ACBB0(struct Sprite *sprite)
 {
     sprite->x = 0;
     sprite->y = 0;
@@ -599,7 +599,7 @@ static void sub_80ACBB0(struct Sprite *sprite)
 // arg 4: duration
 // arg 5: ? (TODO: something related to which mon the pixel offsets are based on)
 // arg 6: ? (TODO: something related to which mon the pixel offsets are based on)
-static void AnimEmberFlare(struct Sprite *sprite)
+void AnimEmberFlare(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) == GetBattlerSide(gBattleAnimTarget)
      && (gBattleAnimAttacker == GetBattlerAtPosition(B_POSITION_PLAYER_RIGHT)
@@ -609,7 +609,7 @@ static void AnimEmberFlare(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void AnimBurnFlame(struct Sprite *sprite)
+void AnimBurnFlame(struct Sprite *sprite)
 {
     gBattleAnimArgs[0] = -gBattleAnimArgs[0];
     gBattleAnimArgs[2] = -gBattleAnimArgs[2];
@@ -624,7 +624,7 @@ static void AnimBurnFlame(struct Sprite *sprite)
 // arg 1: initial y pixel offset
 // arg 2: initial wave offset
 //void AnimFireRing(struct Sprite *sprite)
-static void AnimFireRing(struct Sprite *sprite)
+void AnimFireRing(struct Sprite *sprite)
 {
     InitSpritePosToAnimAttacker(sprite, 1);
     sprite->data[7] = gBattleAnimArgs[2];
@@ -632,7 +632,7 @@ static void AnimFireRing(struct Sprite *sprite)
     sprite->callback = AnimFireRing_Step1;
 }
 
-static void AnimFireRing_Step1(struct Sprite *sprite)
+void AnimFireRing_Step1(struct Sprite *sprite)
 {   
     UpdateFireRingCircleOffset(sprite);
 
@@ -648,7 +648,7 @@ static void AnimFireRing_Step1(struct Sprite *sprite)
     }
 }
 
-static void AnimFireRing_Step2(struct Sprite *sprite)
+void AnimFireRing_Step2(struct Sprite *sprite)
 {
     if (AnimTranslateLinear(sprite))
     {
@@ -668,14 +668,14 @@ static void AnimFireRing_Step2(struct Sprite *sprite)
     }
 }
 
-static void AnimFireRing_Step3(struct Sprite *sprite)
+void AnimFireRing_Step3(struct Sprite *sprite)
 {
     UpdateFireRingCircleOffset(sprite);
     if (++sprite->data[0] == 0x1F)
         DestroyAnimSprite(sprite);
 }
 
-static void UpdateFireRingCircleOffset(struct Sprite *sprite)
+void UpdateFireRingCircleOffset(struct Sprite *sprite)
 {
     sprite->x2 = Sin(sprite->data[7], 28);
     sprite->y2 = Cos(sprite->data[7], 28);
@@ -688,7 +688,7 @@ static void UpdateFireRingCircleOffset(struct Sprite *sprite)
 // arg 3: x delta
 // arg 4: y delta 
 // AnimFireCross(struct Sprite *sprite)
-static void AnimFireCross(struct Sprite *sprite)
+void AnimFireCross(struct Sprite *sprite)
 {
     sprite->x += gBattleAnimArgs[0];
     sprite->y += gBattleAnimArgs[1];
@@ -699,7 +699,7 @@ static void AnimFireCross(struct Sprite *sprite)
     sprite->callback = TranslateSpriteLinear;
 }
 
-static void AnimFireSpiralOutward(struct Sprite *sprite)
+void AnimFireSpiralOutward(struct Sprite *sprite)
 {
     InitSpritePosToAnimAttacker(sprite, 1);
     sprite->data[1] = gBattleAnimArgs[2];
@@ -709,7 +709,7 @@ static void AnimFireSpiralOutward(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, sub_80ACE28);
 }
 
-static void sub_80ACE28(struct Sprite *sprite)
+void sub_80ACE28(struct Sprite *sprite)
 {
     sprite->invisible = FALSE;
     sprite->data[0] = sprite->data[1];
@@ -718,7 +718,7 @@ static void sub_80ACE28(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void sub_80ACE50(struct Sprite *sprite)
+void sub_80ACE50(struct Sprite *sprite)
 {
     sprite->x2 = Sin(sprite->data[1], sprite->data[2] >> 8);
     sprite->y2 = Cos(sprite->data[1], sprite->data[2] >> 8);
@@ -744,7 +744,7 @@ void AnimTask_EruptionLaunchRocks(u8 taskId) // initialize animation task for Mo
     task->func = AnimTask_EruptionLaunchRocks_Step;
 }
 
-static void AnimTask_EruptionLaunchRocks_Step(u8 taskId) // animate Move_ERUPTION?
+void AnimTask_EruptionLaunchRocks_Step(u8 taskId) // animate Move_ERUPTION?
 {
     struct Task *task = &gTasks[taskId];
 
@@ -841,7 +841,7 @@ static void AnimTask_EruptionLaunchRocks_Step(u8 taskId) // animate Move_ERUPTIO
     }
 }
 
-static void sub_80AD1F8(u8 spriteId, u8 taskId, u8 a3)
+void sub_80AD1F8(u8 spriteId, u8 taskId, u8 a3)
 {
     u16 i, j;
     s8 sign;
@@ -875,7 +875,7 @@ static void sub_80AD1F8(u8 spriteId, u8 taskId, u8 a3)
     }
 }
 
-static void AnimEruptionLaunchRock(struct Sprite *sprite)
+void AnimEruptionLaunchRock(struct Sprite *sprite)
 {
     sub_80AD3E4(sprite);
     if (sprite->invisible)
@@ -896,7 +896,7 @@ static u16 sub_80AD374(u8 spriteId)
     return var1;
 }
 
-static void sub_80AD3C8(struct Sprite *sprite, s16 x, s16 y)
+void sub_80AD3C8(struct Sprite *sprite, s16 x, s16 y)
 {
     sprite->data[0] = 0;
     sprite->data[1] = 0;
@@ -906,7 +906,7 @@ static void sub_80AD3C8(struct Sprite *sprite, s16 x, s16 y)
     sprite->data[5] = y * 8;
 }
 
-static void sub_80AD3E4(struct Sprite *sprite)
+void sub_80AD3E4(struct Sprite *sprite)
 {
     s32 var1;
 
@@ -925,7 +925,7 @@ static void sub_80AD3E4(struct Sprite *sprite)
         sprite->invisible = TRUE;
 }
 
-static void AnimEruptionFallingRock(struct Sprite *sprite)
+void AnimEruptionFallingRock(struct Sprite *sprite)
 {
     sprite->x = gBattleAnimArgs[0];
     sprite->y = gBattleAnimArgs[1];
@@ -938,7 +938,7 @@ static void AnimEruptionFallingRock(struct Sprite *sprite)
     sprite->callback = sub_80AD4A8;
 }
 
-static void sub_80AD4A8(struct Sprite *sprite)
+void sub_80AD4A8(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
@@ -974,7 +974,7 @@ static void sub_80AD4A8(struct Sprite *sprite)
 }
 
 //wisp orb
-static void AnimWillOWispOrb(struct Sprite *sprite)
+void AnimWillOWispOrb(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
@@ -1023,7 +1023,7 @@ static void AnimWillOWispOrb(struct Sprite *sprite)
     }
 }
 
-static void sub_80AD690(struct Sprite *sprite)
+void sub_80AD690(struct Sprite *sprite)
 {
     s16 initialData5, newData5;
 
@@ -1043,7 +1043,7 @@ static void sub_80AD690(struct Sprite *sprite)
 }
 
 //wisp fire
-static void AnimWillOWispFire(struct Sprite *sprite)
+void AnimWillOWispFire(struct Sprite *sprite)
 {
     if (!sprite->data[0])
     {
@@ -1086,7 +1086,7 @@ void AnimTask_MoveHeatWaveTargets(u8 taskId)
     task->func = sub_80AD870;
 }
 
-static void sub_80AD870(u8 taskId)
+void sub_80AD870(u8 taskId)
 {
     struct Task *task = &gTasks[taskId];
 
@@ -1193,4 +1193,31 @@ void AnimTask_ShakeTargetInPattern(u8 taskId)
         gSprites[spriteId].y2 = 0;
         DestroyAnimVisualTask(taskId);
     }
+}
+
+void SetSpriteCoordsToAnimTargetCoords(struct Sprite *sprite)
+{
+    sprite->x = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_X_2);
+    sprite->y = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_Y_PIC_OFFSET);
+}
+
+void SpriteCB_BLASTBURN_TARGET(struct Sprite *sprite)
+{
+    SetSpriteCoordsToAnimTargetCoords(sprite);
+    if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER)
+    {
+        sprite->x -= gBattleAnimArgs[0];
+        sprite->y += gBattleAnimArgs[1];
+        sprite->data[2] = -gBattleAnimArgs[4];
+    }
+    else
+    {
+        sprite->x += gBattleAnimArgs[0];
+        sprite->y += gBattleAnimArgs[1];
+        sprite->data[2] = gBattleAnimArgs[4];
+    }
+    sprite->data[1] = gBattleAnimArgs[2];
+    sprite->data[4] = gBattleAnimArgs[3];
+    sprite->data[3] = gBattleAnimArgs[5];
+    sprite->callback = sub_80ACA6C;
 }

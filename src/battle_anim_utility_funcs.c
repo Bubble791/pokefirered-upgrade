@@ -16,7 +16,6 @@ struct AnimStatsChangeData
     u16 species;
 };
 
-static void StartBlendAnimSpriteColor(u8 taskId, u32 selectedPalettes);
 static void AnimTask_BlendSpriteColor_Step2(u8 taskId);
 static void Task_WaitHardwarePaletteFade(u8 taskId);
 static void Task_DoCloneBattlerSpriteWithBlend(u8 taskId);
@@ -120,46 +119,6 @@ void AnimTask_BlendExcept(u8 taskId)
     StartBlendAnimSpriteColor(taskId, selectedPalettes);
 }
 
-void AnimTask_SetCamouflageBlend(u8 taskId)
-{
-    u32 selectedPalettes = UnpackSelectedBattleAnimPalettes(gBattleAnimArgs[0]);
-    
-    switch (gBattleTerrain)
-    {
-    case BATTLE_TERRAIN_GRASS:
-        gBattleAnimArgs[4] = RGB(12, 24, 2);
-        break;
-    case BATTLE_TERRAIN_LONG_GRASS:
-        gBattleAnimArgs[4] = RGB(0, 15, 2);
-        break;
-    case BATTLE_TERRAIN_SAND:
-        gBattleAnimArgs[4] = RGB(30, 24, 11);
-        break;
-    case BATTLE_TERRAIN_UNDERWATER:
-        gBattleAnimArgs[4] = RGB(0, 0, 18);
-        break;
-    case BATTLE_TERRAIN_WATER:
-        gBattleAnimArgs[4] = RGB(11, 22, 31);
-        break;
-    case BATTLE_TERRAIN_POND:
-        gBattleAnimArgs[4] = RGB(11, 22, 31);
-        break;
-    case BATTLE_TERRAIN_MOUNTAIN:
-        gBattleAnimArgs[4] = RGB(22, 16, 10);
-        break;
-    case BATTLE_TERRAIN_CAVE:
-        gBattleAnimArgs[4] = RGB(14, 9, 3);
-        break;
-    case BATTLE_TERRAIN_BUILDING:
-        gBattleAnimArgs[4] = RGB(31, 31, 31);
-        break;
-    case BATTLE_TERRAIN_PLAIN:
-        gBattleAnimArgs[4] = RGB(31, 31, 31);
-        break;
-    }
-    StartBlendAnimSpriteColor(taskId, selectedPalettes);
-}
-
 void AnimTask_BlendParticle(u8 taskId)
 {
     u8 paletteIndex = IndexOfSpritePaletteTag(gBattleAnimArgs[0]);
@@ -168,7 +127,7 @@ void AnimTask_BlendParticle(u8 taskId)
     StartBlendAnimSpriteColor(taskId, selectedPalettes);
 }
 
-static void StartBlendAnimSpriteColor(u8 taskId, u32 selectedPalettes)
+void StartBlendAnimSpriteColor(u8 taskId, u32 selectedPalettes)
 {
     gTasks[taskId].data[0] = selectedPalettes;
     gTasks[taskId].data[1] = selectedPalettes >> 16;

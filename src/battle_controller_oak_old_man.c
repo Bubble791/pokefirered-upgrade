@@ -1288,7 +1288,7 @@ static u32 CopyOakOldManMonData(u8 monId, u8 *dst)
         dst[0] = GetMonData(&gPlayerParty[monId], MON_DATA_SMART_RIBBON);
         size = 1;
         break;
-    case REQUEST_TOUGH_RIBBON_BATTLE:
+    case REQUEST_FORM_CHANGE_BATTLE:
         dst[0] = GetMonData(&gPlayerParty[monId], MON_DATA_TOUGH_RIBBON);
         size = 1;
         break;
@@ -1533,7 +1533,7 @@ static void SetOakOldManMonData(u8 monId)
     case REQUEST_SMART_RIBBON_BATTLE:
         SetMonData(&gPlayerParty[monId], MON_DATA_SMART_RIBBON, &gBattleBufferA[gActiveBattler][3]);
         break;
-    case REQUEST_TOUGH_RIBBON_BATTLE:
+    case REQUEST_FORM_CHANGE_BATTLE:
         SetMonData(&gPlayerParty[monId], MON_DATA_TOUGH_RIBBON, &gBattleBufferA[gActiveBattler][3]);
         break;
     }

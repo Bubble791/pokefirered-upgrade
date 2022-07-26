@@ -7,13 +7,12 @@
 #include "util.h"
 
 static void sub_80B7ACC(struct Sprite *sprite);
-static void AnimBite(struct Sprite *sprite);
-static void AnimTearDrop(struct Sprite *sprite);
-static void AnimClawSlash(struct Sprite *sprite);
+void AnimTearDrop(struct Sprite *sprite);
+void AnimClawSlash(struct Sprite *sprite);
 static void AnimTask_AttackerFadeToInvisible_Step(u8 taskId);
 static void AnimTask_AttackerFadeFromInvisible_Step(u8 taskId);
 static void sub_80B7B48(struct Sprite *sprite);
-static void sub_80B7C10(struct Sprite *sprite);
+void sub_80B7C10(struct Sprite *sprite);
 static void sub_80B7C50(struct Sprite *sprite);
 static void sub_80B7D88(struct Sprite *sprite);
 static void sub_80B856C(u8 priority);
@@ -129,7 +128,7 @@ static const union AffineAnimCmd sAffineAnim_TearDrop_1[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sAffineAnims_TearDrop[] =
+const union AffineAnimCmd *const sAffineAnims_TearDrop[] =
 {
     sAffineAnim_TearDrop_0,
     sAffineAnim_TearDrop_1,
@@ -166,7 +165,7 @@ static const union AnimCmd sAnim_ClawSlash_1[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_ClawSlash[] =
+const union AnimCmd *const sAnims_ClawSlash[] =
 {
     sAnim_ClawSlash_0,
     sAnim_ClawSlash_1,
@@ -306,7 +305,7 @@ static void sub_80B7B48(struct Sprite *sprite)
         DestroyAnimSprite(sprite);
 }
 
-static void AnimBite(struct Sprite *sprite)
+void AnimBite(struct Sprite *sprite)
 {
     sprite->x += gBattleAnimArgs[0];
     sprite->y += gBattleAnimArgs[1];
@@ -317,7 +316,7 @@ static void AnimBite(struct Sprite *sprite)
     sprite->callback = sub_80B7C10;
 }
 
-static void sub_80B7C10(struct Sprite *sprite)
+void sub_80B7C10(struct Sprite *sprite)
 {
     sprite->data[4] += sprite->data[0];
     sprite->data[5] += sprite->data[1];
@@ -337,7 +336,7 @@ static void sub_80B7C50(struct Sprite *sprite)
         DestroySpriteAndMatrix(sprite);
 }
 
-static void AnimTearDrop(struct Sprite *sprite)
+void AnimTearDrop(struct Sprite *sprite)
 {
     u8 battler;
     s8 xOffset;
@@ -748,7 +747,7 @@ void sub_80B8664(u8 taskId)
     DestroyAnimVisualTask(taskId);
 }
 
-static void AnimClawSlash(struct Sprite *sprite)
+void AnimClawSlash(struct Sprite *sprite)
 {
     sprite->x += gBattleAnimArgs[0];
     sprite->y += gBattleAnimArgs[1];

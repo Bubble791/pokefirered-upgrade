@@ -183,7 +183,7 @@
 	.byte \battler
 	.endm
 
-	.macro atk24 ptr:req
+	.macro ifwildbattleend ptr:req
 	.byte 0x24
 	.4byte \ptr
 	.endm
@@ -503,7 +503,7 @@
 	.byte \battler
 	.endm
 
-	.macro atk57
+	.macro flee
 	.byte 0x57
 	.endm
 
@@ -766,9 +766,11 @@
 	.byte 0x8e
 	.endm
 
-	.macro forcerandomswitch param0:req
+	.macro forcerandomswitch bankSwitching:req, bankForcing:req, rom_address:req
 	.byte 0x8f
-	.4byte \param0
+	.byte \bankSwitching
+	.byte \bankForcing
+	.4byte \rom_address
 	.endm
 
 	.macro tryconversiontypechange param0:req
@@ -801,9 +803,10 @@
 	.byte 0x96
 	.endm
 
-	.macro tryinfatuating param0:req
+	.macro tryinfatuating bank:req, rom_address
 	.byte 0x97
-	.4byte \param0
+	.byte \bank
+	.4byte \rom_address
 	.endm
 
 	.macro updatestatusicon battler:req
@@ -854,8 +857,9 @@
 	.4byte \param0
 	.endm
 
-	.macro disablelastusedattack param0:req
+	.macro disablelastusedattack bank:req, param0:req
 	.byte 0xa3
+	.byte \bank
 	.4byte \param0
 	.endm
 
@@ -1253,6 +1257,12 @@
 	.2byte \hword
 	.endm
 
+	.macro setword param0:req param1:req
+	.byte 0xfa
+	.4byte \param0
+	.4byte \param1
+	.endm
+
 	.macro setspecialstatusbit bank:req, specialstatus:req
 	.byte 0xfb
 	.byte \bank
@@ -1647,13 +1657,6 @@
 	setbyte \dst + 1, ((\value) >> 8) & 0xFF
 	.endm
 
-	.macro setword dst:req, value:req
-	setbyte \dst, (\value) & 0xFF
-	setbyte \dst + 1, ((\value) >> 8) & 0xFF
-	setbyte \dst + 2, ((\value) >> 16) & 0xFF
-	setbyte \dst + 3, ((\value) >> 24) & 0xFF
-	.endm
-
 	.macro copybyte dst:req, src:req
 	copyarray \dst, \src, 0x1
 	.endm
@@ -1700,4 +1703,28 @@
 
 	.macro jumpifnotbattletype flags:req, jumpptr:req
 	jumpifword CMP_NO_COMMON_BITS, gBattleTypeFlags, \flags, \jumpptr
+	.endm
+
+	.macro setstatchanger2 stat:req
+	setbyte sSTATCHANGER \stat
+	.endm
+
+	.macro jumpifweather move:req, jumpptr:req
+	jumpifhalfword CMP_COMMON_BITS, gBattleWeather, \move, \jumpptr
+	.endm
+
+	.macro jumpifbehindsubstitute bank:req, rom_address:req
+	jumpifstatus2 \bank, STATUS2_SUBSTITUTE, \rom_address
+	.endm
+
+	.macro resetplayerfaintedflag battler:req
+	various \battler, VARIOUS_RESET_PLAYER_FAINTED_FLAG
+	.endm
+
+	.macro jumpifstatcanbelowered bank:req, stat:req, rom_address:req
+	.byte 0xFF, 0x15
+	.byte \bank
+	.byte \stat
+	.byte 0x1 @ATK48_STAT_NEGATIVE
+	.4byte \rom_address
 	.endm

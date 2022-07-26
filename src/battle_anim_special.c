@@ -50,7 +50,6 @@ static void TrainerBallBlock(struct Sprite *);
 static void SpriteCB_ThrowBall_TenFrameDelay(struct Sprite *);
 static void SpriteCB_ThrowBall_ShrinkMon(struct Sprite *);
 static void SpriteCB_ThrowBall_InitialFall(struct Sprite *);
-static void SpriteCB_ThrowBall_Bounce(struct Sprite *);
 static void SpriteCB_ThrowBall_DelayThenBreakOut(struct Sprite *);
 static void SpriteCB_ThrowBall_InitShake(struct Sprite *);
 static void SpriteCB_ThrowBall_DoShake(struct Sprite *);
@@ -745,6 +744,9 @@ void AnimTask_ThrowBall(u8 taskId)
     ballId = ItemIdToBallId(gLastUsedItem);
     spriteId = CreateSprite(&gBallSpriteTemplates[ballId], 32, 80, 29);
     gSprites[spriteId].data[0] = 34;
+    
+    gBattleAnimTarget = GetCatchingBattler();
+
     gSprites[spriteId].data[1] = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_X);
     gSprites[spriteId].data[2] = GetBattlerSpriteCoord(gBattleAnimTarget, BATTLER_COORD_Y) - 16;
     gSprites[spriteId].callback = SpriteCB_ThrowBall_Init;
@@ -926,21 +928,24 @@ static void SpriteCB_ThrowBall_ShrinkMon(struct Sprite *sprite)
 
 static void SpriteCB_ThrowBall_InitialFall(struct Sprite *sprite)
 {
-    int angle;
+	int angle;
 
-    if (sprite->animEnded)
-    {
-        sprite->data[3] = 0;
-        sprite->data[4] = 40;
-        sprite->data[5] = 0;
-        angle = 0;
-        sprite->y += Cos(angle, 40);
-        sprite->y2 = -Cos(angle, sprite->data[4]);
-        sprite->callback = SpriteCB_ThrowBall_Bounce;
-    }
+	if (sprite->animEnded)
+	{
+		sprite->data[3] = 0;
+		sprite->data[4] = 40;
+		sprite->data[5] = 0;
+		angle = 0;
+		sprite->y += Cos(angle, 40);
+		sprite->y2 = -Cos(angle, sprite->data[4]);
+		if (gBattleStruct->criticalCapture)
+			sprite->callback = SpriteCB_CriticalCaptureThrownBallMovement;
+		else
+			sprite->callback = SpriteCB_ThrowBall_Bounce;
+	}
 }
 
-static void SpriteCB_ThrowBall_Bounce(struct Sprite *sprite)
+void SpriteCB_ThrowBall_Bounce(struct Sprite *sprite)
 {
     bool8 lastBounce;
     int bounceCount;
@@ -2043,43 +2048,33 @@ void AnimTask_TargetToEffectBattler(u8 taskId)
     DestroyAnimVisualTask(taskId);
 }
 
+void LoadShinyStarsSpriteTiles(void)
+{
+	if (GetSpriteTileStartByTag(ANIM_TAG_GOLD_STARS) == 0xFFFF)
+	{
+		LoadCompressedSpriteSheetUsingHeap(&gBattleAnimPicTable[ANIM_TAG_GOLD_STARS - ANIM_SPRITES_START]);
+		LoadCompressedSpritePaletteUsingHeap(&gBattleAnimPaletteTable[ANIM_TAG_GOLD_STARS - ANIM_SPRITES_START]);
+	}
+}
+
 void TryShinyAnimation(u8 battler, struct Pokemon *mon)
 {
-    bool32 isShiny;
-    u32 otId, personality;
-    u32 shinyValue;
-    u8 taskId1, taskId2;
+	u8 taskId1, taskId2;
+	gBattleSpritesDataPtr->healthBoxesData[battler].triedShinyMonAnim = 1;
 
-    isShiny = FALSE;
-    gBattleSpritesDataPtr->healthBoxesData[battler].triedShinyMonAnim = TRUE;
-    otId = GetMonData(mon, MON_DATA_OT_ID);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY);
+	if (IsBattlerSpriteVisible(battler) && IsMonShiny(GetIllusionPartyData(battler)))
+	{
+		LoadShinyStarsSpriteTiles();
+		taskId1 = CreateTask(AnimTask_ShinySparkles, 10);
+		taskId2 = CreateTask(AnimTask_ShinySparkles, 10);
+		gTasks[taskId1].data[0] = battler;
+		gTasks[taskId2].data[0] = battler;
+		gTasks[taskId1].data[1] = 0;
+		gTasks[taskId2].data[1] = 1;
+		return;
+	}
 
-    if (IsBattlerSpriteVisible(battler))
-    {
-        shinyValue = HIHALF(otId) ^ LOHALF(otId) ^ HIHALF(personality) ^ LOHALF(personality);
-        if (shinyValue < SHINY_ODDS)
-            isShiny = TRUE;
-
-        if (isShiny)
-        {
-            if (GetSpriteTileStartByTag(ANIM_TAG_GOLD_STARS) == 0xFFFF)
-            {
-                LoadCompressedSpriteSheetUsingHeap(&gBattleAnimPicTable[ANIM_TAG_GOLD_STARS - ANIM_SPRITES_START]);
-                LoadCompressedSpritePaletteUsingHeap(&gBattleAnimPaletteTable[ANIM_TAG_GOLD_STARS - ANIM_SPRITES_START]);
-            }
-
-            taskId1 = CreateTask(AnimTask_ShinySparkles, 10);
-            taskId2 = CreateTask(AnimTask_ShinySparkles, 10);
-            gTasks[taskId1].data[0] = battler;
-            gTasks[taskId2].data[0] = battler;
-            gTasks[taskId1].data[1] = 0;
-            gTasks[taskId2].data[1] = 1;
-            return;
-        }
-    }
-
-    gBattleSpritesDataPtr->healthBoxesData[battler].finishedShinyMonAnim = 1;
+	gBattleSpritesDataPtr->healthBoxesData[battler].finishedShinyMonAnim = 1;
 }
 
 static void AnimTask_ShinySparkles(u8 taskId)
@@ -2283,22 +2278,6 @@ void AnimTask_SafariGetReaction(u8 taskId)
     else
         gBattleAnimArgs[7] = gBattleCommunication[MULTISTRING_CHOOSER];
     
-    DestroyAnimVisualTask(taskId);
-}
-
-void AnimTask_GetTrappedMoveAnimId(u8 taskId)
-{
-    if (gBattleSpritesDataPtr->animationData->animArg == MOVE_FIRE_SPIN)
-        gBattleAnimArgs[0] = TRAP_ANIM_FIRE_SPIN;
-    else if (gBattleSpritesDataPtr->animationData->animArg == MOVE_WHIRLPOOL)
-        gBattleAnimArgs[0] = TRAP_ANIM_WHIRLPOOL;
-    else if (gBattleSpritesDataPtr->animationData->animArg == MOVE_CLAMP)
-        gBattleAnimArgs[0] = TRAP_ANIM_CLAMP;
-    else if (gBattleSpritesDataPtr->animationData->animArg == MOVE_SAND_TOMB)
-        gBattleAnimArgs[0] = TRAP_ANIM_SAND_TOMB;
-    else
-        gBattleAnimArgs[0] = TRAP_ANIM_BIND;
-
     DestroyAnimVisualTask(taskId);
 }
 

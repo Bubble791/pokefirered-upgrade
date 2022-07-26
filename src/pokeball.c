@@ -1212,6 +1212,9 @@ void DoHitAnimHealthboxEffect(u8 battlerId)
     u8 spriteId;
 
     spriteId = CreateInvisibleSpriteWithCallback(SpriteCB_HitAnimHealthoxEffect);
+    gShakerData[0] = TRUE; //CreateShakerHook
+    gShakerData[1] = spriteId;
+
     gSprites[spriteId].data[0] = 1;
     gSprites[spriteId].data[1] = gHealthboxSpriteIds[battlerId];
     gSprites[spriteId].callback = SpriteCB_HitAnimHealthoxEffect;
@@ -1228,6 +1231,7 @@ static void SpriteCB_HitAnimHealthoxEffect(struct Sprite *sprite)
     {
         gSprites[r1].x2 = 0;
         gSprites[r1].y2 = 0;
+        gShakerData[0] = FALSE; //ObjcShaker
         DestroySprite(sprite);
     }
 }
@@ -1261,11 +1265,15 @@ void FreeBallGfx(u8 ballId)
     FreeSpritePaletteByTag(gBallSpritePalettes[ballId].tag);
 }
 
-static u16 GetBattlerPokeballItemId(u8 battlerId)
+static u16 GetBattlerPokeballItemId(u8 bank)
 {
-    if (GetBattlerSide(battlerId) == B_SIDE_PLAYER)
-        return GetMonData(&gPlayerParty[gBattlerPartyIndexes[battlerId]], MON_DATA_POKEBALL);
-    else
-        return GetMonData(&gEnemyParty[gBattlerPartyIndexes[battlerId]], MON_DATA_POKEBALL);
+    u8 ballId;
+	
+	if (IsDynamaxed(bank))
+		ballId = 27;
+	else
+		ballId = GetMonData(GetIllusionPartyData(bank), MON_DATA_POKEBALL, 0);
+
+	return ballId;
 }
 

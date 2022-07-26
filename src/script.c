@@ -556,3 +556,33 @@ void MEventSetRamScript(u8 *script, u16 scriptSize)
         scriptSize = sizeof(gSaveBlock1Ptr->ramScript.data.script);
     InitRamScript(script, scriptSize, 0xFF, 0xFF, 0xFF);
 }
+
+//Other New Specials//
+///////////////////////////////////////////////////////////////////////////////////
+
+struct DailyEventVar
+{
+	u32 minute : 6;	//60 min in hour
+	u32 hour : 5;	//24 hrs in day
+	u32 day : 5;	//31 days max in month
+	u32 month : 4;	//12 months in year
+	u32 year : 7; //99 years in century
+	u32 century : 5; //31 centuries max - starts at 0
+};
+
+bool8 IsTimeInVarInFuture(u16 var)
+{
+	struct DailyEventVar* timeData = (struct DailyEventVar*) GetVarPointer(var);
+
+	u8 hour = timeData->hour;
+	u8 minute = timeData->minute;
+	u8 day = timeData->day;
+	u8 month = timeData->month;
+	u32 year = timeData->year + timeData->century * 100;
+
+	return year > gClock.year
+	|| (year == gClock.year && month > gClock.month)
+	|| (year == gClock.year && month == gClock.month && day > gClock.day)
+	|| (year == gClock.year && month == gClock.month && day == gClock.day && hour > gClock.hour)
+	|| (year == gClock.year && month == gClock.month && day == gClock.day && hour == gClock.hour && minute > gClock.minute);
+}

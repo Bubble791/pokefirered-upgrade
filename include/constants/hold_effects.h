@@ -69,4 +69,76 @@
 #define HOLD_EFFECT_THICK_CLUB     65
 #define HOLD_EFFECT_STICK          66
 
+//NEW ITEM EFFECTS
+#define HOLD_EFFECT_ROCKY_HELMET    68
+#define HOLD_EFFECT_QUICK_POWDER    69
+#define HOLD_EFFECT_ASSAULT_VEST    70
+#define HOLD_EFFECT_EVIOLITE        71
+#define HOLD_EFFECT_PLATE           72 //Quality = Move Type
+#define HOLD_EFFECT_MEGA_STONE      73
+#define HOLD_EFFECT_LIFE_ORB        74
+#define HOLD_EFFECT_TOXIC_ORB       75
+#define HOLD_EFFECT_FLAME_ORB       76
+#define HOLD_EFFECT_BLACK_SLUDGE    77
+#define HOLD_EFFECT_SMOOTH_ROCK     78
+#define HOLD_EFFECT_DAMP_ROCK       79
+#define HOLD_EFFECT_HEAT_ROCK       80
+#define HOLD_EFFECT_ICY_ROCK        81
+#define HOLD_EFFECT_LIGHT_CLAY      82
+#define HOLD_EFFECT_WIDE_LENS       83 //Quality = % Acc Boost
+#define HOLD_EFFECT_SAFETY_GOGGLES  84
+#define HOLD_EFFECT_WEAKNESS_POLICY 85
+#define HOLD_EFFECT_DRIVE           86 //Quality = Move Type
+#define HOLD_EFFECT_MEMORY          87 //Quality = Move Type
+#define HOLD_EFFECT_ADAMANT_ORB     88
+#define HOLD_EFFECT_LUSTROUS_ORB    89
+#define HOLD_EFFECT_GRISEOUS_ORB    90
+#define HOLD_EFFECT_DESTINY_KNOT    91
+#define HOLD_EFFECT_EXPERT_BELT     92
+#define HOLD_EFFECT_PRIMAL_ORB      93 //Red Orb: Quality = 0, Blue Orb: Quality = 1
+#define HOLD_EFFECT_GEM             94 //Quality = Move Type
+#define HOLD_EFFECT_WEAKNESS_BERRY  95 //Quality = Move Type
+#define HOLD_EFFECT_CUSTAP_BERRY    96
+#define HOLD_EFFECT_LAGGING_TAIL    97
+#define HOLD_EFFECT_IRON_BALL       98
+#define HOLD_EFFECT_BINDING_BAND    99
+
+#define HOLD_EFFECT_PROTECTIVE_PADS 101
+#define HOLD_EFFECT_ABSORB_BULB     102
+#define HOLD_EFFECT_AIR_BALLOON     103
+#define HOLD_EFFECT_BIG_ROOT        104
+#define HOLD_EFFECT_CELL_BATTERY    105
+#define HOLD_EFFECT_EJECT_BUTTON    106
+#define HOLD_EFFECT_FLOAT_STONE     107
+#define HOLD_EFFECT_GRIP_CLAW       108
+#define HOLD_EFFECT_LUMINOUS_MOSS   109
+
+#define HOLD_EFFECT_METRONOME       111
+#define HOLD_EFFECT_MUSCLE_BAND     112
+#define HOLD_EFFECT_RED_CARD        113
+#define HOLD_EFFECT_RING_TARGET     114
+#define HOLD_EFFECT_SHED_SHELL      115
+#define HOLD_EFFECT_SNOWBALL        116
+#define HOLD_EFFECT_STICKY_BARB     117
+#define HOLD_EFFECT_TERRAIN_EXTENDER 118
+#define HOLD_EFFECT_WISE_GLASSES    119
+#define HOLD_EFFECT_SEEDS           120 //Electric Seed: Quality = 1, Grassy Seed: Quality = 2, Misty Seed: Quality = 3, Psychic Seed: Quality = 4
+#define HOLD_EFFECT_JABOCA_ROWAP_BERRY 121 //Quality = Move Split (0 = Physical, 1 = Special)
+#define HOLD_EFFECT_KEE_BERRY       122
+#define HOLD_EFFECT_MARANGA_BERRY   123
+#define HOLD_EFFECT_ZOOM_LENS       124 //Quality = % Acc Boost
+#define HOLD_EFFECT_ADRENALINE_ORB  125
+#define HOLD_EFFECT_POWER_HERB      126
+#define HOLD_EFFECT_MICLE_BERRY     127
+#define HOLD_EFFECT_ENIGMA_BERRY    128
+#define HOLD_EFFECT_TYPE_BOOSTERS   129 //Quality = % Damage Boost
+#define HOLD_EFFECT_Z_CRYSTAL       130 //Quality = Move Type
+#define HOLD_EFFECT_ABILITY_CAPSULE 131
+#define HOLD_EFFECT_EJECT_PACK      132
+#define HOLD_EFFECT_ROOM_SERVICE    133
+#define HOLD_EFFECT_BLUNDER_POLICY  134
+#define HOLD_EFFECT_HEAVY_DUTY_BOOTS 135
+#define HOLD_EFFECT_UTILITY_UMBRELLA 136
+#define HOLD_EFFECT_THROAT_SPRAY    137
+
 #endif // GUARD_HOLD_EFFECTS_H

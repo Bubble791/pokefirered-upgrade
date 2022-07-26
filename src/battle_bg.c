@@ -10,6 +10,7 @@
 #include "overworld.h"
 #include "text_window.h"
 #include "trig.h"
+#include "event_data.h"
 #include "constants/maps.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
@@ -574,6 +575,57 @@ static const struct BattleBackground sBattleTerrainTable[] = {
     }
 };
 
+extern const u32 gBattleAnimBgImage_ElectricTerrain[];
+extern const u32 gBattleAnimBgTilemap_ElectricTerrain[];
+extern const u32 gBattleAnimBgPalette_ElectricTerrain[];
+
+extern const u32 gBattleAnimBgImage_GrassyTerrain[];
+extern const u32 gBattleAnimBgTilemap_GrassyTerrain[];
+extern const u32 gBattleAnimBgPalette_GrassyTerrain[];
+
+extern const u32 gBattleAnimBgImage_MistyTerrain[];
+extern const u32 gBattleAnimBgTilemap_MistyTerrain[];
+extern const u32 gBattleAnimBgPalette_MistyTerrain[];
+
+extern const u32 gBattleAnimBgImage_PsychicTerrain[];
+extern const u32 gBattleAnimBgTilemap_PsychicTerrain[];
+extern const u32 gBattleAnimBgPalette_PsychicTerrain[];
+
+const struct BattleBackground gAttackTerrainTable[] =
+{
+    {
+        .tileset = gBattleAnimBgImage_ElectricTerrain,
+        .tilemap = gBattleAnimBgTilemap_ElectricTerrain,
+        .entryTileset = sBattleTerrainAnimTiles_Building,
+        .entryTilemap = sBattleTerrainAnimTilemap_Building,
+        .palette = gBattleAnimBgPalette_ElectricTerrain,
+    },
+
+    {
+        .tileset = gBattleAnimBgImage_GrassyTerrain,
+        .tilemap = gBattleAnimBgTilemap_GrassyTerrain,
+        .entryTileset = sBattleTerrainAnimTiles_Building,
+        .entryTilemap = sBattleTerrainAnimTilemap_Building,
+        .palette = gBattleAnimBgPalette_GrassyTerrain,
+    },
+
+    {
+        .tileset = gBattleAnimBgImage_MistyTerrain,
+        .tilemap = gBattleAnimBgTilemap_MistyTerrain,
+        .entryTileset = sBattleTerrainAnimTiles_Building,
+        .entryTilemap = sBattleTerrainAnimTilemap_Building,
+        .palette = gBattleAnimBgPalette_MistyTerrain,
+    },
+
+    {
+        .tileset = gBattleAnimBgImage_PsychicTerrain,
+        .tilemap = gBattleAnimBgTilemap_PsychicTerrain,
+        .entryTileset = sBattleTerrainAnimTiles_Building,
+        .entryTilemap = sBattleTerrainAnimTilemap_Building,
+        .palette = gBattleAnimBgPalette_PsychicTerrain,
+    },
+};
+
 static const struct {
     u8 mapScene;
     u8 battleTerrain;
@@ -619,6 +671,15 @@ static void LoadBattleTerrainGfx(u16 terrain)
 {
     if (terrain >= NELEMS(sBattleTerrainTable))
         terrain = BATTLE_TERRAIN_PLAIN;
+    
+    if (gTerrainType) //A terrain like Electric Terrain is active
+	{
+		LZDecompressVram(gAttackTerrainTable[gTerrainType - 1].tileset, (void *)BG_CHAR_ADDR(2));
+		LZDecompressVram(gAttackTerrainTable[gTerrainType - 1].tilemap, (void *)BG_SCREEN_ADDR(26));
+		LoadCompressedPalette(gAttackTerrainTable[gTerrainType - 1].palette, 0x20, 0x60);
+		return;
+	}
+
     // Copy to bg3
     LZDecompressVram(sBattleTerrainTable[terrain].tileset, (void *)BG_CHAR_ADDR(2));
     LZDecompressVram(sBattleTerrainTable[terrain].tilemap, (void *)BG_SCREEN_ADDR(26));
@@ -968,50 +1029,59 @@ void DrawBattleEntryBackground(void)
         gBattle_BG2_Y = -164;
         LoadCompressedSpriteSheetUsingHeap(&sVsLettersSpriteSheet);
     }
-    else if (gBattleTypeFlags & BATTLE_TYPE_POKEDUDE)
-    {
-        LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_GRASS);
-    }
-    else if (gBattleTypeFlags & (BATTLE_TYPE_TRAINER_TOWER | BATTLE_TYPE_LINK | BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_EREADER_TRAINER))
-    {
-        LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_BUILDING);
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_KYOGRE_GROUDON)
-    {
-        if (gGameVersion == VERSION_FIRE_RED)
-        {
-            LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_CAVE);
-        }
-        else
-        {
-            LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_WATER);
-        }
-    }
     else
     {
-        if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
-        {
-            u8 trainerClass = gTrainers[gTrainerBattleOpponent_A].trainerClass;
-            if (trainerClass == TRAINER_CLASS_LEADER)
-            {
-                LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_BUILDING);
-                return;
-            }
-            else if (trainerClass == TRAINER_CLASS_CHAMPION)
-            {
-                LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_BUILDING);
-                return;
-            }
-        }
+        u8 terrain;
 
-        if (GetCurrentMapBattleScene() == MAP_BATTLE_SCENE_NORMAL)
-        {
-            LoadBattleTerrainEntryGfx(gBattleTerrain);
-        }
+        if (VarGet(VAR_BATTLE_BG))
+            terrain = VarGet(VAR_BATTLE_BG);
         else
         {
-            LoadBattleTerrainEntryGfx(BATTLE_TERRAIN_BUILDING);
+            if (gBattleTypeFlags & BATTLE_TYPE_POKEDUDE)
+            {
+                terrain = BATTLE_TERRAIN_GRASS;
+            }
+            else if (gBattleTypeFlags & (BATTLE_TYPE_TRAINER_TOWER | BATTLE_TYPE_LINK | BATTLE_TYPE_BATTLE_TOWER | BATTLE_TYPE_EREADER_TRAINER))
+            {
+                terrain = BATTLE_TERRAIN_BUILDING;
+            }
+            else if (gBattleTypeFlags & BATTLE_TYPE_KYOGRE_GROUDON)
+            {
+                if (gGameVersion == VERSION_FIRE_RED)
+                {
+                    terrain = BATTLE_TERRAIN_CAVE;
+                }
+                else
+                {
+                    terrain = BATTLE_TERRAIN_WATER;
+                }
+            }
+            else
+            {
+                if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+                {
+                    u8 trainerClass = gTrainers[gTrainerBattleOpponent_A].trainerClass;
+                    if (trainerClass == TRAINER_CLASS_LEADER)
+                    {
+                        terrain = BATTLE_TERRAIN_BUILDING;
+                    }
+                    else if (trainerClass == TRAINER_CLASS_CHAMPION)
+                    {
+                        terrain = BATTLE_TERRAIN_BUILDING;
+                    }
+                }
+
+                if (GetCurrentMapBattleScene() == MAP_BATTLE_SCENE_NORMAL)
+                {
+                    terrain = gBattleTerrain;
+                }
+                else
+                {
+                    terrain = BATTLE_TERRAIN_BUILDING;
+                }
+            }
         }
+        LoadBattleTerrainEntryGfx(terrain);
     }
 }
 

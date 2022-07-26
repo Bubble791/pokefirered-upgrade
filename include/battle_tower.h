@@ -7,7 +7,7 @@
 #define BATTLE_TOWER_EREADER_TRAINER_ID 200
 #define BATTLE_TOWER_RECORD_MIXING_TRAINER_BASE_ID 100
 
-struct BattleTowerTrainer
+struct BattleTowerTrainer_
 {
     u8 trainerClass;
     u8 name[3];

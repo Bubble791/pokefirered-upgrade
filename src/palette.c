@@ -103,9 +103,7 @@ void TransferPlttBuffer(void)
         void *src = gPlttBufferFaded;
         void *dest = (void *)PLTT;
 
-		#ifdef DNS_ENABLED
 		DnsTransferPlttBuffer(src, dest);
-		#endif
 
         sPlttBufferTransferPending = 0;
         if (gPaletteFade.mode == HARDWARE_FADE && gPaletteFade.active)

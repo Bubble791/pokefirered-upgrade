@@ -4,23 +4,17 @@
 #include "util.h"
 #include "item.h"
 #include "random.h"
+#include "dynamax.h"
+#include "frontier.h"
+#include "event_data.h"
 #include "battle_ai_script_commands.h"
 #include "constants/abilities.h"
 #include "constants/battle_ai.h"
 #include "constants/battle_move_effects.h"
 #include "constants/moves.h"
-
-#define AI_ACTION_DONE          0x0001
-#define AI_ACTION_FLEE          0x0002
-#define AI_ACTION_WATCH         0x0004
-#define AI_ACTION_DO_NOT_ATTACK 0x0008
-#define AI_ACTION_UNK5          0x0010
-#define AI_ACTION_UNK6          0x0020
-#define AI_ACTION_UNK7          0x0040
-#define AI_ACTION_UNK8          0x0080
+#include "constants/trainers.h"
 
 #define AI_THINKING_STRUCT (gBattleResources->ai)
-#define BATTLE_HISTORY (gBattleResources->battleHistory)
 
 // AI states
 enum
@@ -283,10 +277,10 @@ void BattleAI_HandleItemUseBeforeAISetup(void)
         }
     }
 
-    BattleAI_SetupAIData();
+    BattleAI_SetupAIData(0xF);
 }
 
-void BattleAI_SetupAIData(void)
+void BattleAI_SetupAIData(u8 defaultScoreMoves)
 {
     s32 i;
     u8 *data = (u8 *)AI_THINKING_STRUCT;
@@ -296,68 +290,102 @@ void BattleAI_SetupAIData(void)
     for (i = 0; i < sizeof(struct AI_ThinkingStruct); i++)
         data[i] = 0;
 
-    for (i = 0; i < MAX_MON_MOVES; i++)
-        AI_THINKING_STRUCT->score[i] = 100;
+    // Conditional score reset, unlike Ruby.
+	for (i = 0; i < MAX_MON_MOVES; ++i)
+	{
+		if (defaultScoreMoves & 1)
+			AI_THINKING_STRUCT->score[i] = 100;
+		else
+			AI_THINKING_STRUCT->score[i] = 0;
 
-    moveLimitations = CheckMoveLimitations(gActiveBattler, 0, 0xFF);
-
-    // Ignore moves that aren't possible to use.
-    for (i = 0; i < MAX_MON_MOVES; i++)
-    {
-        if (gBitTable[i] & moveLimitations)
-            AI_THINKING_STRUCT->score[i] = 0;
-
-        AI_THINKING_STRUCT->simulatedRNG[i] = 100 - (Random() % 16);
-    }
+		defaultScoreMoves >>= 1;
+	}
 
     gBattleResources->AI_ScriptsStack->size = 0;
-    gBattlerAttacker = gActiveBattler;
+	gBattlerAttacker = gActiveBattler;
 
-    // Decide a random target battlerId in doubles.
-    if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
-    {
-        gBattlerTarget = (Random() & BIT_FLANK);
-
-        if (gAbsentBattlerFlags & gBitTable[gBattlerTarget])
-            gBattlerTarget ^= BIT_FLANK;
-    }
-    // There's only one choice in single battles.
+    if (IS_DOUBLE_BATTLE)
+	{
+		gBattlerTarget = (Random() & BIT_FLANK) + (SIDE(gActiveBattler) ^ BIT_SIDE);
+		if (gAbsentBattlerFlags & gBitTable[gBattlerTarget])
+			gBattlerTarget ^= BIT_FLANK;
+	}
+	// There's only one choice in single battles.
     else
-    {
-        gBattlerTarget = gBattlerAttacker ^ BIT_SIDE;
-    }
+		gBattlerTarget = gBattlerAttacker ^ BIT_SIDE;
 
-    // Choose proper trainer ai scripts.
-    // Fire Red, why all the returns?!?
-    if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
-    {
-        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_SAFARI;
-        return;
-    }
-    else if (gBattleTypeFlags & BATTLE_TYPE_ROAMER)
-    {
-        AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_ROAMING;
-        return;
-    }
-    else if (!(gBattleTypeFlags & (BATTLE_TYPE_TRAINER_TOWER | BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_BATTLE_TOWER)) && (gTrainerBattleOpponent_A != SECRET_BASE_OPPONENT))
-    {
-        if (gBattleTypeFlags & BATTLE_TYPE_WILD_SCRIPTED)
-        {
-            AI_THINKING_STRUCT->aiFlags = AI_SCRIPT_CHECK_BAD_MOVE;
-            return;
-        }
-        else if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY_FRLG)
-        {
-            AI_THINKING_STRUCT->aiFlags = (AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY);
-            return;
-        }
-    }
-    else
-    {
-        AI_THINKING_STRUCT->aiFlags = (AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY);
-        return;
-    }
-    AI_THINKING_STRUCT->aiFlags = gTrainers[gTrainerBattleOpponent_A].aiFlags;
+    // Ignore moves that aren't possible to use.
+	for (i = 0; i < MAX_MON_MOVES; i++)
+	{
+		if (gBitTable[i] & moveLimitations)
+			AI_THINKING_STRUCT->score[i] = 0;
+
+		AI_THINKING_STRUCT->simulatedRNG[i] = 100 - Random() % 16;
+	}
+
+	// Choose proper trainer ai scripts.
+	AI_THINKING_STRUCT->aiFlags = GetAIFlags();
+
+	//if (IS_DOUBLE_BATTLE)
+		//AI_THINKING_STRUCT->aiFlags |= AI_SCRIPT_DOUBLE_BATTLE; // act smart in doubles and don't attack your partner
+}
+
+u32 GetAIFlags(void)
+{
+	u32 flags;
+
+	#ifdef VAR_GAME_DIFFICULTY
+	u8 difficulty = VarGet(VAR_GAME_DIFFICULTY);
+	#endif
+
+	if (gBattleTypeFlags & BATTLE_TYPE_SAFARI)
+		flags = AI_SCRIPT_SAFARI;
+	else if (gBattleTypeFlags & BATTLE_TYPE_ROAMER)
+		flags = AI_SCRIPT_ROAMING | WildMonIsSmart(gActiveBattler);
+	else if (gBattleTypeFlags & BATTLE_TYPE_FIRST_BATTLE)
+		flags = AI_SCRIPT_FIRST_BATTLE;
+    else if (gBattleTypeFlags & (BATTLE_TYPE_FRONTIER) || IsFrontierTrainerId(gTrainerBattleOpponent_A))
+		flags = GetAIFlagsInBattleFrontier(gActiveBattler);
+	else if (gBattleTypeFlags & (BATTLE_TYPE_EREADER_TRAINER | BATTLE_TYPE_TRAINER_TOWER) && gTrainerBattleOpponent_A != TRAINER_SECRET_BASE)
+		flags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_GOOD_MOVE;
+	else if (IsRaidBattle())
+		flags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_CHECK_GOOD_MOVE; //Make partner smart
+	else if (gBattleTypeFlags & BATTLE_TYPE_WILD_SCRIPTED) //No idea how these two work
+		flags = AI_SCRIPT_CHECK_BAD_MOVE;
+	else if (gBattleTypeFlags & BATTLE_TYPE_LEGENDARY_FRLG)
+		flags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_SEMI_SMART;
+	else
+	{
+		if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
+			flags = gTrainers[gTrainerBattleOpponent_A].aiFlags | gTrainers[VarGet(VAR_SECOND_OPPONENT)].aiFlags;
+		else
+			flags = gTrainers[gTrainerBattleOpponent_A].aiFlags;
+
+		#ifdef VAR_GAME_DIFFICULTY
+		if (difficulty == OPTIONS_EASY_DIFFICULTY && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+			flags = AI_SCRIPT_CHECK_BAD_MOVE; //Trainers are always barely smart in easy mode
+		else if (difficulty == OPTIONS_HARD_DIFFICULTY && gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+		{
+			if (!(flags & AI_SCRIPT_CHECK_GOOD_MOVE)) //Not Trainers who are already smart
+				flags |= AI_SCRIPT_SEMI_SMART; //Regular Trainers are always semi smart in hard mode
+		}
+		else if (difficulty == OPTIONS_EXPERT_DIFFICULTY)
+		{
+			if (gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+			{
+				if (!(flags & AI_SCRIPT_CHECK_GOOD_MOVE)) //Not Trainers who are already smart
+					flags |= AI_SCRIPT_SEMI_SMART; //Regular Trainers are always semi smart in expert mode
+			}
+			else
+				flags = AI_SCRIPT_CHECK_BAD_MOVE; //Even Wild Pokemon are moderately smart in expert mode
+		}
+		#endif
+	}
+
+	if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER) && gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER)
+		flags |= AI_SCRIPT_CHECK_BAD_MOVE; //Partners in wild double battles are like normal trainers
+
+	return flags;
 }
 
 u8 BattleAI_ChooseMoveOrAction(void)
@@ -469,25 +497,14 @@ static void RecordLastUsedMoveByTarget(void)
     }
 }
 
-// not used
-static void ClearBattlerMoveHistory(u8 battlerId)
+void RecordAbilityBattle(u8 bank, u8 ability)
 {
-    s32 i;
-
-    for (i = 0; i < 8; i++)
-        BATTLE_HISTORY->usedMoves[battlerId / 2][i] = MOVE_NONE;
+    BATTLE_HISTORY->abilities[bank] = ability;
 }
 
-void RecordAbilityBattle(u8 battlerId, u8 abilityId)
+void RecordItemEffectBattle(u8 bank, u8 itemEffect)
 {
-    if (GetBattlerSide(battlerId) == 0)
-        BATTLE_HISTORY->abilities[GET_BATTLER_SIDE(battlerId)] = abilityId;
-}
-
-void RecordItemEffectBattle(u8 battlerId, u8 itemEffect)
-{
-    if (GetBattlerSide(battlerId) == 0)
-        BATTLE_HISTORY->itemEffects[GET_BATTLER_SIDE(battlerId)] = itemEffect;
+	gBattleStruct->ai.itemEffects[bank] = itemEffect;
 }
 
 static void Cmd_if_random_less_than(void)
@@ -1165,25 +1182,25 @@ static void Cmd_get_ability(void)
             return;
         }
 
-        if (gBaseStats[gBattleMons[battlerId].species].abilities[0] != ABILITY_NONE)
+        if (gBaseStats[gBattleMons[battlerId].species].ability1!= ABILITY_NONE)
         {
-            if (gBaseStats[gBattleMons[battlerId].species].abilities[1] != ABILITY_NONE)
+            if (gBaseStats[gBattleMons[battlerId].species].ability2 != ABILITY_NONE)
             {
                 // AI has no knowledge of opponent, so it guesses which ability.
                 if (Random() % 2)
-                    AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].abilities[0];
+                    AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].ability1;
                 else
-                    AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].abilities[1];
+                    AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].ability2;
             }
             else
             {
-                AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].abilities[0];
+                AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].ability1;
             }
         }
         else
         {
              // AI can't actually reach this part since no pokemon has ability 2 and no ability 1.
-            AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].abilities[1];
+            AI_THINKING_STRUCT->funcResult = gBaseStats[gBattleMons[battlerId].species].ability2;
         }
     }
     else
@@ -1967,4 +1984,20 @@ static bool8 AIStackPop(void)
     }
     else
         return FALSE;
+}
+
+void ResetBestMonToSwitchInto(u8 bank)
+{
+	gBattleStruct->ai.bestMonIdToSwitchIntoScores[bank][0] = 0;
+	gBattleStruct->ai.bestMonIdToSwitchInto[bank][0] = PARTY_SIZE;
+	gBattleStruct->ai.bestMonIdToSwitchIntoScores[bank][1] = 0;
+	gBattleStruct->ai.bestMonIdToSwitchInto[bank][1] = PARTY_SIZE;
+
+	if (!BankSideHasTwoTrainers(bank)) //Store data for second mon too
+	{
+		gBattleStruct->ai.bestMonIdToSwitchIntoScores[PARTNER(bank)][0] = 0;
+		gBattleStruct->ai.bestMonIdToSwitchInto[PARTNER(bank)][0] = PARTY_SIZE;
+		gBattleStruct->ai.bestMonIdToSwitchIntoScores[PARTNER(bank)][1] = 0;
+		gBattleStruct->ai.bestMonIdToSwitchInto[PARTNER(bank)][1] = PARTY_SIZE;
+	}
 }

@@ -65,6 +65,7 @@ static const u8 *GetTrainerCantBattleSpeech(void);
 
 static EWRAM_DATA u16 sTrainerBattleMode = 0;
 EWRAM_DATA u16 gTrainerBattleOpponent_A = 0;
+EWRAM_DATA u16 gTrainerBattleOpponent_B = 0;
 static EWRAM_DATA u16 sTrainerObjectEventLocalId = 0;
 static EWRAM_DATA u8 *sTrainerAIntroSpeech = NULL;
 static EWRAM_DATA u8 *sTrainerADefeatSpeech = NULL;
@@ -453,54 +454,78 @@ static void CB2_EndMarowakBattle(void)
     }
 }
 
+static u8 TryLoadAlternateAreaTerrain(u8 terrain)
+{
+	u16 tileBehavior;
+	s16 x, y;
+
+	PlayerGetDestCoords(&x, &y);
+	tileBehavior = MapGridGetMetatileBehaviorAt(x, y);
+    // need todo
+
+	return terrain;
+}
+
 u8 BattleSetup_GetTerrainId(void)
 {
     u16 tileBehavior;
     s16 x, y;
 
+    u8 terrain = BATTLE_TERRAIN_PLAIN;
+
     PlayerGetDestCoords(&x, &y);
     tileBehavior = MapGridGetMetatileBehaviorAt(x, y);
-    if (MetatileBehavior_IsTallGrass_2(tileBehavior))
-        return BATTLE_TERRAIN_GRASS;
-    if (MetatileBehavior_IsLongGrass(tileBehavior))
-        return BATTLE_TERRAIN_LONG_GRASS;
-    if (MetatileBehavior_IsSandOrShallowFlowingWater(tileBehavior))
-        return BATTLE_TERRAIN_SAND;
-    switch (gMapHeader.mapType)
+    
+	if (VarGet(VAR_BATTLE_BG))
+		terrain = VarGet(VAR_BATTLE_BG);
+	else
     {
-    case MAP_TYPE_TOWN:
-    case MAP_TYPE_CITY:
-    case MAP_TYPE_ROUTE:
-        break;
-    case MAP_TYPE_UNDERGROUND:
-        if (MetatileBehavior_IsIndoorEncounter(tileBehavior))
+        if (MetatileBehavior_IsTallGrass_2(tileBehavior))
+            return BATTLE_TERRAIN_GRASS;
+        if (MetatileBehavior_IsLongGrass(tileBehavior))
+            return BATTLE_TERRAIN_LONG_GRASS;
+        if (MetatileBehavior_IsSandOrShallowFlowingWater(tileBehavior))
+            return BATTLE_TERRAIN_SAND;
+
+        switch (gMapHeader.mapType)
+        {
+        case MAP_TYPE_TOWN:
+        case MAP_TYPE_CITY:
+        case MAP_TYPE_ROUTE:
+            break;
+        case MAP_TYPE_UNDERGROUND:
+            if (MetatileBehavior_IsIndoorEncounter(tileBehavior))
+                return BATTLE_TERRAIN_BUILDING;
+            if (MetatileBehavior_IsSurfable(tileBehavior))
+                return BATTLE_TERRAIN_POND;
+            return BATTLE_TERRAIN_CAVE;
+        case MAP_TYPE_INDOOR:
+        case MAP_TYPE_SECRET_BASE:
             return BATTLE_TERRAIN_BUILDING;
+        case MAP_TYPE_UNDERWATER:
+            return BATTLE_TERRAIN_UNDERWATER;
+        case MAP_TYPE_OCEAN_ROUTE:
+            if (MetatileBehavior_IsSurfable(tileBehavior))
+                return BATTLE_TERRAIN_WATER;
+            return BATTLE_TERRAIN_PLAIN;
+        }
+        if (MetatileBehavior_IsDeepSemiDeepOrSplashingWater(tileBehavior))
+            return BATTLE_TERRAIN_WATER;
         if (MetatileBehavior_IsSurfable(tileBehavior))
             return BATTLE_TERRAIN_POND;
-        return BATTLE_TERRAIN_CAVE;
-    case MAP_TYPE_INDOOR:
-    case MAP_TYPE_SECRET_BASE:
-        return BATTLE_TERRAIN_BUILDING;
-    case MAP_TYPE_UNDERWATER:
-        return BATTLE_TERRAIN_UNDERWATER;
-    case MAP_TYPE_OCEAN_ROUTE:
-        if (MetatileBehavior_IsSurfable(tileBehavior))
-            return BATTLE_TERRAIN_WATER;
-        return BATTLE_TERRAIN_PLAIN;
+        if (MetatileBehavior_IsMountain(tileBehavior))
+            return BATTLE_TERRAIN_MOUNTAIN;
+        if (TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING))
+        {
+            if (MetatileBehavior_GetBridgeType(tileBehavior))
+                return BATTLE_TERRAIN_POND;
+            if (MetatileBehavior_IsBridge(tileBehavior) == TRUE)
+                return BATTLE_TERRAIN_WATER;
+        }
     }
-    if (MetatileBehavior_IsDeepSemiDeepOrSplashingWater(tileBehavior))
-        return BATTLE_TERRAIN_WATER;
-    if (MetatileBehavior_IsSurfable(tileBehavior))
-        return BATTLE_TERRAIN_POND;
-    if (MetatileBehavior_IsMountain(tileBehavior))
-        return BATTLE_TERRAIN_MOUNTAIN;
-    if (TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_SURFING))
-    {
-        if (MetatileBehavior_GetBridgeType(tileBehavior))
-            return BATTLE_TERRAIN_POND;
-        if (MetatileBehavior_IsBridge(tileBehavior) == TRUE)
-            return BATTLE_TERRAIN_WATER;
-    }
+
+    terrain = TryLoadAlternateAreaTerrain(terrain); //Loads special BG's if you're surfing
+
     return BATTLE_TERRAIN_PLAIN;
 }
 
@@ -1026,7 +1051,7 @@ void PlayTrainerEncounterMusic(void)
     }
 }
 
-static const u8 *ReturnEmptyStringIfNull(const u8 *string)
+const u8 *ReturnEmptyStringIfNull(const u8 *string)
 {
     if (string == NULL)
         return gString_Dummy;

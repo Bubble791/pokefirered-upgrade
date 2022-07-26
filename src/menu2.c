@@ -612,10 +612,10 @@ u8 Menu2_GetMonSpriteAnchorCoord(u16 species, u32 personality, u8 a2)
         case 0:
             break;
         case 26:
-            species = SPECIES_UNOWN_EMARK;
+            species = SPECIES_UNOWN_EXCLAMATION;
             break;
         case 27:
-            species = SPECIES_UNOWN_QMARK;
+            species = SPECIES_UNOWN_QUESTION;
             break;
         default:
             species = SPECIES_UNOWN_B + unownLetter - 1;

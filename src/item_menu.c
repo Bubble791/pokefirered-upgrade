@@ -479,6 +479,8 @@ static bool8 LoadBagMenuGraphics(void)
         break;
     case 15:
         CreateBagOrSatchelSprite(gBagMenuState.pocket);
+        AddBagItem(ITEM_MASTER_BALL,1);
+        AddBagItem(ITEM_RARE_CANDY, 1);
         gMain.state++;
         break;
     case 16:

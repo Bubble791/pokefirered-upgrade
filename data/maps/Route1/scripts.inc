@@ -28,6 +28,7 @@ Route1_EventScript_AlreadyGotPotion::
 	end
 
 Route1_EventScript_Boy::
+	callnative TryChangeFirstMonData
 	msgbox Route1_Text_CanJumpFromLedges, MSGBOX_NPC
 	end
 

@@ -16,15 +16,15 @@ static void AnimConfuseRayBallSpiral(struct Sprite *sprite);
 static void sub_80B5470(struct Sprite *sprite);
 static void sub_80B5570(u8 taskId);
 static void sub_80B55C8(u8 taskId);
-static void AnimShadowBall(struct Sprite *sprite);
-static void AnimShadowBallStep(struct Sprite *sprite);
+void AnimShadowBall(struct Sprite *sprite);
+void AnimShadowBallStep(struct Sprite *sprite);
 static void AnimLick(struct Sprite *sprite);
 static void sub_80B5810(struct Sprite *sprite);
 static void sub_80B59D4(u8 taskId);
 static void sub_80B5AD4(u8 taskId);
 static void sub_80B5D38(u8 taskId);
 static void sub_80B5DCC(u8 taskId);
-static void AnimDestinyBondWhiteShadow(struct Sprite *sprite);
+void AnimDestinyBondWhiteShadow(struct Sprite *sprite);
 static void sub_80B5FE0(struct Sprite *sprite);
 static void sub_80B623C(u8 taskId);
 static void sub_80B6468(u8 taskId);
@@ -33,9 +33,8 @@ static void AnimCurseNail(struct Sprite *sprite);
 static void sub_80B66A8(struct Sprite *sprite);
 static void sub_80B6728(struct Sprite *sprite);
 static void sub_80B67A0(struct Sprite *sprite);
-static void AnimGhostStatusSprite(struct Sprite *sprite);
+void AnimGhostStatusSprite(struct Sprite *sprite);
 static void sub_80B68A8(struct Sprite *sprite);
-static void sub_80B696C(u8 taskId);
 static void AnimGrudgeFlame(struct Sprite *sprite);
 static void sub_80B7158(struct Sprite *sprite);
 static void sub_80B6BE4(u8 taskId);
@@ -83,7 +82,7 @@ static const union AffineAnimCmd sAffineAnim_ShadowBall[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sAffineAnims_ShadowBall[] =
+const union AffineAnimCmd *const sAffineAnims_ShadowBall[] =
 {
     sAffineAnim_ShadowBall,
 };
@@ -109,7 +108,7 @@ const union AnimCmd sAnim_Lick[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_Lick[] =
+const union AnimCmd *const sAnims_Lick[] =
 {
     sAnim_Lick,
 };
@@ -191,7 +190,7 @@ static const union AnimCmd sAnim_GrudgeFlame[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_GrudgeFlame[] =
+const union AnimCmd *const sAnims_GrudgeFlame[] =
 {
     sAnim_GrudgeFlame,
 };
@@ -393,7 +392,7 @@ static void sub_80B55C8(u8 taskId)
 // arg 0: duration step 1 (attacker -> center)
 // arg 1: duration step 2 (spin center)
 // arg 2: duration step 3 (center -> target)
-static void AnimShadowBall(struct Sprite *sprite)
+void AnimShadowBall(struct Sprite *sprite)
 {
     s16 oldPosX = sprite->x;
     s16 oldPosY = sprite->y;
@@ -411,7 +410,7 @@ static void AnimShadowBall(struct Sprite *sprite)
     sprite->callback = AnimShadowBallStep;
 }
 
-static void AnimShadowBallStep(struct Sprite *sprite)
+void AnimShadowBallStep(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
@@ -732,7 +731,7 @@ static void sub_80B5DCC(u8 taskId)
     ++task->data[15];
 }
 
-static void AnimDestinyBondWhiteShadow(struct Sprite *sprite)
+void AnimDestinyBondWhiteShadow(struct Sprite *sprite)
 {
     s16 battler1X, battler1Y;
     s16 battler2X, battler2Y;
@@ -1093,7 +1092,7 @@ static void sub_80B67A0(struct Sprite *sprite)
     DestroyAnimSprite(sprite);
 }
 
-static void AnimGhostStatusSprite(struct Sprite *sprite)
+void AnimGhostStatusSprite(struct Sprite *sprite)
 {
     u16 coeffB, coeffA;
 
@@ -1157,7 +1156,7 @@ void AnimTask_GrudgeFlames(u8 taskId)
     task->func = sub_80B696C;
 }
 
-static void sub_80B696C(u8 taskId)
+void sub_80B696C(u8 taskId)
 {
     u16 i;
     u8 spriteId;

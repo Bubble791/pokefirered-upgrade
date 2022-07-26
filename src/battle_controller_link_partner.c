@@ -708,7 +708,7 @@ static u32 CopyLinkPartnerMonData(u8 monId, u8 *dst)
         dst[0] = GetMonData(&gPlayerParty[monId], MON_DATA_SMART_RIBBON);
         size = 1;
         break;
-    case REQUEST_TOUGH_RIBBON_BATTLE:
+    case REQUEST_FORM_CHANGE_BATTLE:
         dst[0] = GetMonData(&gPlayerParty[monId], MON_DATA_TOUGH_RIBBON);
         size = 1;
         break;
@@ -953,7 +953,7 @@ static void SetLinkPartnerMonData(u8 monId)
     case REQUEST_SMART_RIBBON_BATTLE:
         SetMonData(&gPlayerParty[monId], MON_DATA_SMART_RIBBON, &gBattleBufferA[gActiveBattler][3]);
         break;
-    case REQUEST_TOUGH_RIBBON_BATTLE:
+    case REQUEST_FORM_CHANGE_BATTLE:
         SetMonData(&gPlayerParty[monId], MON_DATA_TOUGH_RIBBON, &gBattleBufferA[gActiveBattler][3]);
         break;
     }
@@ -1174,9 +1174,9 @@ static void LinkPartnerDoMoveAnimation(void)
     {
     case 0:
         if (gBattleSpritesDataPtr->battlerData[gActiveBattler].behindSubstitute
-         && !gBattleSpritesDataPtr->battlerData[gActiveBattler].flag_x8)
+         && !gBattleSpritesDataPtr->battlerData[gActiveBattler].substituteOffScreen)
         {
-            gBattleSpritesDataPtr->battlerData[gActiveBattler].flag_x8 = 1;
+            gBattleSpritesDataPtr->battlerData[gActiveBattler].substituteOffScreen = 1;
             InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, gActiveBattler, B_ANIM_SUBSTITUTE_TO_MON);
         }
         gBattleSpritesDataPtr->healthBoxesData[gActiveBattler].animationState = 1;
@@ -1197,7 +1197,7 @@ static void LinkPartnerDoMoveAnimation(void)
             if (gBattleSpritesDataPtr->battlerData[gActiveBattler].behindSubstitute && multihit < 2)
             {
                 InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, gActiveBattler, B_ANIM_MON_TO_SUBSTITUTE);
-                gBattleSpritesDataPtr->battlerData[gActiveBattler].flag_x8 = 0;
+                gBattleSpritesDataPtr->battlerData[gActiveBattler].substituteOffScreen = 0;
             }
             gBattleSpritesDataPtr->healthBoxesData[gActiveBattler].animationState = 3;
         }

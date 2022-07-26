@@ -65,7 +65,7 @@ enum
     REQUEST_BEAUTY_RIBBON_BATTLE,
     REQUEST_CUTE_RIBBON_BATTLE,
     REQUEST_SMART_RIBBON_BATTLE,
-    REQUEST_TOUGH_RIBBON_BATTLE,
+    REQUEST_FORM_CHANGE_BATTLE, //Was REQUEST_FORM_CHANGE_BATTLE
 };
 
 #define RESET_ACTION_MOVE_SELECTION     0
@@ -114,6 +114,27 @@ struct ChooseMoveStruct
     u16 species;
     u8 monType1;
     u8 monType2;
+
+    u8 moveTypes[MAX_MON_MOVES];
+	u8 moveResults[MAX_BATTLERS_COUNT][MAX_MON_MOVES];
+	u16 movePowers[MAX_MON_MOVES];
+	u16 moveAcc[MAX_MON_MOVES];
+	u8 monType3;
+	bool8 canMegaEvolve;
+	u8 megaVariance;
+	bool8 zMoveUsed : 1;
+	bool8 megaDone : 1;
+	bool8 ultraDone : 1;
+	bool8 dynamaxDone : 1;
+	bool8 dynamaxed : 1;
+	bool8 bank;
+	u8 zPartyIndex;
+	u16 possibleZMoves[MAX_MON_MOVES];
+	u8 ability;
+	bool8 canDynamax;
+	u16 possibleMaxMoves[MAX_MON_MOVES];
+	u16 maxMovePowers[MAX_MON_MOVES];
+	u8 dynamaxPartyIndex;
 };
 
 enum
@@ -199,7 +220,7 @@ void BtlController_EmitTrainerSlide(u8 bufferId);
 void BtlController_EmitTrainerSlideBack(u8 bufferId);
 void BtlController_EmitFaintAnimation(u8 bufferId);
 void BtlController_EmitBallThrowAnim(u8 bufferId, u8 caseId);
-void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 movePower, s32 dmg, u8 friendship, struct DisableStruct *disableStructPtr);
+void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 movePower, s32 dmg, u8 friendship, struct DisableStruct *disableStructPtr, u8 hit);
 void BtlController_EmitPrintString(u8 bufferId, u16 stringId);
 void BtlController_EmitPrintSelectionString(u8 bufferId, u16 stringId);
 void BtlController_EmitChooseAction(u8 bufferId, u8 arg1, u16 arg2);
@@ -230,6 +251,8 @@ void BtlController_EmitBattleAnimation(u8 bufferId, u8 animationId, u16 argument
 void BtlController_EmitLinkStandbyMsg(u8 bufferId, u8 arg1);
 void BtlController_EmitResetActionMoveSelection(u8 bufferId, u8 caseId);
 void BtlController_EmitCmd55(u8 bufferId, u8 arg1);
+void BtlController_EmitSetRawMonData(u8 bufferId, u8 monId, u8 bytes, void *data);
+void EmitMoveChosen(u8 bufferId, u8 chosenMoveIndex, u8 target, u8 megaState, u8 ultraState, u8 zMoveState, u8 dynamaxState);
 
 // player controller
 void PlayerDummy(void);
@@ -246,6 +269,9 @@ void SetBattleEndCallbacks(void);
 void MoveSelectionCreateCursorAt(u8 cursorPos, u8 arg1);
 void MoveSelectionDestroyCursorAt(u8 cursorPos);
 void HandleInputChooseMove(void);
+void HandleMoveSwitching(void);
+void PlayerHandleChooseMove(void);
+void HandleChooseMoveAfterDma3(void);
 
 // opponent controller
 void SetControllerToOpponent(void);
@@ -287,5 +313,8 @@ void SetControllerToLinkOpponent(void);
 
 // link partner controller
 void SetControllerToLinkPartner(void);
+
+void PrepareBufferDataTransfer(u8 bufferId, u8 *data, u16 size);
+bool8 IsBagDisabled(void);
 
 #endif // GUARD_BATTLE_CONTROLLERS_H

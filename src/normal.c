@@ -5,34 +5,33 @@
 #include "task.h"
 #include "trig.h"
 
-static void AnimConfusionDuck(struct Sprite *sprite);
-static void AnimSimplePaletteBlend(struct Sprite *sprite);
-static void AnimComplexPaletteBlend(struct Sprite *sprite);
-static void sub_80B9B8C(struct Sprite *sprite);
-static void AnimShakeMonOrBattleTerrain(struct Sprite *sprite);
-static void AnimHitSplatBasic(struct Sprite *sprite);
-static void AnimHitSplatHandleInvert(struct Sprite *sprite);
-static void AnimHitSplatRandom(struct Sprite *sprite);
-static void AnimHitSplatOnMonEdge(struct Sprite *sprite);
-static void AnimCrossImpact(struct Sprite *sprite);
-static void AnimFlashingHitSplat(struct Sprite *sprite);
-static void AnimHitSplatPersistent(struct Sprite *sprite);
-static void AnimConfusionDuckStep(struct Sprite *sprite);
-static void AnimSimplePaletteBlendStep(struct Sprite *sprite);
-static void sub_80B9AD0(struct Sprite *sprite);
-static void sub_80B9B5C(struct Sprite *sprite);
-static void sub_80B9C2C(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
-static void sub_80B9C7C(u8 taskId);
-static void sub_80B9DA0(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
-static void sub_80B9DF0(u8 taskId);
-static void sub_80B9EA8(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
-static void sub_80B9F04(u8 taskId);
-static void sub_80B9FD8(u8 taskId);
-static void sub_80BA090(u8 taskId);
-static void sub_80BA3CC(void);
-static void sub_80BA320(struct Sprite *sprite);
-static void sub_80BA4D0(u8 taskId);
-static void sub_80BA7BC(struct Sprite *sprite);
+void AnimConfusionDuck(struct Sprite *sprite);
+void AnimSimplePaletteBlend(struct Sprite *sprite);
+void AnimComplexPaletteBlend(struct Sprite *sprite);
+void sub_80B9B8C(struct Sprite *sprite);
+void AnimShakeMonOrBattleTerrain(struct Sprite *sprite);
+void AnimHitSplatBasic(struct Sprite *sprite);
+void AnimHitSplatHandleInvert(struct Sprite *sprite);
+void AnimHitSplatRandom(struct Sprite *sprite);
+void AnimHitSplatOnMonEdge(struct Sprite *sprite);
+void AnimCrossImpact(struct Sprite *sprite);
+void AnimFlashingHitSplat(struct Sprite *sprite);
+void AnimHitSplatPersistent(struct Sprite *sprite);
+void AnimConfusionDuckStep(struct Sprite *sprite);
+void AnimSimplePaletteBlendStep(struct Sprite *sprite);
+void sub_80B9AD0(struct Sprite *sprite);
+void sub_80B9B5C(struct Sprite *sprite);
+void sub_80B9C2C(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
+void sub_80B9C7C(u8 taskId);
+void sub_80B9DA0(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
+void sub_80B9DF0(u8 taskId);
+void sub_80B9EA8(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount);
+void sub_80B9F04(u8 taskId);
+void sub_80B9FD8(u8 taskId);
+void sub_80BA090(u8 taskId);
+void sub_80BA3CC(void);
+void sub_80BA320(struct Sprite *sprite);
+void sub_80BA4D0(u8 taskId);
 
 
 static const union AnimCmd sAnim_ConfusionDuck_0[] =
@@ -53,7 +52,7 @@ static const union AnimCmd sAnim_ConfusionDuck_1[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_ConfusionDuck[] =
+const union AnimCmd *const sAnims_ConfusionDuck[] =
 {
     sAnim_ConfusionDuck_0,
     sAnim_ConfusionDuck_1,
@@ -102,7 +101,7 @@ static const union AnimCmd gUnknown_83E7B54[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const gUnknown_83E7B6C[] =
+const union AnimCmd *const gUnknown_83E7B6C[] =
 {
     gUnknown_83E7B54,
 };
@@ -156,7 +155,7 @@ static const union AffineAnimCmd sAffineAnim_HitSplat_3[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sAffineAnims_HitSplat[] =
+const union AffineAnimCmd *const sAffineAnims_HitSplat[] =
 {
     sAffineAnim_HitSplat_0,
     sAffineAnim_HitSplat_1,
@@ -252,13 +251,35 @@ const struct SpriteTemplate gPersistHitSplatSpriteTemplate =
     .callback = AnimHitSplatPersistent,
 };
 
+const struct SpriteTemplate gObstructCrossSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_OBSTRUCT_CROSS,
+    .paletteTag = ANIM_TAG_OBSTRUCT_CROSS,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gDummySpriteAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = AnimCrossImpact,
+};
+
+const struct SpriteTemplate gSunRazeXSpriteTemplate =
+{
+    .tileTag = ANIM_TAG_CROSS_IMPACT,
+    .paletteTag = ANIM_TAG_AIR_WAVE_2,
+    .oam = &gOamData_AffineOff_ObjBlend_32x32,
+    .anims = gDummySpriteAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = AnimCrossImpact,
+};
+
 // Moves a spinning duck around the mon's head.
 // arg 0: initial x pixel offset
 // arg 1: initial y pixel offset
 // arg 2: initial wave offset
 // arg 3: wave period (higher means faster wave)
 // arg 4: duration
-static void AnimConfusionDuck(struct Sprite *sprite)
+void AnimConfusionDuck(struct Sprite *sprite)
 {
     sprite->x += gBattleAnimArgs[0];
     sprite->y += gBattleAnimArgs[1];
@@ -279,7 +300,7 @@ static void AnimConfusionDuck(struct Sprite *sprite)
     sprite->callback(sprite);
 }
 
-static void AnimConfusionDuckStep(struct Sprite *sprite)
+void AnimConfusionDuckStep(struct Sprite *sprite)
 {
     sprite->x2 = Cos(sprite->data[0], 30);
     sprite->y2 = Sin(sprite->data[0], 10);
@@ -298,7 +319,7 @@ static void AnimConfusionDuckStep(struct Sprite *sprite)
 // arg 2: start blend amount
 // arg 3: end blend amount
 // arg 4: blend color
-static void AnimSimplePaletteBlend(struct Sprite *sprite)
+void AnimSimplePaletteBlend(struct Sprite *sprite)
 {
     u32 selectedPalettes = UnpackSelectedBattleAnimPalettes(gBattleAnimArgs[0]);
     
@@ -329,13 +350,13 @@ u32 UnpackSelectedBattleAnimPalettes(s16 selector)
     return SelectBattleAnimSpriteAndBgPalettes(battleBackground, attacker, target, attackerPartner, targetPartner, arg5, arg6);
 }
 
-static void AnimSimplePaletteBlendStep(struct Sprite *sprite)
+void AnimSimplePaletteBlendStep(struct Sprite *sprite)
 {
     if (!gPaletteFade.active)
         DestroyAnimSprite(sprite);
 }
 
-static void AnimComplexPaletteBlend(struct Sprite *sprite)
+void AnimComplexPaletteBlend(struct Sprite *sprite)
 {
     u32 selectedPalettes;
 
@@ -353,7 +374,7 @@ static void AnimComplexPaletteBlend(struct Sprite *sprite)
     sprite->callback = sub_80B9AD0;
 }
 
-static void sub_80B9AD0(struct Sprite *sprite)
+void sub_80B9AD0(struct Sprite *sprite)
 {
     u32 selectedPalettes;
 
@@ -379,7 +400,7 @@ static void sub_80B9AD0(struct Sprite *sprite)
     --sprite->data[2];
 }
 
-static void sub_80B9B5C(struct Sprite *sprite)
+void sub_80B9B5C(struct Sprite *sprite)
 {
     u32 selectedPalettes;
 
@@ -391,7 +412,7 @@ static void sub_80B9B5C(struct Sprite *sprite)
     }
 }
 
-static void sub_80B9B8C(struct Sprite *sprite)
+void sub_80B9B8C(struct Sprite *sprite)
 {
     sprite->x += gBattleAnimArgs[0];
     sprite->y += gBattleAnimArgs[1];
@@ -419,7 +440,7 @@ void AnimTask_CurseBlendEffect(u8 taskId)
     gTasks[taskId].func = sub_80B9C7C;
 }
 
-static void sub_80B9C2C(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
+void sub_80B9C2C(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
 {
     u32 selectedPalettes = UnpackSelectedBattleAnimPalettes(gTasks[taskId].data[0]);
     
@@ -432,7 +453,7 @@ static void sub_80B9C2C(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
     gTasks[taskId].data[8] ^= 1;
 }
 
-static void sub_80B9C7C(u8 taskId)
+void sub_80B9C7C(u8 taskId)
 {
     u8 initialBlendAmount, targetBlendAmount;
 
@@ -484,7 +505,7 @@ void AnimTask_BlendColorCycleExclude(u8 taskId)
     gTasks[taskId].func = sub_80B9DF0;
 }
 
-static void sub_80B9DA0(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
+void sub_80B9DA0(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
 {
     u32 selectedPalettes = ((u16)gTasks[taskId].data[9] << 16) | (u16)gTasks[taskId].data[10];
     
@@ -497,7 +518,7 @@ static void sub_80B9DA0(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
     gTasks[taskId].data[8] ^= 1;
 }
 
-static void sub_80B9DF0(u8 taskId)
+void sub_80B9DF0(u8 taskId)
 {
     u8 initialBlendAmount, targetBlendAmount;
 
@@ -542,7 +563,7 @@ void AnimTask_BlendColorCycleByTag(u8 taskId)
     gTasks[taskId].func = sub_80B9F04;
 }
 
-static void sub_80B9EA8(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
+void sub_80B9EA8(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
 {
     u8 paletteIndex = IndexOfSpritePaletteTag(gTasks[taskId].data[0]);
     
@@ -555,7 +576,7 @@ static void sub_80B9EA8(u8 taskId, u8 initialBlendAmount, u8 targetBlendAmount)
     gTasks[taskId].data[8] ^= 1;
 }
 
-static void sub_80B9F04(u8 taskId)
+void sub_80B9F04(u8 taskId)
 {
     u8 initialBlendAmount, targetBlendAmount;
 
@@ -606,7 +627,7 @@ void AnimTask_FlashAnimTagWithColor(u8 taskId)
     gTasks[taskId].func = sub_80B9FD8;
 }
 
-static void sub_80B9FD8(u8 taskId)
+void sub_80B9FD8(u8 taskId)
 {
     u32 selectedPalettes;
 
@@ -640,7 +661,7 @@ static void sub_80B9FD8(u8 taskId)
     --gTasks[taskId].data[2];
 }
 
-static void sub_80BA090(u8 taskId)
+void sub_80BA090(u8 taskId)
 {
     u32 selectedPalettes;
 
@@ -669,7 +690,7 @@ void AnimTask_InvertScreenColor(u8 taskId)
 }
 
 // not used
-static void sub_80BA16C(u8 taskId)
+void sub_80BA16C(u8 taskId)
 {
     u8 attackerBattler;
     u8 targetBattler;
@@ -708,7 +729,7 @@ static void sub_80BA16C(u8 taskId)
     }
 }
 
-static void AnimShakeMonOrBattleTerrain(struct Sprite *sprite)
+void AnimShakeMonOrBattleTerrain(struct Sprite *sprite)
 {
     u16 var0;
 
@@ -741,7 +762,7 @@ static void AnimShakeMonOrBattleTerrain(struct Sprite *sprite)
     sprite->callback = sub_80BA320;
 }
 
-static void sub_80BA320(struct Sprite *sprite)
+void sub_80BA320(struct Sprite *sprite)
 {
     u8 i;
     u16 var0;
@@ -771,7 +792,7 @@ static void sub_80BA320(struct Sprite *sprite)
     }
 }
 
-static void sub_80BA3CC(void)
+void sub_80BA3CC(void)
 {
     gSprites[gBattlerSpriteIds[gBattleAnimAttacker]].coordOffsetEnabled = 0;
     gSprites[gBattlerSpriteIds[gBattleAnimTarget]].coordOffsetEnabled = 0;
@@ -802,7 +823,7 @@ void AnimTask_ShakeBattleTerrain(u8 taskId)
     gTasks[taskId].func(taskId);
 }
 
-static void sub_80BA4D0(u8 taskId)
+void sub_80BA4D0(u8 taskId)
 {
     if (gTasks[taskId].data[3] == 0)
     {
@@ -830,7 +851,7 @@ static void sub_80BA4D0(u8 taskId)
     }
 }
 
-static void AnimHitSplatBasic(struct Sprite *sprite)
+void AnimHitSplatBasic(struct Sprite *sprite)
 {
     StartSpriteAffineAnim(sprite, gBattleAnimArgs[3]);
     if (gBattleAnimArgs[2] == 0)
@@ -841,7 +862,7 @@ static void AnimHitSplatBasic(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSprite);
 }
 
-static void AnimHitSplatPersistent(struct Sprite *sprite)
+void AnimHitSplatPersistent(struct Sprite *sprite)
 {
     StartSpriteAffineAnim(sprite, gBattleAnimArgs[3]);
     if (gBattleAnimArgs[2] == 0)
@@ -853,14 +874,14 @@ static void AnimHitSplatPersistent(struct Sprite *sprite)
     StoreSpriteCallbackInData6(sprite, DestroyAnimSpriteAfterTimer);
 }
 
-static void AnimHitSplatHandleInvert(struct Sprite *sprite)
+void AnimHitSplatHandleInvert(struct Sprite *sprite)
 {
     if (GetBattlerSide(gBattleAnimAttacker) != B_SIDE_PLAYER && !IsContest())
         gBattleAnimArgs[1] = -gBattleAnimArgs[1];
     AnimHitSplatBasic(sprite);
 }
 
-static void AnimHitSplatRandom(struct Sprite *sprite)
+void AnimHitSplatRandom(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[1] == -1)
         gBattleAnimArgs[1] = Random() & 3;
@@ -875,7 +896,7 @@ static void AnimHitSplatRandom(struct Sprite *sprite)
     sprite->callback = RunStoredCallbackWhenAffineAnimEnds;
 }
 
-static void AnimHitSplatOnMonEdge(struct Sprite *sprite)
+void AnimHitSplatOnMonEdge(struct Sprite *sprite)
 {
     sprite->data[0] = GetAnimBattlerSpriteId(gBattleAnimArgs[0]);
     sprite->x = gSprites[sprite->data[0]].x + gSprites[sprite->data[0]].x2;
@@ -887,7 +908,7 @@ static void AnimHitSplatOnMonEdge(struct Sprite *sprite)
     sprite->callback = RunStoredCallbackWhenAffineAnimEnds;
 }
 
-static void AnimCrossImpact(struct Sprite *sprite)
+void AnimCrossImpact(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[2] == 0)
         InitSpritePosToAnimAttacker(sprite, 1);
@@ -898,7 +919,7 @@ static void AnimCrossImpact(struct Sprite *sprite)
     sprite->callback = WaitAnimForDuration;
 }
 
-static void AnimFlashingHitSplat(struct Sprite *sprite)
+void AnimFlashingHitSplat(struct Sprite *sprite)
 {
     StartSpriteAffineAnim(sprite, gBattleAnimArgs[3]);
     if (gBattleAnimArgs[2] == 0)
@@ -908,7 +929,7 @@ static void AnimFlashingHitSplat(struct Sprite *sprite)
     sprite->callback = sub_80BA7BC;
 }
 
-static void sub_80BA7BC(struct Sprite *sprite)
+void sub_80BA7BC(struct Sprite *sprite)
 {
     sprite->invisible ^= 1;
     if (sprite->data[0]++ > 12)

@@ -8,10 +8,10 @@
 #define WEATHER_SNOW               4   // unused
 #define WEATHER_RAIN_THUNDERSTORM  5   // unused
 #define WEATHER_FOG_HORIZONTAL     6
-#define WEATHER_VOLCANIC_ASH       7   // unused
+#define WEATHER_STEADY_SNOW       7   // unused
 #define WEATHER_SANDSTORM          8   // unused
 #define WEATHER_FOG_DIAGONAL       9   // unused
-#define WEATHER_UNDERWATER         10  // unused
+#define WEATHER_FOG_3         10  // unused
 #define WEATHER_SHADE              11
 #define WEATHER_DROUGHT            12  // unused and broken in overworld
 #define WEATHER_DOWNPOUR           13  // unused

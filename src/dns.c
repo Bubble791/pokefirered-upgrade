@@ -388,11 +388,13 @@ ALIGNED(4) EWRAM_DATA static u16 sDnsPaletteDmaBuffer[512] = {0};
 //Called from TransferPlttBuffer
 void DnsTransferPlttBuffer(void *src, void *dest)
 {
+    #ifdef DNS_ENABLED
     if ((IsOverworld() || IsCombat()) && !IsMapDNSException()) 
     {
         DmaCopy16(3, sDnsPaletteDmaBuffer, dest, PLTT_SIZE);
     }
     else
+    #endif
     {
         DmaCopy16(3, src, dest, PLTT_SIZE);
     }

@@ -38,7 +38,6 @@ static s16 LeafBladeGetPosFactor(struct Sprite *);
 static void AnimTask_LeafBladeStep2(struct Task *, u8);
 static void AnimTask_LeafBladeStep2_Callback(struct Sprite *);
 static void AnimFlyingParticleStep(struct Sprite *);
-static void AnimNeedleArmSpikeStep(struct Sprite *);
 static void AnimSliceStep(struct Sprite *);
 static void AnimCirclingMusicNote_Step(struct Sprite *);
 static void AnimProtectStep(struct Sprite *);
@@ -99,7 +98,7 @@ static const union AnimCmd sPowderParticlesAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sPowderParticlesAnimTable[] =
+const union AnimCmd *const sPowderParticlesAnimTable[] =
 {
     sPowderParticlesAnimCmds,
 };
@@ -191,7 +190,7 @@ static const union AnimCmd sPowerAbsorptionOrbAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSolarbeamBigOrbAnimTable[] =
+const union AnimCmd *const sSolarbeamBigOrbAnimTable[] =
 {
     sSolarbeamBigOrbAnimCmds1,
     sSolarbeamBigOrbAnimCmds2,
@@ -202,12 +201,12 @@ static const union AnimCmd *const sSolarbeamBigOrbAnimTable[] =
     sSolarbeamBigOrbAnimCmds7,
 };
 
-static const union AnimCmd *const sSolarbeamSmallOrbAnimTable[] =
+const union AnimCmd *const sSolarbeamSmallOrbAnimTable[] =
 {
     sSolarbeamSmallOrbAnimCms,
 };
 
-static const union AnimCmd *const sPowerAbsorptionOrbAnimTable[] =
+const union AnimCmd *const sPowerAbsorptionOrbAnimTable[] =
 {
     sPowerAbsorptionOrbAnimCmds,
 };
@@ -218,7 +217,7 @@ static const union AffineAnimCmd sPowerAbsorptionOrbAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sPowerAbsorptionOrbAffineAnimTable[] =
+const union AffineAnimCmd *const sPowerAbsorptionOrbAffineAnimTable[] =
 {
     sPowerAbsorptionOrbAffineAnimCmds,
 };
@@ -263,7 +262,7 @@ static const union AffineAnimCmd sStockpileAbsorptionOrbAffineCmds[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sStockpileAbsorptionOrbAffineAnimTable[] =
+const union AffineAnimCmd *const sStockpileAbsorptionOrbAffineAnimTable[] =
 {
     sStockpileAbsorptionOrbAffineCmds,
 };
@@ -285,7 +284,7 @@ static const union AffineAnimCmd sAbsorptionOrbAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sAbsorptionOrbAffineAnimTable[] =
+const union AffineAnimCmd *const sAbsorptionOrbAffineAnimTable[] =
 {
     sAbsorptionOrbAffineAnimCmds,
 };
@@ -325,7 +324,7 @@ static const union AnimCmd sLeechSeedAnimCmds2[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sLeechSeedAnimTable[] =
+const union AnimCmd *const sLeechSeedAnimTable[] =
 {
     sLeechSeedAnimCmds1,
     sLeechSeedAnimCmds2,
@@ -354,7 +353,7 @@ static const union AnimCmd sSporeParticleAnimCmds2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSporeParticleAnimTable[] =
+const union AnimCmd *const sSporeParticleAnimTable[] =
 {
     sSporeParticleAnimCmds1,
     sSporeParticleAnimCmds2,
@@ -383,12 +382,12 @@ static const union AnimCmd sPetalDanceSmallFlowerAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sPetalDanceBigFlowerAnimTable[] =
+const union AnimCmd *const sPetalDanceBigFlowerAnimTable[] =
 {
     sPetalDanceBigFlowerAnimCmds,
 };
 
-static const union AnimCmd *const sPetalDanceSmallFlowerAnimTable[] =
+const union AnimCmd *const sPetalDanceSmallFlowerAnimTable[] =
 {
     sPetalDanceSmallFlowerAnimCmds,
 };
@@ -438,7 +437,7 @@ static const union AnimCmd sRazorLeafParticleAnimCmds2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sRazorLeafParticleAnimTable[] =
+const union AnimCmd *const sRazorLeafParticleAnimTable[] =
 {
     sRazorLeafParticleAnimCmds1,
     sRazorLeafParticleAnimCmds2,
@@ -475,7 +474,7 @@ static const union AnimCmd sRazorLeafCutterAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sRazorLeafCutterAnimTable[] =
+const union AnimCmd *const sRazorLeafCutterAnimTable[] =
 {
     sRazorLeafCutterAnimCmds,
 };
@@ -497,7 +496,7 @@ static const union AffineAnimCmd sSwiftStarAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sSwiftStarAffineAnimTable[] = 
+const union AffineAnimCmd *const sSwiftStarAffineAnimTable[] = 
 {
     sSwiftStarAffineAnimCmds,
 };
@@ -531,7 +530,7 @@ static const union AnimCmd sConstrictBindingAnimCmds2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sConstrictBindingAnimTable[] =
+const union AnimCmd *const sConstrictBindingAnimTable[] =
 {
     sConstrictBindingAnimCmds1,
     sConstrictBindingAnimCmds2,
@@ -553,7 +552,7 @@ static const union AffineAnimCmd sConstrictBindingAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sConstrictBindingAffineAnimTable[] = 
+const union AffineAnimCmd *const sConstrictBindingAffineAnimTable[] = 
 {
     sConstrictBindingAffineAnimCmds1,
     sConstrictBindingAffineAnimCmds2,
@@ -583,7 +582,7 @@ static const union AffineAnimCmd sMimicOrbAffineAnimCmds2[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sMimicOrbAffineAnimTable[] = 
+const union AffineAnimCmd *const sMimicOrbAffineAnimTable[] = 
 {
     sMimicOrbAffineAnimCmds1,
     sMimicOrbAffineAnimCmds2,
@@ -634,7 +633,7 @@ static const union AnimCmd sIngrainRootAnimCmds4[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sIngrainRootAnimTable[] =
+const union AnimCmd *const sIngrainRootAnimTable[] =
 {
     sIngrainRootAnimCmds1,
     sIngrainRootAnimCmds2,
@@ -671,7 +670,7 @@ static const union AnimCmd sIngrainOrbAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sIngrainOrbAnimTable[] =
+const union AnimCmd *const sIngrainOrbAnimTable[] =
 {
     sIngrainOrbAnimCmds,
 };
@@ -693,7 +692,7 @@ static const union AnimCmd sFallingBagAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sFallingBagAnimTable[] =
+const union AnimCmd *const sFallingBagAnimTable[] =
 {
     sFallingBagAnimCmds,
 };
@@ -717,7 +716,7 @@ static const union AffineAnimCmd sFallingBagAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sFallingBagAffineAnimTable[] = 
+const union AffineAnimCmd *const sFallingBagAffineAnimTable[] = 
 {
     sFallingBagAffineAnimCmds1,
     sFallingBagAffineAnimCmds2,
@@ -754,7 +753,7 @@ static const union AnimCmd sPresentHealParticleAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sPresentHealParticleAnimTable[] =
+const union AnimCmd *const sPresentHealParticleAnimTable[] =
 {
     sPresentHealParticleAnimCmds,
 };
@@ -799,7 +798,7 @@ static const union AffineAnimCmd sTrickBagAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sTrickBagAffineAnimTable[] = 
+const union AffineAnimCmd *const sTrickBagAffineAnimTable[] = 
 {
     sTrickBagAffineAnimCmds1,
     sTrickBagAffineAnimCmds2,
@@ -875,7 +874,7 @@ static const union AnimCmd sLeafBladeAnimCmds7[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sLeafBladeAnimTable[] =
+const union AnimCmd *const sLeafBladeAnimTable[] =
 {
     sLeafBladeAnimCmds1,
     sLeafBladeAnimCmds2,
@@ -904,7 +903,7 @@ static const union AffineAnimCmd sAromatherapyBigFlowerAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sAromatherapyBigFlowerAffineAnimTable[] = 
+const union AffineAnimCmd *const sAromatherapyBigFlowerAffineAnimTable[] = 
 {
     sAromatherapyBigFlowerAffineAnimCmds,
 };
@@ -952,17 +951,17 @@ static const union AffineAnimCmd sSilverWindSmallSparkAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sSilverWindBigSparkAffineAnimTable[] = 
+const union AffineAnimCmd *const sSilverWindBigSparkAffineAnimTable[] = 
 {
     sSilverWindBigSparkAffineAnimCmds,
 };
 
-static const union AffineAnimCmd *const sSilverWindMediumSparkAffineAnimTable[] = 
+const union AffineAnimCmd *const sSilverWindMediumSparkAffineAnimTable[] = 
 {
     sSilverWindMediumSparkAffineAnimCmds,
 };
 
-static const union AffineAnimCmd *const sSilverWindSmallSparkAffineAnimTable[] = 
+const union AffineAnimCmd *const sSilverWindSmallSparkAffineAnimTable[] = 
 {
     sSilverWindSmallSparkAffineAnimCmds,
 };
@@ -1040,7 +1039,7 @@ static const union AnimCmd sWhipAnimCmds2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sWhipAnimTable[] =    
+const union AnimCmd *const sWhipAnimTable[] =    
 {
     sWhipAnimCmds1,
     sWhipAnimCmds2,
@@ -1079,7 +1078,7 @@ static const union AnimCmd sUnknown_83E3178[] =
 };
 
 // Unused
-static const union AnimCmd *const sUnknown_83E3190[] =
+const union AnimCmd *const sUnknown_83E3190[] =
 {
     sUnknown_83E3178,
 };
@@ -1156,7 +1155,7 @@ static const union AffineAnimCmd sUnknown_83E3234[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sUnknown_83E3244[] = 
+const union AffineAnimCmd *const sUnknown_83E3244[] = 
 {
     sUnknown_83E31C4,
     sUnknown_83E31D4,
@@ -1189,7 +1188,7 @@ static const union AnimCmd sCuttingSliceAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sCuttingSliceAnimTable[] =
+const union AnimCmd *const sCuttingSliceAnimTable[] =
 {
     sCuttingSliceAnimCmds,
 };
@@ -1276,7 +1275,7 @@ static const union AnimCmd sUnknown_83E330C[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sUnknown_83E3314[] =
+const union AnimCmd *const sUnknown_83E3314[] =
 {
     sUnknown_83E32C4,
     sUnknown_83E32CC,
@@ -1329,7 +1328,7 @@ static const union AffineAnimCmd sMilkBottleAffineAnimCmds2[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sMilkBottleAffineAnimTable[] =
+const union AffineAnimCmd *const sMilkBottleAffineAnimTable[] =
 {
     sMilkBottleAffineAnimCmds1,
     sMilkBottleAffineAnimCmds2,
@@ -1359,7 +1358,7 @@ static const union AnimCmd sGrantingStarsAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sGrantingStarsAnimTable[] =
+const union AnimCmd *const sGrantingStarsAnimTable[] =
 {
     sGrantingStarsAnimCmds,
 };
@@ -1412,7 +1411,7 @@ static const union AnimCmd sUnknown_83E3448[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sUnknown_83E346C[] =
+const union AnimCmd *const sUnknown_83E346C[] =
 {
     sUnknown_83E3424,
     sUnknown_83E3448,
@@ -1436,7 +1435,7 @@ static const union AnimCmd sSleepLetterZAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSleepLetterZAnimTable[] =
+const union AnimCmd *const sSleepLetterZAnimTable[] =
 {
     sSleepLetterZAnimCmds,
 };
@@ -1469,7 +1468,7 @@ static const union AffineAnimCmd sSleepLetterZAffineAnimCmds2_2[] =
     AFFINEANIMCMD_LOOP(10),
 };
 
-static const union AffineAnimCmd *const sSleepLetterZAffineAnimTable[] =
+const union AffineAnimCmd *const sSleepLetterZAffineAnimTable[] =
 {
     sSleepLetterZAffineAnimCmds1,
     sSleepLetterZAffineAnimCmds2,
@@ -1554,7 +1553,7 @@ static const union AnimCmd sSlashSliceAnimCmds2[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSlashSliceAnimTable[] =
+const union AnimCmd *const sSlashSliceAnimTable[] =
 {
     sSlashSliceAnimCmds1,
     sSlashSliceAnimCmds2,
@@ -1602,7 +1601,7 @@ static const union AnimCmd sEndureEnergyAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sEndureEnergyAnimTable[] =
+const union AnimCmd *const sEndureEnergyAnimTable[] =
 {
     sEndureEnergyAnimCmds,
 };
@@ -1637,7 +1636,7 @@ static const union AnimCmd sSharpenSphereAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSharpenSphereAnimTable[] =
+const union AnimCmd *const sSharpenSphereAnimTable[] =
 {
     sSharpenSphereAnimCmds,
 };
@@ -1674,7 +1673,7 @@ static const union AnimCmd sOctazookaAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sOctazookaAnimTable[] =
+const union AnimCmd *const sOctazookaAnimTable[] =
 {
     sOctazookaAnimCmds,
 };
@@ -1699,7 +1698,7 @@ static const union AnimCmd sConversionAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sConversionAnimTable[] =
+const union AnimCmd *const sConversionAnimTable[] =
 {
     sConversionAnimCmds,
 };
@@ -1710,7 +1709,7 @@ static const union AffineAnimCmd sConversionAffineAnimCmds[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sConversionAffineAnimTable[] =
+const union AffineAnimCmd *const sConversionAffineAnimTable[] =
 {
     sConversionAffineAnimCmds,
 };
@@ -1735,7 +1734,7 @@ static const union AnimCmd sConversion2AnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sConversion2AnimTable[] =
+const union AnimCmd *const sConversion2AnimTable[] =
 {
     sConversion2AnimCmds,
 };
@@ -1771,7 +1770,7 @@ static const union AnimCmd sMoonlightSparkleAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sMoonlightSparkleAnimTable[] =
+const union AnimCmd *const sMoonlightSparkleAnimTable[] =
 {
     sMoonlightSparkleAnimCmds,
 };
@@ -1800,7 +1799,7 @@ static const union AnimCmd sHealingBlueStarAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sHealingBlueStarAnimTable[] =
+const union AnimCmd *const sHealingBlueStarAnimTable[] =
 {
     sHealingBlueStarAnimCmds,
 };
@@ -1836,7 +1835,7 @@ static const union AnimCmd sSuperFangAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSuperFangAnimTable[] =
+const union AnimCmd *const sSuperFangAnimTable[] =
 {
     sSuperFangAnimCmds,
 };
@@ -1919,7 +1918,7 @@ static const union AffineAnimCmd sWavyMusicNotesAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sMusicNotesAffineAnimTable[] =    
+const union AffineAnimCmd *const sMusicNotesAffineAnimTable[] =    
 {
     sWavyMusicNotesAffineAnimCmds,
 };
@@ -1972,7 +1971,7 @@ static const union AffineAnimCmd sSlowFlyingMusicNotesAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(1),
 };
 
-static const union AffineAnimCmd *const sSlowFlyinsMusicNotesAffineAnimTable[] =
+const union AffineAnimCmd *const sSlowFlyinsMusicNotesAffineAnimTable[] =
 {
     sSlowFlyingMusicNotesAffineAnimCmds,
 };
@@ -2024,7 +2023,7 @@ static const union AnimCmd sMetronomeThroughtBubbleAnimCmds4[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sMetronomeThroughtBubbleAnimTable[] =
+const union AnimCmd *const sMetronomeThroughtBubbleAnimTable[] =
 {
     sMetronomeThroughtBubbleAnimCmds1,
     sMetronomeThroughtBubbleAnimCmds2,
@@ -2072,7 +2071,7 @@ static const union AffineAnimCmd sMetronomeFingerAffineAnimCmds2_2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sMetronomeFingerAffineAnimTable[] =
+const union AffineAnimCmd *const sMetronomeFingerAffineAnimTable[] =
 {
     sMetronomeFingerAffineAnimCmds1,
     sMetronomeFingerAffineAnimCmds2,
@@ -2136,7 +2135,7 @@ static const union AnimCmd sTauntFingerAnimCmds4[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sTauntFingerAnimTable[] =
+const union AnimCmd *const sTauntFingerAnimTable[] =
 {
     sTauntFingerAnimCmds1,
     sTauntFingerAnimCmds2,
@@ -3692,7 +3691,7 @@ void AnimNeedleArmSpike(struct Sprite* sprite)
     }
 }
 
-static void AnimNeedleArmSpikeStep(struct Sprite* sprite)
+void AnimNeedleArmSpikeStep(struct Sprite* sprite)
 {
     if (sprite->data[0])
     {

@@ -3,7 +3,6 @@
 #include "battle_main.h"
 #include "battle_ai_script_commands.h"
 #include "battle_anim.h"
-#include "battle_util.h"
 #include "battle_controllers.h"
 #include "battle_message.h"
 #include "link.h"
@@ -12,14 +11,21 @@
 #include "party_menu.h"
 #include "task.h"
 #include "util.h"
+#include "dynamax.h"
+#include "mega.h"
+#include "set_z_effect.h"
+#include "frontier.h"
+#include "malloc.h"
 #include "constants/abilities.h"
 #include "constants/battle.h"
+#include "constants/moves.h"
+#include "constants/battle_move_effects.h"
 
 static EWRAM_DATA u8 sLinkSendTaskId = 0;
 static EWRAM_DATA u8 sLinkReceiveTaskId = 0;
 static EWRAM_DATA u8 gUnknown_202286E = 0;
 EWRAM_DATA struct UnusedControllerStruct gUnknown_2022870 = {0};
-static EWRAM_DATA u8 sBattleBuffersTransferData[0x100] = {0};
+EWRAM_DATA u8 sBattleBuffersTransferData[0x100] = {0};
 
 static void CreateTasksForSendRecvLinkBuffers(void);
 static void InitLinkBtlControllers(void);
@@ -57,6 +63,31 @@ void SetUpBattleVars(void)
     gBattleControllerExecFlags = 0;
     ClearBattleAnimationVars();
     ClearBattleMonForms();
+
+    memset(gBattleBufferA, 0x0, sizeof(gBattleBufferA)); //Clear both battle buffers
+	memset(gBattleBufferB, 0x0, sizeof(gBattleBufferB));
+    memset(gBattleMons, 0x0, sizeof(gBattleMons));
+
+    gBattleStringLoader = NULL;
+    gSeedHelper = NULL;
+    gTerrainType = 0;
+    gBankSwitching = 0;
+    gDontRemoveTransformSpecies = 0;
+    gForceSwitchHelper = 0;
+    gFormCounter = 0;
+    gMagicianHelper= 0;
+    gBackupHWord = 0;
+    gAbilityPopUpHelper = 0;
+    gShakerData[0] = 0;
+    gShakerData[1] = 0;
+    
+    if (IsRaidBattle())
+	{
+		gBattleTypeFlags |= BATTLE_TYPE_DYNAMAX;
+		gBattleStruct->dynamaxData.timer[B_POSITION_OPPONENT_LEFT] = -2; //Don't revert
+		gBattleStruct->dynamaxData.backupRaidMonItem = GetMonData(&gEnemyParty[0], MON_DATA_HELD_ITEM, NULL); //For Frontier
+	}
+
     BattleAI_HandleItemUseBeforeAISetup();
     gUnknown_2022B54 = 0;
     gUnknown_2023DDC = 0;
@@ -330,7 +361,7 @@ static void SetBattlePartyIds(void)
     }
 }
 
-static void PrepareBufferDataTransfer(u8 bufferId, u8 *data, u16 size)
+void PrepareBufferDataTransfer(u8 bufferId, u8 *data, u16 size)
 {
     s32 i;
 
@@ -590,8 +621,7 @@ void BtlController_EmitSetMonData(u8 bufferId, u8 requestId, u8 monToCheck, u8 b
     PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, 3 + bytes);
 }
 
-// not used
-static void BtlController_EmitSetRawMonData(u8 bufferId, u8 monId, u8 bytes, void *data)
+void BtlController_EmitSetRawMonData(u8 bufferId, u8 monId, u8 bytes, void *data)
 {
     s32 i;
 
@@ -703,7 +733,7 @@ static void BtlController_EmitPause(u8 bufferId, u8 toWait, void *data)
     PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, toWait * 3 + 2);
 }
 
-void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 movePower, s32 dmg, u8 friendship, struct DisableStruct *disableStructPtr)
+void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 movePower, s32 dmg, u8 friendship, struct DisableStruct *disableStructPtr, u8 hit)
 {
     sBattleBuffersTransferData[0] = CONTROLLER_MOVEANIMATION;
     sBattleBuffersTransferData[1] = move;
@@ -716,7 +746,7 @@ void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 m
     sBattleBuffersTransferData[8] = (dmg & 0x00FF0000) >> 16;
     sBattleBuffersTransferData[9] = (dmg & 0xFF000000) >> 24;
     sBattleBuffersTransferData[10] = friendship;
-    sBattleBuffersTransferData[11] = gMultiHitCounter; // multihit in pokeem
+    sBattleBuffersTransferData[11] = hit; // multihit in pokeem
     if (WEATHER_HAS_EFFECT2)
     {
         sBattleBuffersTransferData[12] = gBattleWeather;
@@ -733,6 +763,23 @@ void BtlController_EmitMoveAnimation(u8 bufferId, u16 move, u8 turnOfMove, u16 m
     PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, 16 + sizeof(struct DisableStruct));
 }
 
+static u8* StringCopyBattleStringLoader(u8 *dest, const u8 *src)
+{
+    s32 i;
+    s32 limit = 0x96;
+
+    for (i = 0; i < limit; i++)
+    {
+        dest[i] = src[i];
+
+        if (dest[i] == 0xFF)
+            return &dest[i];
+    }
+
+    dest[i] = 0xFF;
+    return &dest[i];
+}
+
 void BtlController_EmitPrintString(u8 bufferId, u16 stringID)
 {
     s32 i;
@@ -742,6 +789,7 @@ void BtlController_EmitPrintString(u8 bufferId, u16 stringID)
     sBattleBuffersTransferData[1] = gBattleOutcome;
     sBattleBuffersTransferData[2] = stringID;
     sBattleBuffersTransferData[3] = (stringID & 0xFF00) >> 8;
+
     stringInfo = (struct BattleMsgData *)(&sBattleBuffersTransferData[4]);
     stringInfo->currentMove = gCurrentMove;
     stringInfo->originallyUsedMove = gChosenMove;
@@ -752,8 +800,15 @@ void BtlController_EmitPrintString(u8 bufferId, u16 stringID)
     stringInfo->hpScale = gBattleStruct->hpScale;
     stringInfo->itemEffectBattler = gPotentialItemEffectBattler;
     stringInfo->moveType = gBattleMoves[gCurrentMove].type;
+    stringInfo->zMoveActive = gBattleStruct->zMoveData.active;
+	stringInfo->dynamaxActive = gBattleStruct->dynamaxData.active;
+
+    if (gBattleStringLoader !=  NULL)
+		StringCopyBattleStringLoader(stringInfo->battleStringLoader, gBattleStringLoader);
+
     for (i = 0; i < MAX_BATTLERS_COUNT; ++i)
-        stringInfo->abilities[i] = gBattleMons[i].ability;
+        stringInfo->abilities[i] = *GetAbilityLocation(i);
+
     for (i = 0; i < TEXT_BUFF_ARRAY_COUNT; ++i)
     {
         stringInfo->textBuffs[0][i] = gBattleTextBuff1[i];
@@ -779,8 +834,13 @@ void BtlController_EmitPrintSelectionString(u8 bufferId, u16 stringID)
     stringInfo->lastAbility = gLastUsedAbility;
     stringInfo->scrActive = gBattleScripting.battler;
     stringInfo->bakScriptPartyIdx = gBattleStruct->scriptPartyIdx;
+    stringInfo->zMoveActive = gBattleStruct->zMoveData.active;
+	stringInfo->dynamaxActive = gBattleStruct->dynamaxData.active;
+	if (gBattleStringLoader !=  NULL)
+		StringCopyBattleStringLoader(stringInfo->battleStringLoader, gBattleStringLoader);
+
     for (i = 0; i < MAX_BATTLERS_COUNT; ++i)
-        stringInfo->abilities[i] = gBattleMons[i].ability;
+        stringInfo->abilities[i] = *GetAbilityLocation(i);
     for (i = 0; i < TEXT_BUFF_ARRAY_COUNT; ++i)
     {
         stringInfo->textBuffs[0][i] = gBattleTextBuff1[i];
@@ -807,17 +867,196 @@ static void BtlController_EmitUnknownYesNoBox(u8 bufferId, u32 arg1) // TODO: Do
     PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, 2);
 }
 
+struct ChooseMoveStructOld
+{
+    u16 moves[4];		//0x0
+    u8 currentPp[4];	//0x8
+    u8 maxPp[4];		//0xC
+    u16 species;		//0x10
+    u8 monType1;		//0x12
+    u8 monType2;		//0x13
+};
+
+const u8 gMoveEffectsThatIgnoreWeaknessResistance[] = 
+{
+    EFFECT_BIDE,
+    EFFECT_SUPER_FANG,
+    EFFECT_DRAGON_RAGE,
+    EFFECT_SONICBOOM,
+    EFFECT_LEVEL_DAMAGE,
+    EFFECT_PSYWAVE,
+    EFFECT_MEMENTO,
+    EFFECT_ENDEAVOR,
+    EFFECT_PAIN_SPLIT,
+    EFFECT_COUNTER,
+    EFFECT_MIRROR_COAT,
+    MOVE_EFFECT_TABLES_TERMIN
+};
+
 void BtlController_EmitChooseMove(u8 bufferId, bool8 isDoubleBattle, bool8 NoPpNumber, struct ChooseMoveStruct *movePpData)
 {
-    s32 i;
+    u32 i, j;
+    const struct Evolution* evolutions;
 
-    sBattleBuffersTransferData[0] = CONTROLLER_CHOOSEMOVE;
-    sBattleBuffersTransferData[1] = isDoubleBattle;
-    sBattleBuffersTransferData[2] = NoPpNumber;
-    sBattleBuffersTransferData[3] = 0;
-    for (i = 0; i < sizeof(*movePpData); ++i)
-        sBattleBuffersTransferData[4 + i] = *((u8 *)(movePpData) + i);
-    PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, sizeof(*movePpData) + 4);
+    struct ChooseMoveStruct* tempMoveStruct = AllocZeroed(sizeof(struct ChooseMoveStruct)); //Make space for new expanded data
+	memcpy(tempMoveStruct, movePpData, sizeof(struct ChooseMoveStructOld)); //Copy the old data
+	tempMoveStruct->monType1 = gBattleMons[gActiveBattler].type1;
+	tempMoveStruct->monType2 = gBattleMons[gActiveBattler].type2;
+	tempMoveStruct->monType3 = gBattleMons[gActiveBattler].type3;
+	tempMoveStruct->ability = ABILITY(gActiveBattler);
+
+    //Fix Transformed Move PP
+	if (IS_TRANSFORMED(gActiveBattler))
+	{
+		for (i = 0; i < MAX_MON_MOVES; ++i)
+		{
+			if (tempMoveStruct->maxPp[i] > 5)
+				tempMoveStruct->maxPp[i] = 5;
+		}
+	}
+
+	tempMoveStruct->dynamaxed = IsDynamaxed(gActiveBattler);
+	tempMoveStruct->dynamaxDone = gBattleStruct->dynamaxData.used[gActiveBattler];
+	if ((!gBattleStruct->dynamaxData.used[gActiveBattler] || IsDynamaxed(gActiveBattler))
+	&& DynamaxEnabled(gActiveBattler)
+	&& MonCanDynamax(GetBankPartyData(gActiveBattler))
+	&& !BATTLER_SEMI_INVULNERABLE(gActiveBattler))
+	{
+		for (i = 0; i < MAX_MON_MOVES; ++i)
+			tempMoveStruct->possibleMaxMoves[i] = GetMaxMove(gActiveBattler, i);
+	}
+
+    gBattleScripting.dmgMultiplier = 1;
+
+    for (i = 0; i < MAX_MON_MOVES; ++i)
+	{
+		u8 foe = (IS_DOUBLE_BATTLE && !BATTLER_ALIVE(FOE(gActiveBattler))) ? PARTNER(FOE(gActiveBattler)) : FOE(gActiveBattler);
+		u16 originalMove = gBattleMons[gActiveBattler].moves[i];
+		u16 move = (tempMoveStruct->dynamaxed) ? tempMoveStruct->possibleMaxMoves[i] : originalMove;
+
+		tempMoveStruct->moveTypes[i] = GetMoveTypeSpecial(gActiveBattler, move);
+
+		if (IS_DOUBLE_BATTLE && CountAliveMonsInBattle(BATTLE_ALIVE_DEF_SIDE, gActiveBattler, foe) >= 2) //Because target can vary, display only attacker's modifiers
+		{
+			tempMoveStruct->movePowers[i] = CalcVisualBasePower(gActiveBattler, gActiveBattler, move, TRUE);
+			tempMoveStruct->moveAcc[i] = VisualAccuracyCalc_NoTarget(move, gActiveBattler);
+
+			if (tempMoveStruct->possibleMaxMoves[i] != MOVE_NONE)
+			{
+				gBattleStruct->ai.zMoveHelper = originalMove;
+				tempMoveStruct->maxMovePowers[i] = CalcVisualBasePower(gActiveBattler, gActiveBattler, tempMoveStruct->possibleMaxMoves[i], TRUE);
+				gBattleStruct->ai.zMoveHelper = MOVE_NONE;
+			}
+
+			for (j = 0; j < gBattlersCount; ++j)
+			{
+				if (SPLIT(move) != SPLIT_STATUS)
+				{
+					u8 moveResult;
+
+					if (j == gActiveBattler || j == PARTNER(gActiveBattler))
+					{
+						tempMoveStruct->moveResults[GetBattlerPosition(j)][i] = 0;
+						continue;
+					}
+
+					moveResult = VisualTypeCalc(move, gActiveBattler, j);
+
+					if (!(moveResult & MOVE_RESULT_NO_EFFECT)
+					&& (CheckTableForMoveEffect(move, gMoveEffectsThatIgnoreWeaknessResistance) || gBattleMoves[move].effect == EFFECT_OHKO))
+						moveResult = 0; //These moves can have no effect, but are neither super nor not very effective
+					tempMoveStruct->moveResults[GetBattlerPosition(j)][i] = moveResult;
+				}
+				else
+					tempMoveStruct->moveResults[GetBattlerPosition(j)][i] = 0;
+			}
+		}
+		else //Single Battle or single target
+		{
+			tempMoveStruct->movePowers[i] = CalcVisualBasePower(gActiveBattler, foe, move, FALSE);
+			tempMoveStruct->moveAcc[i] = VisualAccuracyCalc(move, gActiveBattler, foe);
+
+			if (tempMoveStruct->possibleMaxMoves[i] != MOVE_NONE)
+			{
+				gBattleStruct->ai.zMoveHelper = originalMove;
+				tempMoveStruct->maxMovePowers[i] = CalcVisualBasePower(gActiveBattler, foe, tempMoveStruct->possibleMaxMoves[i], FALSE);
+				gBattleStruct->ai.zMoveHelper = MOVE_NONE;
+			}
+
+			if (SPLIT(move) != SPLIT_STATUS)
+			{
+				u8 moveResult = VisualTypeCalc(move, gActiveBattler, foe);
+
+				if (!(moveResult & MOVE_RESULT_NO_EFFECT)
+				&& (CheckTableForMoveEffect(move, gMoveEffectsThatIgnoreWeaknessResistance) || gBattleMoves[move].effect == EFFECT_OHKO))
+					moveResult = 0; //These moves can have no effect, but are neither super nor not very effective
+
+				tempMoveStruct->moveResults[GetBattlerPosition(foe)][i] = moveResult;
+			}
+			else
+				tempMoveStruct->moveResults[GetBattlerPosition(foe)][i] = 0;
+		}
+	}
+
+	tempMoveStruct->megaDone = gBattleStruct->megaData.done[gActiveBattler];
+	tempMoveStruct->ultraDone = gBattleStruct->ultraData.done[gActiveBattler];
+	if (!IS_TRANSFORMED(gActiveBattler) && !tempMoveStruct->dynamaxed)
+	{
+		if (!gBattleStruct->megaData.done[gActiveBattler])
+		{
+			evolutions = CanMegaEvolve(gActiveBattler, FALSE);
+			if (evolutions != NULL)
+			{
+				if (!BankMegaEvolved(gActiveBattler, FALSE)
+				&& MegaEvolutionEnabled(gActiveBattler)
+				&& !BATTLER_SEMI_INVULNERABLE(gActiveBattler) //No Mega Evolving while not on screen
+				&& !DoesZMoveUsageStopMegaEvolution(gActiveBattler) //No Mega Evolving if you've used a Z-Move (*cough* *cough* Rayquaza)
+				&& !DoesDynamaxUsageStopMegaEvolution(gActiveBattler))
+				{
+					tempMoveStruct->canMegaEvolve = TRUE;
+					tempMoveStruct->megaVariance = evolutions->unknown;
+				}
+			}
+		}
+
+		if (!gBattleStruct->ultraData.done[gActiveBattler])
+		{
+			evolutions = CanMegaEvolve(gActiveBattler, TRUE); //Check Ultra Burst
+			if (evolutions != NULL)
+			{
+				if (!BankMegaEvolved(gActiveBattler, TRUE) //Check Ultra Burst
+				&& !BATTLER_SEMI_INVULNERABLE(gActiveBattler) //No Ultra Bursting while not on screen
+				&& !DoesDynamaxUsageStopMegaEvolution(gActiveBattler))
+				{
+					tempMoveStruct->canMegaEvolve = TRUE;
+					tempMoveStruct->megaVariance = evolutions->unknown;
+				}
+			}
+		}
+	}
+
+	tempMoveStruct->zMoveUsed = gBattleStruct->zMoveData.used[gActiveBattler];
+	tempMoveStruct->zPartyIndex = gBattleStruct->zMoveData.partyIndex[SIDE(gActiveBattler)];
+	if (!gBattleStruct->zMoveData.used[gActiveBattler] && !IsMegaZMoveBannedBattle() && !IsMega(gActiveBattler) && !IsBluePrimal(gActiveBattler) && !IsRedPrimal(gActiveBattler))
+	{
+		u8 limitations = CheckMoveLimitations(gActiveBattler, 0, MOVE_LIMITATION_PP);
+
+		for (i = 0; i < MAX_MON_MOVES; ++i)
+		{
+			if (!(limitations & gBitTable[i])) //Don't display a Z-Move if the base move has no PP
+				tempMoveStruct->possibleZMoves[i] = CanUseZMove(gActiveBattler, i, 0);
+		}
+	}
+
+	sBattleBuffersTransferData[0] = CONTROLLER_CHOOSEMOVE;
+	sBattleBuffersTransferData[1] = isDoubleBattle;
+	sBattleBuffersTransferData[2] = NoPpNumber;
+	sBattleBuffersTransferData[3] = 0;
+	for (i = 0; i < sizeof(*tempMoveStruct); ++i)
+		sBattleBuffersTransferData[4 + i] = ((u8*)(tempMoveStruct))[i];
+	PrepareBufferDataTransfer(bufferId, sBattleBuffersTransferData, sizeof(*tempMoveStruct) + 4);
+
+	Free(tempMoveStruct);
 }
 
 void BtlController_EmitChooseItem(u8 bufferId, u8 *arg1)

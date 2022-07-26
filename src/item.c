@@ -7,6 +7,7 @@
 #include "load_save.h"
 #include "quest_log.h"
 #include "strings.h"
+#include "set_z_effect.h"
 #include "constants/hold_effects.h"
 #include "constants/items.h"
 #include "constants/maps.h"
@@ -611,8 +612,6 @@ void TrySetObtainedItemQuestLogEvent(u16 itemId)
 
 u16 SanitizeItemId(u16 itemId)
 {
-    if (itemId >= ITEM_N_A)
-        return ITEM_NONE;
     return itemId;
 }
 
@@ -684,4 +683,29 @@ ItemUseFunc ItemId_GetBattleFunc(u16 itemId)
 u8 ItemId_GetSecondaryId(u16 itemId)
 {
     return gItems[SanitizeItemId(itemId)].secondaryId;
+}
+
+bool8 IsBerry(u16 item)
+{
+	return GetPocketByItemId(item) == POCKET_BERRY_POUCH;
+}
+
+bool8 IsMegaStone(u16 item)
+{
+	return ItemId_GetHoldEffect(item) == HOLD_EFFECT_MEGA_STONE;
+}
+
+bool8 IsPrimalOrb(u16 item)
+{
+	return ItemId_GetHoldEffect(item) == HOLD_EFFECT_PRIMAL_ORB;
+}
+
+bool8 IsZCrystal(u16 item)
+{
+	return ItemId_GetHoldEffect(item) == HOLD_EFFECT_Z_CRYSTAL;
+}
+
+bool8 IsTypeZCrystal(u16 item, u8 moveType)
+{
+	return IsZCrystal(item) && ItemId_GetHoldEffectParam(item) == moveType && !IsSpecialZCrystal(item);
 }

@@ -54,6 +54,29 @@
 #define B_TXT_TRAINER2_LOSE_TEXT 0x2E
 #define B_TXT_TRAINER2_WIN_TEXT 0x2F
 #define B_TXT_BUFF3 0x30
+#define B_TXT_AFFECTS_TARGET_SIDE 0x35
+#define B_TXT_AFFECTS_ATTACKER_SIDE 0x36
+#define B_TXT_AFFECTS_TARGET_SIDE_CAPS 0x37
+#define B_TXT_AFFECTS_ATTACKER_SIDE_CAPS 0x38
+#define B_TXT_SCRIPTING_TRAINER 0x39
+#define B_TXT_CAPTURED_MON_NAME 0x3A
+#define B_TXT_DEF_NAME 0x3B
+#define B_TXT_DEF_PARTNER_NAME 0x3C
+#define B_TXT_DEF_PREFIX5 0x3D
+/*
+#define B_TXT_TRAINER2_WIN_TEXT 0x31
+#define B_TXT_PARTNER_CLASS 0x32
+#define B_TXT_PARTNER_NAME 0x33
+#define B_TXT_BUFF3 0x34
+#define B_TXT_AFFECTS_TARGET_SIDE 0x35
+#define B_TXT_AFFECTS_ATTACKER_SIDE 0x36
+#define B_TXT_AFFECTS_TARGET_SIDE_CAPS 0x37
+#define B_TXT_AFFECTS_ATTACKER_SIDE_CAPS 0x38
+#define B_TXT_SCRIPTING_TRAINER 0x39
+#define B_TXT_CAPTURED_MON_NAME 0x3A
+#define B_TXT_DEF_NAME 0x3B
+#define B_TXT_DEF_PARTNER_NAME 0x3C
+#define B_TXT_DEF_PREFIX5 0x3D*/
 
 // for B_TXT_BUFF1, B_TXT_BUFF2 and B_TXT_BUFF3
 
@@ -192,6 +215,27 @@
     textVar[4] = B_BUFF_EOS;                                    \
 }
 
+#define PREPARE_STAT_ROSE(textvar);											\
+{																			\
+	textvar[0] = B_BUFF_PLACEHOLDER_BEGIN;									\
+	textvar[1] = B_BUFF_STRING;												\
+	textvar[2] = STRINGID_STATROSE;											\
+	textvar[3] = STRINGID_STATROSE >> 8;									\
+	textvar[4] = B_BUFF_EOS;												\
+}
+
+#define TEXT_BUFFER_SIDE_STATUS(move, status, side)				\
+{																\
+	gSideStatuses[side] &= ~status;							\
+	gBattleTextBuff1[0] = 0xFD;									\
+	gBattleTextBuff1[1] = 0x2;									\
+	gBattleTextBuff1[2] = (move & 0xFF);						\
+	gBattleTextBuff1[3] = move >> 8;							\
+	gBattleTextBuff1[4] = EOS;									\
+	BattleScriptPushCursor();									\
+	gBattlescriptCurrInstr = BattleScript_SideStatusWoreOffRet;	\
+}
+
 struct BattleMsgData
 {
     u16 currentMove;
@@ -203,8 +247,11 @@ struct BattleMsgData
     u8 hpScale;
     u8 itemEffectBattler;
     u8 moveType;
+    bool8 zMoveActive;
+	bool8 dynamaxActive;
     u8 abilities[4];
     u8 textBuffs[3][0x10];
+    u8 battleStringLoader[0x96];
 };
 
 void BufferStringBattle(u16 stringID);

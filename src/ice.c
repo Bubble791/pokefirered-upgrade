@@ -19,18 +19,18 @@ static void sub_80AF108(struct Sprite *sprite);
 static void sub_80AF28C(struct Sprite *sprite);
 static void AnimIcePunchSwirlingParticle(struct Sprite *sprite);
 static void AnimIceBeamParticle(struct Sprite *sprite);
-static void AnimIceEffectParticle(struct Sprite *sprite);
+void AnimIceEffectParticle(struct Sprite *sprite);
 static void AnimFlickerIceEffectParticle(struct Sprite *sprite);
-static void AnimSwirlingSnowball_Step1(struct Sprite *sprite);
+void AnimSwirlingSnowball_Step1(struct Sprite *sprite);
 static void AnimSwirlingSnowball_Step2(struct Sprite *sprite);
 static void AnimSwirlingSnowball_Step3(struct Sprite *sprite);
 static void AnimSwirlingSnowball_End(struct Sprite *sprite);
-static void AnimMoveParticleBeyondTarget(struct Sprite *sprite);
+void AnimMoveParticleBeyondTarget(struct Sprite *sprite);
 static void AnimWiggleParticleTowardsTarget(struct Sprite *sprite);
 static void AnimWaveFromCenterOfTarget(struct Sprite *sprite);
-static void InitSwirlingFogAnim(struct Sprite *sprite);
+void InitSwirlingFogAnim(struct Sprite *sprite);
 static void AnimSwirlingFogAnim(struct Sprite *sprite);
-static void AnimThrowMistBall(struct Sprite *sprite);
+void AnimThrowMistBall(struct Sprite *sprite);
 static void InitPoisonGasCloudAnim(struct Sprite *sprite);
 static void MovePoisonGasCloud(struct Sprite *sprite);
 static void AnimHailBegin(struct Sprite *sprite);
@@ -111,22 +111,22 @@ static const union AnimCmd *const gUnknown_83E631C[] =
     gUnknown_83E62E8,
 };
 
-static const union AnimCmd *const sAnims_IceCrystalLarge[] =
+const union AnimCmd *const sAnims_IceCrystalLarge[] =
 {
     sAnim_IceCrystalLarge,
 };
 
-static const union AnimCmd *const sAnims_IceCrystalSmall[] =
+const union AnimCmd *const sAnims_IceCrystalSmall[] =
 {
     sAnim_IceCrystalSmall,
 };
 
-static const union AnimCmd *const sAnims_Snowball[] =
+const union AnimCmd *const sAnims_Snowball[] =
 {
     sAnim_Snowball,
 };
 
-static const union AnimCmd *const sAnims_BlizzardIceCrystal[] =
+const union AnimCmd *const sAnims_BlizzardIceCrystal[] =
 {
     sAnim_BlizzardIceCrystal,
 };
@@ -210,7 +210,7 @@ static const union AffineAnimCmd sAffineAnim_IceCrystalHit[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sAffineAnims_IceCrystalHit[] =
+const union AffineAnimCmd *const sAffineAnims_IceCrystalHit[] =
 {
     sAffineAnim_IceCrystalHit,
 };
@@ -305,7 +305,7 @@ static const union AnimCmd sAnim_Cloud[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sAnims_Cloud[] =
+const union AnimCmd *const sAnims_Cloud[] =
 {
     sAnim_Cloud,
 };
@@ -451,7 +451,7 @@ static const union AnimCmd sAnim_IceBallChunk_1[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sAnims_IceBallChunk[] =
+const union AnimCmd *const sAnims_IceBallChunk[] =
 {
     sAnim_IceBallChunk_0,
     sAnim_IceBallChunk_1,
@@ -613,7 +613,7 @@ static void AnimIceBeamParticle(struct Sprite *sprite)
 // arg 0: target x offset
 // arg 1: target y offset
 // arg 2: ??? unknown boolean
-static void AnimIceEffectParticle(struct Sprite *sprite)
+void AnimIceEffectParticle(struct Sprite *sprite)
 {
     if (gBattleAnimArgs[2] == 0)
     {
@@ -645,7 +645,7 @@ static void AnimFlickerIceEffectParticle(struct Sprite *sprite)
 // arg 3: target y offset
 // arg 4: particle speed
 // arg 5: multiple targets? (boolean)
-static void AnimSwirlingSnowball_Step1(struct Sprite *sprite)
+void AnimSwirlingSnowball_Step1(struct Sprite *sprite)
 {
     s32 i;
     s16 tempDataHolder[8];
@@ -748,7 +748,7 @@ static void AnimSwirlingSnowball_End(struct Sprite *sprite)
 // arg 5: wave amplitude
 // arg 6: wave frequency
 // arg 7: multiple targets? (boolean)
-static void AnimMoveParticleBeyondTarget(struct Sprite *sprite)
+void AnimMoveParticleBeyondTarget(struct Sprite *sprite)
 {
     s32 i;
     s16 tempDataHolder[8];
@@ -849,7 +849,7 @@ static void AnimWaveFromCenterOfTarget(struct Sprite *sprite)
 // arg 3: duration
 // arg 4: animate on opponent? (boolean)
 // arg 5: ??? unknown boolean
-static void InitSwirlingFogAnim(struct Sprite *sprite)
+void InitSwirlingFogAnim(struct Sprite *sprite)
 {
     s16 tempVar;
     u8  battler;
@@ -1017,7 +1017,7 @@ static void AnimTask_Haze2(u8 taskId)
 // arg 3: target y offset
 // arg 4: duration
 // arg 5: ??? unknown (seems to vibrate target mon somehow)
-static void AnimThrowMistBall(struct Sprite *sprite)
+void AnimThrowMistBall(struct Sprite *sprite)
 {
     sprite->x = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_X_2);
     sprite->y = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_Y_PIC_OFFSET);

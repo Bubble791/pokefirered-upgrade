@@ -49,7 +49,7 @@ const u8 unref_83FFAAC[] = {
 
 const u8 unref_83FFABF[] = _("100");
 
-static const struct BattleTowerTrainer sBattleTowerTrainers[] =
+static const struct BattleTowerTrainer_ sBattleTowerTrainers[] =
 {
 
 };

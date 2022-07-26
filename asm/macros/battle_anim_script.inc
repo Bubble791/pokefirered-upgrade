@@ -283,3 +283,215 @@
 	.macro jumpretfalse ptr:req
 	jumpreteq FALSE, \ptr
 	.endm
+
+@new macros
+	.macro objtemplate objtemplatetiletag objtemplatepaltag objtemplateoam objtemplateimageanim objtemplategfx objtemplaterotscale objtemplatecallback
+	.2byte \objtemplatetiletag
+	.2byte \objtemplatepaltag
+	.4byte \objtemplateoam
+	.4byte \objtemplateimageanim
+	.4byte \objtemplategfx
+	.4byte \objtemplaterotscale
+	.4byte \objtemplatecallback
+	.endm
+
+	.macro launchtask launchtaskPtr launchtaskPriority launchtaskArgsNo launchtaskarg0 launchtaskarg1 launchtaskarg2 launchtaskarg3 launchtaskarg4 launchtaskarg5 launchtaskarg6 launchtaskarg7 launchtaskarg8
+	.byte 0x3
+	.4byte \launchtaskPtr
+	.byte \launchtaskPriority
+	.byte \launchtaskArgsNo
+	.2byte \launchtaskarg0
+	.2byte \launchtaskarg1
+	.2byte \launchtaskarg2
+	.2byte \launchtaskarg3
+	.2byte \launchtaskarg4
+	.2byte \launchtaskarg5
+	.2byte \launchtaskarg6
+	.2byte \launchtaskarg7
+	.2byte \launchtaskarg8
+	.endm
+
+	.macro pause pause_cmdToWait
+	.byte 0x4
+	.byte \pause_cmdToWait
+	.endm
+
+	.macro waitanimation
+	.byte 0x5
+	.endm
+
+	.macro endanimation
+	.byte 0x8
+	.endm
+
+	.macro playsound1 playsound1ID
+	.byte 0x9
+	.2byte \playsound1ID
+	.endm
+
+	.macro pokespritetoBG animABank
+	.byte 0xA
+	.byte \animABank
+	.endm
+
+	.macro pokespritefromBG animBBank
+	.byte 0xB
+	.byte \animBBank
+	.endm
+
+	.macro setblends setblends_value
+	.byte 0xC
+	.2byte \setblends_value
+	.endm
+
+	.macro resetblends
+	.byte 0xD
+	.endm
+
+	.macro loadBG1 loadBG1ID
+	.byte 0x14
+	.byte \loadBG1ID
+	.endm
+
+	.macro loaddefaultBG
+	.byte 0x15
+	.endm
+
+	.macro loadBG2 loadBG2ID
+	.byte 0x18
+	.byte \loadBG2ID
+	.endm
+
+	.macro playsound2 playsound2ID playsound2Unkown
+	.byte 0x19
+	.2byte \playsound2ID
+	.byte \playsound2Unkown
+	.endm
+
+	.macro pancontrol anim1Aarg1
+	.byte 0x1A
+	.byte \anim1Aarg1
+	.endm
+
+	.macro playsoundpanchange anim1BsongID anim1BArg3 anim1BArg4 anim1BArg5 anim1BArg6
+	.byte 0x1B
+	.2byte \anim1BsongID
+	.byte \anim1BArg3
+	.byte \anim1BArg4
+	.byte \anim1BArg5
+	.byte \anim1BArg6
+	.endm
+
+	.macro soundcomplex anim1Carg1 anim1Carg2 anim1Carg3 anim1Carg4
+	.byte 0x1C
+	.2byte \anim1Carg1
+	.byte \anim1Carg2
+	.byte \anim1Carg3
+	.byte \anim1Carg4
+	.endm
+
+	.macro playsoundwait anim1Darg1 anim1Darg2 anim1Darg3
+	.byte 0x1D
+	.2byte \anim1Darg1
+	.byte \anim1Darg2
+	.byte \anim1Darg3
+	.endm
+
+	.macro set_BLDCNT set_BLDCNTvalue
+	.byte 0x1E
+	.2byte \set_BLDCNTvalue
+	.endm
+
+	.macro launchsoundtask launchsoundtaskPtr launchsoundtaskArgsNo launchsoundtaskarg0 launchsoundtaskarg1 launchsoundtaskarg2 launchsoundtaskarg3 launchsoundtaskarg4 launchsoundtaskarg5 launchsoundtaskarg6 launchsoundtaskarg7 launchsoundtaskarg8
+	.byte 0x1F
+	.4byte \launchsoundtaskPtr
+	.byte \launchsoundtaskArgsNo
+	.2byte \launchsoundtaskarg0
+	.2byte \launchsoundtaskarg1
+	.2byte \launchsoundtaskarg2
+	.2byte \launchsoundtaskarg3
+	.2byte \launchsoundtaskarg4
+	.2byte \launchsoundtaskarg5
+	.2byte \launchsoundtaskarg6
+	.2byte \launchsoundtaskarg7
+	.2byte \launchsoundtaskarg8
+	.endm
+
+	.macro waitforsound
+	.byte 0x20
+	.endm
+
+	.macro jumpifargmatches jumpifargmatchesargID jumpifargmatchesValue jumpifargmatchesPtr
+	.byte 0x21
+	.byte \jumpifargmatchesargID
+	.2byte \jumpifargmatchesValue
+	.4byte \jumpifargmatchesPtr
+	.endm
+
+	.macro pokespritetoBG2 animABank
+	.byte 0x22
+	.byte \animABank
+	.endm
+
+	.macro pokespritefromBG2 animBBank
+	.byte 0x23
+	.byte \animBBank
+	.endm
+
+	.macro jumpifnotinbattle jumpifnotinbattlePTR
+	.byte 0x24
+	.4byte \jumpifnotinbattlePTR
+	.endm
+
+	.macro chooseBG chooseBG1 chooseBG2 chooseBG3
+	.byte 0x25
+	.byte \chooseBG1
+	.byte \chooseBG2
+	.byte \chooseBG3
+	.endm
+
+	.macro playsoundpanchange2 anim26H0 anim26B0 anim26B1 anim26B2 anim26B3
+	.byte 0x26
+	.2byte \anim26H0
+	.byte \anim26B0
+	.byte \anim26B1
+	.byte \anim26B2
+	.byte \anim26B3
+	.endm
+
+	.macro playsoundpanchange3 anim27H0 anim27B0 anim27B1 anim27B2 anim27B3
+	.byte 0x27
+	.2byte \anim27H0
+	.byte \anim27B0
+	.byte \anim27B1
+	.byte \anim27B2
+	.byte \anim27B3
+	.endm
+
+	.macro leftbankBG_over_partnerBG anim28Bank
+	.byte 0x28
+	.byte \anim28Bank
+	.endm
+
+	.macro bankBG_over_partnerBG
+	.byte 0x29
+	.endm
+
+	.macro leftopponentbankBG_over_partnerBG anim2Aarg
+	.byte 0x2A
+	.byte \anim2Aarg
+	.endm
+
+	.macro makebankinvisible makebankinvisibleBank
+	.byte 0x2B
+	.byte \makebankinvisibleBank
+	.endm
+
+	.macro makebankvisible makebankvisibleBank
+	.byte 0x2C
+	.byte \makebankvisibleBank
+	.endm
+
+	.macro stopmusic
+	.byte 0x2F
+	.endm

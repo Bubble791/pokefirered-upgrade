@@ -226,6 +226,9 @@ extern const u8 gText_MoveInterfacePP[];
 extern const u8 gText_MoveInterfaceType[];
 extern const u8 gText_LinkStandby[];
 extern const u8 gText_BattleMenu[];
+extern const u8 gText_BattleMenu2[];
+extern const u8 gText_BattleMenuRaidEnd[];
+extern const u8 gText_CaptureRaidMon[];
 extern const u8 gText_WhatWillPkmnDo[];
 
 // battle_script_commands

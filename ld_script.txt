@@ -74,6 +74,18 @@ SECTIONS {
         src/battle_controller_opponent.o(.text);
         src/battle_ai_switch_items.o(.text);
         src/battle_controller_link_opponent.o(.text);
+        src/ability_battle_effects.o(.text);
+        src/damage_calc.o(.text);
+        src/accuracy.o(.text);
+        src/attackcanceler.o(.text);
+        src/build_pokemon.o(.text);
+        src/switching.o(.text);
+        src/stat_buffs.o(.text);
+        src/mega.o(.text);
+        src/set_z_effect.o(.text);
+        src/ai_util.o(.text);
+        src/new_battle_anim.o(.text);
+        src/form_change.o(.text);
         src/pokemon.o(.text);
         src/trig.o(.text);
         src/random.o(.text);
@@ -310,6 +322,9 @@ SECTIONS {
         src/siirtc.o(.text);
         src/rtc.o(.text);
         src/dns.o(.text);
+        src/dynamax.o(.text);
+        src/frontier.o(.text);
+        src/debug.o(.text);
     } =0
 
     script_data :
@@ -322,6 +337,13 @@ SECTIONS {
         data/battle_scripts_2.o(script_data);
         data/battle_ai_scripts.o(script_data);
         data/mystery_event_script_cmd_table.o(script_data);
+        data/ability_battle_scripts.o(script_data);
+        data/cmd49_battle_scripts.o(script_data);
+        data/et_battle_scripts.o(script_data);
+        data/attackcanceler_battle_scripts.o(script_data);
+        data/item_battle_scripts.o(script_data);
+        data/battle_start_turn_battle_scripts.o(script_data);
+        data/set_effect_battle_scripts.o(script_data);
     } =0
 
     lib_text :
@@ -412,11 +434,25 @@ SECTIONS {
         src/battle_bg.o(.rodata);
         src/battle_main.o(.rodata);
         src/battle_util.o(.rodata);
+        src/battle_util2.o(.rodata);
         src/battle_script_commands.o(.rodata);
         src/battle_controller_player.o(.rodata);
         data/smokescreen.o(.rodata);
         src/battle_controller_opponent.o(.rodata);
+        src/battle_controllers.o(.rodata);
         src/battle_controller_link_opponent.o(.rodata);
+        src/ability_battle_effects.o(.rodata);
+        src/damage_calc.o(.rodata);
+        src/accuracy.o(.rodata);
+        src/attackcanceler.o(.rodata);
+        src/build_pokemon.o(.rodata);
+        src/switching.o(.rodata);
+        src/stat_buffs.o(.rodata);
+        src/mega.o(.rodata);
+        src/set_z_effect.o(.rodata);
+        src/ai_util.o(.rodata);
+        src/new_battle_anim.o(.rodata);
+        src/form_change.o(.rodata);
         src/pokemon.o(.rodata);
         src/trig.o(.rodata);
         src/util.o(.rodata);
@@ -608,6 +644,9 @@ SECTIONS {
         src/move_descriptions.o(.rodata);
         src/rtc.o(.rodata);
         src/dns.o(.rodata);
+        src/dynamax.o(.rodata);
+        src/frontier.o(.rodata);
+        src/debug.o(.rodata);
 
         /* These should not be moved to C files */
         src/mystery_event_msg.o(.rodata);

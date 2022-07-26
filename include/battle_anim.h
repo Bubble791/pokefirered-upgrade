@@ -34,6 +34,8 @@ struct BattleAnimBackground
     const u32 *tilemap;
 };
 
+extern const struct UCoords8 sBattlerCoords[][4];
+
 #define ANIM_ARGS_COUNT 8
 
 // Linear Translation
@@ -61,6 +63,8 @@ extern u8 gBattlerSpriteIds[MAX_BATTLERS_COUNT];
 extern s32 gAnimMoveDmg;
 extern u16 gAnimBattlerSpecies[MAX_BATTLERS_COUNT];
 extern u8 gUnknown_2037F24;
+extern u16 sAnimMoveIndex;
+extern const u8 *sBattleAnimScriptPtr;
 
 // battle_anim.c
 extern const struct OamData gOamData_AffineOff_ObjNormal_8x8;
@@ -487,12 +491,14 @@ void AnimTask_BlendColorCycleByTag(u8 taskId);
 void AnimTask_FlashAnimTagWithColor(u8 taskId);
 void AnimTask_InvertScreenColor(u8 taskId);
 void AnimTask_ShakeBattleTerrain(u8 taskId);
+void sub_80BA7BC(struct Sprite *sprite);
 
 // ground.c
 void AnimTask_DigDownMovement(u8 taskId);
 void AnimTask_DigUpMovement(u8 taskId);
 void AnimTask_HorizontalShake(u8 taskId);
 void AnimTask_IsPowerOver99(u8 taskId);
+void AnimMudSportDirtRising(struct Sprite *sprite);
 void AnimTask_PositionFissureBgOnBattler(u8 taskId);
 
 // dragon.c
@@ -506,6 +512,7 @@ void AnimTask_DestinyBondWhiteShadow(u8 taskId);
 void AnimTask_CurseStretchingBlackBg(u8 taskId);
 void AnimTask_GrudgeFlames(u8 taskId);
 void sub_80B6BBC(u8 taskId);
+void sub_80B696C(u8 taskId);
 
 // rock.c
 void AnimTask_LoadSandstormBackground(u8 taskId);
@@ -534,17 +541,25 @@ void sub_80B8664(u8 taskId);
 void AnimTask_MetallicShine(u8 taskId);
 void AnimTask_SetGreyscaleOrOriginalPal(u8 taskId);
 void GetIsDoomDesireHitTurn(u8 taskId);
+void sub_80B7C10(struct Sprite *sprite);
+void AnimBite(struct Sprite *sprite);
 
 // flying.c
 void AnimTask_AnimateGustTornadoPalette(u8 taskId);
 void DestroyAnimSpriteAfterTimer(struct Sprite *sprite);
 void AnimTask_DrillPeckHitSplats(u8 taskId);
+void sub_80B1CC0(struct Sprite *sprite);
+void sub_80B190C(struct Sprite *sprite);
 
 // poison.c
 extern const union AffineAnimCmd *const gAffineAnims_Droplet[];
+void sub_80B1728(struct Sprite *sprite);
 
 // fighting.c
 void AnimTask_MoveSkyUppercutBg(u8 taskId);
+void AnimSpinningKickOrPunchFinish(struct Sprite *sprite);
+void sub_80B0EF0(struct Sprite *sprite);
+void AnimDizzyPunchDuck(struct Sprite *sprite);
 
 // ice.c
 extern const union AnimCmd *const gAnims_SmallBubblePair[];
@@ -560,6 +575,7 @@ void AnimTask_VoltTackleAttackerReappear(u8 taskId);
 void AnimTask_VoltTackleBolt(u8 taskId);
 void AnimTask_ShockWaveProgressingBolt(u8 taskId);
 void AnimTask_ShockWaveLightning(u8 taskId);
+bool8 sub_80AF058(struct Task *task, u8 taskId);
 
 // fire.c
 extern const union AnimCmd *const gAnims_BasicFire[];
@@ -605,9 +621,26 @@ void AnimTask_SetAnimTargetToBattlerTarget(u8 taskId);
 void AnimTask_SetAnimAttackerAndTargetForEffectAtk(u8 taskId);
 void AnimTask_SetAttackerInvisibleWaitForSignal(u8 taskId);
 
+void sub_807331C(u8 taskId);
+void StartBlendAnimSpriteColor(u8 taskId, u32 selectedPalettes);
+void AnimNeedleArmSpikeStep(struct Sprite *);
+
+// bug.s
+void AnimSpiderWeb(struct Sprite *sprite);
+void AnimMissileArc(struct Sprite *sprite);
+void AnimMissileArcStep(struct Sprite *sprite);
+void sub_80B4274(struct Sprite *sprite);
+
+void AnimBlockXStep(struct Sprite *);
+void SpriteCB_ThrowBall_Bounce(struct Sprite *);
+extern const union AnimCmd *const sExplosionAnimTable[];
+bool8 IsAnimMoveBloomDoom(void);
+
+void SpriteCB_CriticalCaptureThrownBallMovement(struct Sprite* sprite);
+
+extern const union AffineAnimCmd *const sFallingBagAffineAnimTable[];
 // battle_anim_scripts.s
 extern const u8 *const gBattleAnims_StatusConditions[];
-extern const u16 gMovesWithQuietBGM[];
 extern const u8 *const gBattleAnims_Moves[];
 
 #endif // GUARD_BATTLE_ANIM_H

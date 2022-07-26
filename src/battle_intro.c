@@ -1,11 +1,15 @@
 #include "global.h"
 #include "gflib.h"
 #include "battle.h"
+#include "battle_controllers.h"
+#include "battle_scripts.h"
 #include "battle_anim.h"
 #include "battle_setup.h"
 #include "scanline_effect.h"
+#include "pokemon.h"
 #include "task.h"
 #include "trig.h"
+#include "constants/species.h"
 
 static EWRAM_DATA u16 sBgCnt = 0;
 
@@ -95,20 +99,35 @@ s32 GetAnimBgAttribute(u8 bgId, u8 attributeId)
 void HandleIntroSlide(u8 terrain)
 {
     u8 taskId;
+    int bank;
+    for (bank = 0; bank < gBattlersCount; ++bank)
+    {
+        if (GetMonAbility(GetBankPartyData(bank)) == ABILITY_ILLUSION)
+            gStatuses3[bank] |= STATUS3_ILLUSION;
+    }
 
     if (gBattleTypeFlags & BATTLE_TYPE_LINK)
     {
         taskId = CreateTask(BattleIntroSlideLink, 0);
     }
-    else if ((gBattleTypeFlags & BATTLE_TYPE_KYOGRE_GROUDON) && gGameVersion != VERSION_RUBY)
+    else if (gBattleTypeFlags & BATTLE_TYPE_FRONTIER)
+    {
+        taskId = CreateTask(BattleIntroSlide3, 0);
+    }
+    else if ((gBattleTypeFlags & BATTLE_TYPE_KYOGRE_GROUDON)) //Why?
     {
         terrain = BATTLE_TERRAIN_UNDERWATER;
         taskId = CreateTask(BattleIntroSlide2, 0);
+    }
+    else if (terrain > 0x13) //Terrain Champion
+    {
+        taskId = CreateTask(BattleIntroSlide3, 0);
     }
     else
     {
         taskId = CreateTask(sBattleIntroSlideFuncs[terrain], 0);
     }
+
     gTasks[taskId].data[0] = 0;
     gTasks[taskId].data[1] = terrain;
     gTasks[taskId].data[2] = 0;
@@ -489,4 +508,216 @@ static void sub_80BCFCC(u8 arg0, u8 arg1, u8 battlerPosition, u8 arg3, u8 arg4, 
     for (i = arg1; i < arg1 + 8; ++i)
         for (j = arg0; j < arg0 + 8; ++j)
             *((u16 *)(BG_VRAM) + (i * 32) + (j + (arg6 << 10))) = offset++ | (arg4 << 12);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
+struct TrainerSlide
+{
+	u16 trainerId;
+	const u8* msgFirstDown;
+	const u8* msgLastSwitchIn;
+	const u8* msgLastLowHp;
+};
+
+struct DynamaxTrainerSlide
+{
+	u16 trainerId;
+	const u8* dynamaxMsg;
+};
+
+static const struct TrainerSlide sTrainerSlides[] =
+{
+	{},
+};
+const u8 gText_DefaultTrainerDynamaxMsg[] = _("");
+const u8 gText_TestTrainerDynamaxMsg[] = ("");
+static const struct DynamaxTrainerSlide sDynamaxTrainerSlides[] =
+{
+	{0x17, gText_TestTrainerDynamaxMsg}, //Test data
+};
+
+//This file's functions:
+static bool8 IsBankHpLow(u8 bank);
+static u8 GetEnemyMonCount(bool8 onlyAlive);
+
+void atk53_trainerslidein(void)
+{
+	gActiveBattler = GetBattlerAtPosition(gBattlescriptCurrInstr[1]);
+	BtlController_EmitTrainerSlide(0);
+	MarkBattlerForControllerExec(gActiveBattler);
+	gBattlescriptCurrInstr += 2;
+}
+
+void TrainerSlideInScriptingBank(void)
+{
+	gActiveBattler = gBattleScripting.battler;
+	BtlController_EmitTrainerSlide(0);
+	MarkBattlerForControllerExec(gActiveBattler);
+}
+
+void TrainerSlideOutScriptingBank(void)
+{
+	gActiveBattler = gBattleScripting.battler;
+	BtlController_EmitTrainerSlideBack(0);
+	MarkBattlerForControllerExec(gActiveBattler);
+}
+
+static u8 GetEnemyMonCount(bool8 onlyAlive)
+{
+	u8 i, count = 0;
+
+	for (i = 0; i < PARTY_SIZE; i++)
+	{
+		u32 species = GetMonData(&gEnemyParty[i], MON_DATA_SPECIES2, NULL);
+		if (species != SPECIES_NONE
+		&&  species != SPECIES_EGG
+		&& (!onlyAlive || gEnemyParty[i].hp))
+			++count;
+	}
+
+	return count;
+}
+
+static bool8 IsBankHpLow(u8 bank)
+{
+	return ((gBattleMons[bank].hp * 100) / gBattleMons[bank].maxHP) < 25;
+}
+
+bool8 ShouldDoTrainerSlide(u8 bank, u16 trainerId, u8 caseId)
+{
+	u32 i;
+
+	if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER) || SIDE(bank) != B_SIDE_OPPONENT)
+		return FALSE;
+
+	for (i = 0; i < ARRAY_COUNT(sTrainerSlides); ++i)
+	{
+		if (trainerId == sTrainerSlides[i].trainerId)
+		{
+			gBattleScripting.battler = bank;
+			switch (caseId) {
+				case TRAINER_SLIDE_LAST_SWITCHIN:
+					if (sTrainerSlides[i].msgLastSwitchIn != NULL && GetEnemyMonCount(TRUE) == 1)
+					{
+						gBattleStringLoader = sTrainerSlides[i].msgLastSwitchIn;
+						return TRUE;
+					}
+					break;
+
+				case TRAINER_SLIDE_LAST_LOW_HP:
+					if (sTrainerSlides[i].msgLastLowHp != NULL
+					&& GetEnemyMonCount(TRUE) == 1
+					&& IsBankHpLow(bank)
+					&& !gBattleStruct->trainerSlideLowHpMsgDone)
+					{
+						gBattleStruct->trainerSlideLowHpMsgDone = TRUE;
+						gBattleStringLoader = sTrainerSlides[i].msgLastLowHp;
+						return TRUE;
+					}
+					break;
+
+				case TRAINER_SLIDE_FIRST_DOWN:
+					if (sTrainerSlides[i].msgFirstDown != NULL && GetEnemyMonCount(TRUE) == GetEnemyMonCount(FALSE) - 1)
+					{
+						gBattleStringLoader = sTrainerSlides[i].msgFirstDown;
+						return TRUE;
+					}
+					break;
+			}
+			break;
+		}
+	}
+
+	return FALSE;
+}
+
+void TryDoDynamaxTrainerSlide(void)
+{
+	u32 i;
+	u16 trainerId;
+
+	if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER) || SIDE(gBattleScripting.battler) != B_SIDE_OPPONENT)
+		return;
+
+	if (IsTwoOpponentBattle() && GetBattlerPosition(gBattleScripting.battler) == B_POSITION_OPPONENT_RIGHT)
+		trainerId = gTrainerBattleOpponent_B;
+	else
+		trainerId = gTrainerBattleOpponent_A;
+
+	gBattleStringLoader = gText_DefaultTrainerDynamaxMsg;
+	for (i = 0; i < ARRAY_COUNT(sDynamaxTrainerSlides); ++i)
+	{
+		if (trainerId == sDynamaxTrainerSlides[i].trainerId)
+			gBattleStringLoader = sDynamaxTrainerSlides[i].dynamaxMsg;
+	}
+
+	BattleScriptPush(gBattlescriptCurrInstr + 5); //After callasm
+	gBattlescriptCurrInstr = BattleScript_TrainerSlideMsgRet - 5;
+}
+
+//Hook in Battle Main
+void CheckLastMonLowHPSlide(void)
+{
+	if (ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT), gTrainerBattleOpponent_A, TRAINER_SLIDE_LAST_LOW_HP)
+	|| (IsTwoOpponentBattle() && ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT), gTrainerBattleOpponent_B, TRAINER_SLIDE_LAST_LOW_HP))
+	|| (IS_DOUBLE_BATTLE && ShouldDoTrainerSlide(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT), gTrainerBattleOpponent_A, TRAINER_SLIDE_LAST_LOW_HP)))
+		BattleScriptExecute(BattleScript_TrainerSlideMsgEnd2);
+}
+
+//handletrainerslidemsg BANK CASE
+void atkFF1C_handletrainerslidemsg(void)
+{
+    u8 caseId;
+
+	gActiveBattler = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+
+	if (IS_DOUBLE_BATTLE)
+		gActiveBattler &= BIT_SIDE; //Always mon on enemy left in doubles
+
+	caseId = gBattlescriptCurrInstr[2];
+
+	switch(caseId) {
+		case 0:
+			gBattleStruct->savedObjId = gBattlerSpriteIds[gActiveBattler];
+			break;
+
+		case 1:
+			gBattlerSpriteIds[gActiveBattler] = gBattleStruct->savedObjId;
+			if (BATTLER_ALIVE(gActiveBattler))
+				BattleLoadOpponentMonSpriteGfx(GetBankPartyData(gActiveBattler), gActiveBattler);
+	}
+
+	gBattlescriptCurrInstr += 3;
+}
+
+//trytrainerslidefirstdownmsg BANK
+void atkFF1D_trytrainerslidefirstdownmsg(void)
+{
+	u8 pos, shouldDo;
+
+	gActiveBattler = GetBattlerForBattleScript(gBattlescriptCurrInstr[1]);
+	pos = GetBattlerPosition(gActiveBattler);
+
+	if (IsTwoOpponentBattle() && pos == B_POSITION_OPPONENT_RIGHT)
+		shouldDo = ShouldDoTrainerSlide(gActiveBattler, gTrainerBattleOpponent_B, TRAINER_SLIDE_FIRST_DOWN);
+	else
+		shouldDo = ShouldDoTrainerSlide(gActiveBattler, gTrainerBattleOpponent_A, TRAINER_SLIDE_FIRST_DOWN);
+
+	if (shouldDo)
+	{
+		BattleScriptPush(gBattlescriptCurrInstr + 2);
+		gBattlescriptCurrInstr = BattleScript_TrainerSlideMsgRet;
+		return;
+	}
+
+	gBattlescriptCurrInstr += 2;
+}
+
+void atkFF1E_trainerslideout(void)
+{
+	gActiveBattler = GetBattlerAtPosition(gBattlescriptCurrInstr[1]);
+	BtlController_EmitTrainerSlideBack(0);
+	MarkBattlerForControllerExec(gActiveBattler);
+	gBattlescriptCurrInstr += 2;
 }

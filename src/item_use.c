@@ -1,6 +1,7 @@
 #include "global.h"
 #include "gflib.h"
 #include "battle.h"
+#include "battle_anim.h"
 #include "berry_pouch.h"
 #include "berry_powder.h"
 #include "bike.h"
@@ -124,6 +125,11 @@ static const u8 sUnref_83E27B4[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
+
+const u8 gText_CantAimAtTwoTargets[] = _("现在的情况不太好\n无法同时收服两个宝可梦!{PAUSE_UNTIL_PRESS}");
+const u8 gText_CantAimAtSemiInvulnerableTarget[] = _("现在的情况不太好\n无法同时收服看不见的宝可梦!{PAUSE_UNTIL_PRESS}");
+const u8 gText_CantCatchPokemonYet[] = _("你还不能扔精灵球!{PAUSE_UNTIL_PRESS}");
+const u8 gText_CantCatchPokemonRightNow[] = _("哎呀!\n宝可梦逃出来了!{PAUSE_UNTIL_PRESS}");
 
 static void (*const sExitCallbackByItemType[])(void) = {
     CB2_ShowPartyMenuForItemUse,
@@ -734,13 +740,54 @@ void Task_ItemUse_CloseMessageBoxAndReturnToField_VsSeeker(u8 taskId)
     Task_ItemUse_CloseMessageBoxAndReturnToField(taskId);
 }
 
+bool8 DoubleWildPokeBallItemUseFix(u8 taskId)
+{
+	bool8 effect = FALSE;
+
+	if (IsRaidBattle() && !RAID_BATTLE_END)
+	{
+		DisplayItemMessageInBag(taskId, 2, gText_CantCatchPokemonYet, Task_ReturnToBagFromContextMenu);
+		effect = TRUE;
+	}
+	else if (FlagGet(FLAG_NO_CATCHING) || FlagGet(FLAG_NO_CATCHING_AND_RUNNING))
+	{
+		DisplayItemMessageInBag(taskId, 2, gText_CantCatchPokemonRightNow, Task_ReturnToBagFromContextMenu);
+		effect = TRUE;
+	}
+	else if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+	{
+		if (BATTLER_ALIVE(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT))
+		&& BATTLER_ALIVE(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT)))
+		{
+			DisplayItemMessageInBag(taskId, 2, gText_CantAimAtTwoTargets, Task_ReturnToBagFromContextMenu);
+			effect = TRUE;
+		}
+		else if ((BATTLER_ALIVE(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT)) && BATTLER_SEMI_INVULNERABLE(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT)))
+		||	   (BATTLER_ALIVE(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT)) && BATTLER_SEMI_INVULNERABLE(GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT))))
+		{
+			DisplayItemMessageInBag(taskId, 2, gText_CantAimAtSemiInvulnerableTarget, Task_ReturnToBagFromContextMenu);
+			effect = TRUE;
+		}
+	}
+	else if (BATTLER_SEMI_INVULNERABLE(GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT)))
+	{
+		DisplayItemMessageInBag(taskId, 2, gText_CantAimAtSemiInvulnerableTarget, Task_ReturnToBagFromContextMenu);
+		effect = TRUE;
+	}
+
+	return effect;
+}
+
 void BattleUseFunc_PokeBallEtc(u8 taskId)
 {
     if (!IsPlayerPartyAndPokemonStorageFull())
     {
-        RemoveBagItem(gSpecialVar_ItemId, 1);
-        Bag_BeginCloseWin0Animation();
-        ItemMenu_StartFadeToExitCallback(taskId);
+        if(!DoubleWildPokeBallItemUseFix(taskId))
+        {
+            RemoveBagItem(gSpecialVar_ItemId, 1);
+            Bag_BeginCloseWin0Animation();
+            ItemMenu_StartFadeToExitCallback(taskId);
+        }
     }
     else
     {
@@ -823,10 +870,10 @@ void BattleUseFunc_Ether(u8 taskId)
 
 void BattleUseFunc_PokeDoll(u8 taskId)
 {
-    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+    if (!(gBattleTypeFlags & BATTLE_TYPE_TRAINER)
+	&& !AreAllKindsOfRunningPrevented())
     {
         sub_80A1A44();
-        ItemUse_SetQuestLogEvent(QL_EVENT_USED_ITEM, 0, gSpecialVar_ItemId, 0xFFFF);
         DisplayItemMessageInBag(taskId, 2, gStringVar4, ItemMenu_StartFadeToExitCallback);
     }
     else

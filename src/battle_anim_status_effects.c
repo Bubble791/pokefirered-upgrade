@@ -100,7 +100,7 @@ static const union AnimCmd sUnknown_83BF464[] =
     ANIMCMD_END
 };
 
-static const union AnimCmd *const sSpriteAnimTable_83BF47C[] =
+const union AnimCmd *const sSpriteAnimTable_83BF47C[] =
 {
     sUnknown_83BF464
 };
@@ -528,4 +528,24 @@ static void Task_DoStatusAnimation(u8 taskId)
         gBattleSpritesDataPtr->healthBoxesData[gTasks[taskId].data[0]].statusAnimActive = FALSE;
         DestroyTask(taskId);
     }
+}
+
+void SpriteCB_GLACIER_TASK_ATTACKER(u8 taskId)
+{
+    s16 x = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_X_2) - 32;
+    s16 y = GetBattlerSpriteCoord(gBattleAnimAttacker, BATTLER_COORD_Y_PIC_OFFSET) - 36;
+    u8 spriteId;
+
+    if (IsContest())
+        x -= 6;
+    
+    SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_EFFECT_BLEND | BLDCNT_TGT2_ALL);
+    SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 16));
+    spriteId = CreateSprite(&sUnknown_83BF55C, x, y, 4);
+    if (GetSpriteTileStartByTag(ANIM_TAG_ICE_CUBE) == SPRITE_INVALID_TAG)
+        gSprites[spriteId].invisible = TRUE;
+    
+    SetSubspriteTables(&gSprites[spriteId], sUnknown_83BF554);
+    gTasks[taskId].data[15] = spriteId;
+    gTasks[taskId].func = sub_80784D8;
 }

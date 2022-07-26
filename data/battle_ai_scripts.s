@@ -588,7 +588,7 @@ AI_CBM_BulkUp::
 	end
 
 AI_CBM_WaterSport::
-	if_status3 AI_USER, STATUS3_WATERSPORT, Score_Minus10
+	if_status3 AI_USER, STATUS3_AIR_BALLOON_BS, Score_Minus10
 	end
 
 AI_CBM_CalmMind::
@@ -769,7 +769,6 @@ AI_CheckViability::
 	if_effect EFFECT_TICKLE, AI_CV_DefenseDown
 	if_effect EFFECT_COSMIC_POWER, AI_CV_SpDefUp
 	if_effect EFFECT_BULK_UP, AI_CV_DefenseUp
-	if_effect EFFECT_POISON_TAIL, AI_CV_HighCrit
 	if_effect EFFECT_WATER_SPORT, AI_CV_WaterSport
 	if_effect EFFECT_CALM_MIND, AI_CV_SpDefUp
 	if_effect EFFECT_DRAGON_DANCE, AI_CV_DragonDance

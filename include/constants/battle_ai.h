@@ -49,4 +49,10 @@
 #define AI_SCRIPT_SAFARI (1 << 30)
 #define AI_SCRIPT_FIRST_BATTLE (1 << 31)
 
+// script's table id to bit
+#define AI_SCRIPT_CHECK_BAD_MOVE (1 << 0)
+#define AI_SCRIPT_SEMI_SMART (1 << 1)
+#define AI_SCRIPT_CHECK_GOOD_MOVE (1 << 2)
+
+
 #endif // GUARD_CONSTANTS_BATTLE_AI_H

@@ -64,7 +64,6 @@ static void AnimHelpingHandClapStep(struct Sprite *);
 static void AnimTask_HelpingHandAttackerMovementStep(u8);
 static void AnimForesightMagnifyingGlassStep(struct Sprite *);
 static void AnimTask_MonToSubstituteDoll(u8);
-static void AnimBlockXStep(struct Sprite *);
 static void AnimTask_OdorSleuthMovementWaitFinish(u8);
 static void MoveOdorSleuthClone(struct Sprite *);
 static void AnimTask_TeeterDanceMovementStep(u8);
@@ -82,7 +81,7 @@ static const union AnimCmd sScratchAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sScratchAnimTable[] =
+const union AnimCmd *const sScratchAnimTable[] =
 {
     sScratchAnimCmds,
 };
@@ -128,7 +127,7 @@ static const union AnimCmd sOpeningEyeAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sOpeningEyeAnimTable[] =    
+const union AnimCmd *const sOpeningEyeAnimTable[] =    
 {
     sOpeningEyeAnimCmds,
 };
@@ -181,7 +180,7 @@ static const union AffineAnimCmd sMeanLookEyeAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sMeanLookEyeAffineAnimTable[] =
+const union AffineAnimCmd *const sMeanLookEyeAffineAnimTable[] =
 {
     sMeanLookEyeAffineAnimCmds1,
     sMeanLookEyeAffineAnimCmds2,
@@ -219,7 +218,7 @@ static const union AnimCmd sLeerAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sLeerAnimTable[] =
+const union AnimCmd *const sLeerAnimTable[] =
 {
     sLeerAnimCmds,
 };
@@ -241,7 +240,7 @@ static const union AnimCmd sLetterZAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sLetterZAnimTable[] =
+const union AnimCmd *const sLetterZAnimTable[] =
 {
     sLetterZAnimCmds,
 };
@@ -253,7 +252,7 @@ static const union AffineAnimCmd sLetterZAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sLetterZAffineAnimTable[] =
+const union AffineAnimCmd *const sLetterZAffineAnimTable[] =
 {
     sLetterZAffineAnimCmds,
 };
@@ -278,7 +277,7 @@ static const union AnimCmd sFangAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sFangAnimTable[] =
+const union AnimCmd *const sFangAnimTable[] =
 {
     sFangAnimCmds,
 };
@@ -290,7 +289,7 @@ static const union AffineAnimCmd sFangAffineAnimCmds[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sFangAffineAnimTable[] =
+const union AffineAnimCmd *const sFangAffineAnimTable[] =
 {
     sFangAffineAnimCmds,
 };
@@ -320,7 +319,7 @@ static const union AffineAnimCmd sSpotlightAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sSpotlightAffineAnimTable[] =
+const union AffineAnimCmd *const sSpotlightAffineAnimTable[] =
 {
     sSpotlightAffineAnimCmds1,
     sSpotlightAffineAnimCmds2,
@@ -367,7 +366,7 @@ static const union AnimCmd sRapidSpinAnimCmds[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sRapidSpinAnimTable[] =
+const union AnimCmd *const sRapidSpinAnimTable[] =
 {
     sRapidSpinAnimCmds,
 };
@@ -397,7 +396,7 @@ static const union AnimCmd sTriAttackTriangleAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sTriAttackTriangleAnimTable[] =
+const union AnimCmd *const sTriAttackTriangleAnimTable[] =
 {
     sTriAttackTriangleAnimCmds,
 };
@@ -411,7 +410,7 @@ static const union AffineAnimCmd sTriAttackTriangleAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sTriAttackTriangleAffineAnimTable[] =
+const union AffineAnimCmd *const sTriAttackTriangleAffineAnimTable[] =
 {
     sTriAttackTriangleAffineAnimCmds,
 };
@@ -440,7 +439,7 @@ static const union AnimCmd sEclipsingOrbAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sEclipsingOrbAnimTable[] =
+const union AnimCmd *const sEclipsingOrbAnimTable[] =
 {
     sEclipsingOrbAnimCmds,
 };
@@ -565,7 +564,7 @@ static const union AnimCmd sGreenStarAnimCmds3[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sGreenStarAnimTable[] =    
+const union AnimCmd *const sGreenStarAnimTable[] =    
 {
     sGreenStarAnimCmds1,
     sGreenStarAnimCmds2,
@@ -651,7 +650,7 @@ static const union AnimCmd sSweetScentPetalAnimCmds3[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sSweetScentPetalAnimCmdTable[] =    
+const union AnimCmd *const sSweetScentPetalAnimCmdTable[] =    
 {
     sSweetScentPetalAnimCmds1,
     sSweetScentPetalAnimCmds2,
@@ -679,7 +678,7 @@ static const union AnimCmd sPainSplitAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sPainSplitAnimCmdTable[] =
+const union AnimCmd *const sPainSplitAnimCmdTable[] =
 {
     sPainSplitAnimCmds,
 };
@@ -762,7 +761,7 @@ static const union AffineAnimCmd sYawnCloudAffineAnimCmds3[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sYawnCloudAffineAnimTable[] =    
+const union AffineAnimCmd *const sYawnCloudAffineAnimTable[] =    
 {
     sYawnCloudAffineAnimCmds1,
     sYawnCloudAffineAnimCmds2,
@@ -812,7 +811,7 @@ static const union AffineAnimCmd sSmokeBallEscapeCloudAffineAnimCmds4[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sSmokeBallEscapeCloudAffineAnimTable[] =    
+const union AffineAnimCmd *const sSmokeBallEscapeCloudAffineAnimTable[] =    
 {
     sSmokeBallEscapeCloudAffineAnimCmds1,
     sSmokeBallEscapeCloudAffineAnimCmds2,
@@ -892,7 +891,7 @@ static const union AnimCmd sRoarNoiseLineAnimCmds2[] =
     ANIMCMD_JUMP(0),
 };
 
-static const union AnimCmd *const sRoarNoiseLineAnimTable[] =
+const union AnimCmd *const sRoarNoiseLineAnimTable[] =
 {
     sRoarNoiseLineAnimCmds1,
     sRoarNoiseLineAnimCmds2,
@@ -944,7 +943,7 @@ static const union AffineAnimCmd sBarrageBallAffineAnimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sBarrageBallAffineAnimTable[] =
+const union AffineAnimCmd *const sBarrageBallAffineAnimTable[] =
 {
     sBarrageBallAffineAnimCmds1,
     sBarrageBallAffineAnimCmds2,
@@ -1063,7 +1062,7 @@ static const union AnimCmd sKnockOffStrikeAnimCmds[] =
     ANIMCMD_END,
 };
 
-static const union AnimCmd *const sKnockOffStrikeAnimTable[] =    
+const union AnimCmd *const sKnockOffStrikeAnimTable[] =    
 {
     sKnockOffStrikeAnimCmds,
 };
@@ -1082,7 +1081,7 @@ static const union AffineAnimCmd sKnockOffStrikeAffineanimCmds2[] =
     AFFINEANIMCMD_END,
 };
 
-static const union AffineAnimCmd *const sKnockOffStrikeAffineAnimTable[] =
+const union AffineAnimCmd *const sKnockOffStrikeAffineAnimTable[] =
 {
     sKnockOffStrikeAffineanimCmds1,
     sKnockOffStrikeAffineanimCmds2,
@@ -1105,7 +1104,7 @@ static const union AffineAnimCmd sRecycleSpriteAffineAnimCmds[] =
     AFFINEANIMCMD_JUMP(0),
 };
 
-static const union AffineAnimCmd *const sRecycleSpriteAffineAnimTable[] =
+const union AffineAnimCmd *const sRecycleSpriteAffineAnimTable[] =
 {
     sRecycleSpriteAffineAnimCmds,
 };
@@ -4672,7 +4671,7 @@ void AnimBlockX(struct Sprite *sprite)
     sprite->callback = AnimBlockXStep;
 }
 
-static void AnimBlockXStep(struct Sprite *sprite)
+void AnimBlockXStep(struct Sprite *sprite)
 {
     switch (sprite->data[0])
     {
