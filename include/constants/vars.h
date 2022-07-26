@@ -199,8 +199,8 @@
 #define VAR_BATTLE_FACILITY_TRAINER1_NAME               0x4093
 #define VAR_BATTLE_FACILITY_TRAINER2_NAME               0x4094
 #define VAR_BATTLE_FACILITY_SONG_OVERRIDE               0x4095
-#define VAR_BATTLE_BG                 0x4096
-#define VAR_0x4097                 0x4097
+#define VAR_BATTLE_BG                                   0x4096
+#define VAR_TERRAIN                                     0x4097
 #define VAR_0x4098                 0x4098
 #define VAR_0x4099                 0x4099
 #define VAR_0x409A                 0x409A

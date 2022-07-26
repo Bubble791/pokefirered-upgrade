@@ -10,7 +10,6 @@
 #define NIGHTFALL_END_HOUR  20      //20 - 21
 #define NIGHT_END_HOUR      0       //21 - 00
 
-#define MAX_NUM_ROAMERS 1
 
 #define DNS_ENABLED
 #define OVERWRITE_RIVAL
